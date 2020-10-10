@@ -1,0 +1,62 @@
+{
+  "name": "@pie-dao/smart-pools",
+  "version": "0.0.1",
+  "description": "Implementations of smart pools for Balancer",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn compile && yarn typechain",
+    "compile": "npx buidler --config ./buidler.compile.config.ts compile",
+    "coverage": "npm run build && npx buidler coverage --temp artifacts --network coverage",
+    "lint:solidity": "npx solhint ./contracts/**/*.sol",
+    "lint:typescript": "tslint -c tslint.json {test,typechain,utils}/**/*.ts",
+    "lint": "yarn lint:solidity && yarn lint:typescript",
+    "prettier:solidity": "npx prettier --write ./contracts/**/*.sol --print-width 100",
+    "prettier:typescript": "npx prettier --write {test,typechain,utils}/**/*.ts --print-width 100",
+    "prettier": "yarn prettier:solidity && yarn prettier:typescript",
+    "test": "npx buidler test",
+    "typechain": "typechain --target ethers-v4 --outDir typechain ./artifacts/**/*.json",
+    "clean": "rm -rf ./artifacts && rm -rf ./cache && rm -rf ./coverage && rm -rf dist && rm -rf ./typechain",
+    "remix": "remixd -s . --remix-ide https://remix.ethereum.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pie-dao/proxied-balancer-factory.git"
+  },
+  "author": "Pie DAO",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/pie-dao/proxied-balancer-factory/issues"
+  },
+  "homepage": "https://github.com/pie-dao/proxied-balancer-factory/readme",
+  "devDependencies": {
+    "@nomiclabs/buidler-ethers": "^1.3.4",
+    "@nomiclabs/buidler-etherscan": "^1.3.3",
+    "@nomiclabs/buidler-waffle": "^1.3.5",
+    "@typechain/ethers-v4": "^1.0.0",
+    "@types/chai": "^4.2.8",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.0",
+    "buidler-deploy": "^0.4.13",
+    "chai": "^4.2.0",
+    "ethereum-waffle": "^2.3.2",
+    "ethers": "^4.0.47",
+    "prettier": "^2.0.5",
+    "prettier-plugin-solidity": "^1.0.0-alpha.52",
+    "solhint": "^3.0.0",
+    "solidity-coverage": "^0.7.9",
+    "ts-generator": "0.0.8",
+    "ts-node": "^8.6.2",
+    "tslint": "^6.1.2",
+    "typechain": "^2.0.0",
+    "typescript": "^3.7.5"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@nomiclabs/buidler": "^1.4.1",
+    "@pie-dao/mock-contracts": "0.0.9",
+    "@pie-dao/proxy": "0.0.6",
+    "dotenv": "^8.2.0"
+  }
+}
