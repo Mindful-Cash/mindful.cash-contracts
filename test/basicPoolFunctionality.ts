@@ -226,7 +226,7 @@ describe("Basic Pool Functionality", function () {
       expect(balance).to.eq(mintAmount.add(INITIAL_SUPPLY));
 
       for (let entry of tokens) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(mintAmount));
       }
     });
@@ -252,7 +252,7 @@ describe("Basic Pool Functionality", function () {
       expect(balance).to.eq(INITIAL_SUPPLY.sub(removeAmount));
 
       for (let entry of tokens) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(removeAmount.div(2)));
       }
     });
@@ -292,10 +292,10 @@ describe("Basic Pool Functionality", function () {
       const balance = await smartpool.balanceOf(account);
       expect(balance).to.eq(INITIAL_SUPPLY.sub(removeAmount));
 
-      const userBalance = await tokens[0].balanceOf(account)
+      const userBalance = await tokens[0].balanceOf(account);
       expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(removeAmount));
       for (let entry of tokens.slice(1)) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(removeAmount.div(2)));
       }
     });
@@ -485,7 +485,7 @@ describe("Basic Pool Functionality", function () {
       expect(balance).to.eq(mintAmount.add(INITIAL_SUPPLY));
 
       for (let entry of tokens) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(mintAmount));
       }
     });
@@ -523,7 +523,7 @@ describe("Basic Pool Functionality", function () {
       expect(balance).to.eq(INITIAL_SUPPLY.sub(removeAmount));
 
       for (let entry of tokens) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(removeAmount.div(2)));
       }
     });
@@ -585,7 +585,7 @@ describe("Basic Pool Functionality", function () {
       expect(tokenBalance).to.eq(mintAmount.sub(constants.WeiPerEther));
 
       for (let entry of tokens) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(constants.WeiPerEther.div(2)));
       }
     });
@@ -647,7 +647,7 @@ describe("Basic Pool Functionality", function () {
     it("Unbinding a token should work", async () => {
       smartpool.unbind(tokens[0].address);
       for (let entry of tokens) {
-        const userBalance = await entry.balanceOf(account)
+        const userBalance = await entry.balanceOf(account);
         expect(userBalance).to.eq(INITIAL_TOKEN_SUPPLY.sub(constants.WeiPerEther.div(2)));
       }
     });
@@ -670,20 +670,20 @@ describe("Basic Pool Functionality", function () {
 
   describe("lockBPoolSwap modifier", async () => {
     it("If swap disabled, keep disabled", async () => {
-      await expect (await smartpool.isPublicSwap()).is.eq(false);
+      await expect(await smartpool.isPublicSwap()).is.eq(false);
       await smartpool.joinPool(constants.WeiPerEther);
-      await expect (await pool.isPublicSwap()).is.eq(false);
+      await expect(await pool.isPublicSwap()).is.eq(false);
     });
     it("If swap enabled, keep enabled", async () => {
       await smartpool.setPublicSwap(true);
-      await expect (await smartpool.isPublicSwap()).is.eq(true);
+      await expect(await smartpool.isPublicSwap()).is.eq(true);
       // would be nice of we can verify the following calls
       //    setPublicSwap(false)
       //    setPublicSwap(true)
       // Is there a mocking library that allows this?
       // Or test by require(isPublicSwap == false) in a function
       await smartpool.joinPool(constants.WeiPerEther);
-      await expect (await smartpool.isPublicSwap()).is.eq(true);
+      await expect(await smartpool.isPublicSwap()).is.eq(true);
     });
   });
 

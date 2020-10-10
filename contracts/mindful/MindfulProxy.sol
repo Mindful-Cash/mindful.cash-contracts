@@ -7,6 +7,7 @@ import "@pie-dao/proxy/contracts/PProxyPausable.sol";
 import "../interfaces/IBFactory.sol";
 import "../interfaces/IBPool.sol";
 import "../interfaces/IERC20.sol";
+import "../interfaces/IUniswapV2Factory";
 import "../Ownable.sol";
 import "../interfaces/IPV2SmartPool.sol";
 import "../libraries/LibSafeApprove.sol";
@@ -15,30 +16,24 @@ contract MindfulProxy is Ownable {
   using SafeMath for uint256;
   using LibSafeApprove for IERC20;
 
+  IUniswapV2Factory constant UNISWAP_FACTORY = IUniswapV2Factory(
+    0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
+  );
+  // ISmartPoolRegistry public constant REGISTRY = ISmartPoolRegistry(
+  //   0x412a5d5eC35fF185D6BfF32a367a985e1FB7c296
+  // );
+  IWETH public constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+
   IBFactory public balancerFactory;
 
   address public smartPoolImplementation;
+
+  bool private isPaused = false;
 
   mapping(address => address) public poolManager;
   mapping(address => bool) public isPool;
 
   address[] public pools;
-
-  event SmartPoolCreated(
-    address indexed poolAddress,
-    address indexed poolManager,
-    string name,
-    string symbol
-  );
-
-  IWETH public constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
-  IUniswapV2Factory constant uniswapFactory = IUniswapV2Factory(
-    0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
-  );
-  ISmartPoolRegistry public constant registry = ISmartPoolRegistry(
-    0x412a5d5eC35fF185D6BfF32a367a985e1FB7c296
-  );
-  bool private isPaused = false;
 
   function togglePause() public onlyOwner {
     isPaused = !isPaused;
@@ -47,6 +42,13 @@ contract MindfulProxy is Ownable {
   constructor() public {
     _setOwner(msg.sender);
   }
+
+  event SmartPoolCreated(
+    address indexed poolAddress,
+    address indexed poolManager,
+    string name,
+    string symbol
+  );
 
   // Pauzer
   modifier revertIfPaused {
@@ -129,97 +131,124 @@ contract MindfulProxy is Ownable {
   }
 
   // Max eth amount enforced by msg.value
-  function toPie(address _pie, uint256 _poolAmount) external payable revertIfPausedsa {
-    require(registry.inRegistry(_pie), "Not a Pie");
-    uint256 totalEth = calcToPie(_pie, _poolAmount);
-    require(msg.value >= totalEth, "Amount ETH too low");
+  function toChakra(
+    address _chakra,
+    address _baseCurrency,
+    uint256 _poolAmount,
+    uint256 _baseAmount
+  ) external payable revertIfPaused {
+    require(_baseCurrency != address(0), "invalid");
 
-    WETH.deposit{value: totalEth}();
+    // require(registry.inRegistry(_chakra), "Not a Pie");
+    require(isPool(_chakra), "Not a Chakra");
 
-    _toPie(_pie, _poolAmount);
+    uint256 totalBaseAmount = calcToChakra(_chakra, _baseCurrency, _poolAmount);
 
-    // return excess ETH
-    if (address(this).balance != 0) {
-      // Send any excess ETH back
-      msg.sender.transfer(address(this).balance);
+    if (_baseCurrency == address(WETH)) {
+      require(
+        (msg.value == _baseAmount) && (_baseAmount >= totalEth),
+        "Base currency amount too low"
+      );
+
+      WETH.deposit{value: totalEth}();
+
+      // return excess ETH
+      if (address(this).balance != 0) {
+        // Send any excess ETH back
+        msg.sender.transfer(address(this).balance);
+      }
+    } else {
+      require(_baseAmount >= totalEth, "Base currency amount too low");
+
+      require(IERC20(_baseCurrency).transferFrom(msg.sender, address(this), _baseAmount));
     }
 
+    _toChakra(_chakra, _poolAmount);
+
     // Transfer pool tokens to msg.sender
-    IERC20 pie = IERC20(_pie);
+    IERC20 pie = IERC20(_chakra);
 
     IERC20(pie).transfer(msg.sender, pie.balanceOf(address(this)));
   }
 
-  function _toPie(address _pie, uint256 _poolAmount) internal {
-    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_pie).calcTokensForAmount(
+  function _toChakra(
+    address _chakra,
+    address _baseCurrency,
+    uint256 _poolAmount
+  ) internal {
+    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(
       _poolAmount
     );
 
     for (uint256 i = 0; i < tokens.length; i++) {
-      if (registry.inRegistry(tokens[i])) {
-        _toPie(tokens[i], amounts[i]);
+      if (isPool[tokens[i]]) {
+        _toChakra(tokens[i], amounts[i]);
       } else {
         IUniswapV2Exchange pair = IUniswapV2Exchange(
-          UniLib.pairFor(address(uniswapFactory), tokens[i], address(WETH))
+          UniLib.pairFor(address(uniswapFactory), tokens[i], _baseCurrency)
         );
 
         (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
           address(uniswapFactory),
-          address(WETH),
+          _baseCurrency,
           tokens[i]
         );
         uint256 amountIn = UniLib.getAmountIn(amounts[i], reserveA, reserveB);
 
         // UniswapV2 does not pull the token
-        WETH.transfer(address(pair), amountIn);
+        IERC20(_baseCurrency).transfer(address(pair), amountIn);
 
-        if (token0Or1(address(WETH), tokens[i]) == 0) {
+        if (token0Or1(_baseCurrency, tokens[i]) == 0) {
           pair.swap(amounts[i], 0, address(this), new bytes(0));
         } else {
           pair.swap(0, amounts[i], address(this), new bytes(0));
         }
       }
 
-      IERC20(tokens[i]).safeApprove(_pie, amounts[i]);
+      IERC20(tokens[i]).safeApprove(_chakra, amounts[i]);
     }
 
-    IPSmartPool pie = IPSmartPool(_pie);
+    IPSmartPool pie = IPSmartPool(_chakra);
     pie.joinPool(_poolAmount);
   }
 
-  function calcToPie(address _pie, uint256 _poolAmount) public view returns (uint256) {
-    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_pie).calcTokensForAmount(
+  function calcToChakra(
+    address _chakra,
+    address _baseCurrency,
+    uint256 _poolAmount
+  ) public view returns (uint256) {
+    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(
       _poolAmount
     );
 
-    uint256 totalEth = 0;
+    uint256 totalBaseAmount = 0;
 
     for (uint256 i = 0; i < tokens.length; i++) {
-      if (registry.inRegistry(tokens[i])) {
-        totalEth += calcToPie(tokens[i], amounts[i]);
+      if (isPoo[tokens[i]]) {
+        totalBaseAmount += calcToChakra(tokens[i], amounts[i]);
       } else {
         (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
           address(uniswapFactory),
-          address(WETH),
+          _baseCurrency,
           tokens[i]
         );
-        totalEth += UniLib.getAmountIn(amounts[i], reserveA, reserveB);
+        totalBaseAmount += UniLib.getAmountIn(amounts[i], reserveA, reserveB);
       }
     }
 
-    return totalEth;
+    return totalBaseAmount;
   }
 
   function toEth(
-    address _pie,
+    address _chakra,
     uint256 _poolAmount,
     uint256 _minEthAmount
   ) external revertIfPausedsa {
-    uint256 totalEth = calcToPie(_pie, _poolAmount);
+    uint256 totalEth = calcToChakra(_chakra, _poolAmount);
     require(_minEthAmount <= totalEth, "Output ETH amount too low");
-    IPSmartPool pie = IPSmartPool(_pie);
+    IPSmartPool pie = IPSmartPool(_chakra);
 
-    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_pie).calcTokensForAmount(
+    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(
       _poolAmount
     );
     pie.transferFrom(msg.sender, address(this), _poolAmount);
@@ -250,8 +279,8 @@ contract MindfulProxy is Ownable {
     msg.sender.transfer(address(this).balance);
   }
 
-  function calcToEth(address _pie, uint256 _poolAmountOut) external view returns (uint256) {
-    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_pie).calcTokensForAmount(
+  function calcToEth(address _chakra, uint256 _poolAmountOut) external view returns (uint256) {
+    (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(
       _poolAmountOut
     );
 

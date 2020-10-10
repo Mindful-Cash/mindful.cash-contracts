@@ -32,7 +32,7 @@ describe("Advanced Pool Functionality", function () {
   let smartpool: Pv2SmartPool;
   let startBlock: number;
   let endBlock: number;
-  let tokenFactory : MockTokenFactory
+  let tokenFactory: MockTokenFactory;
 
   beforeEach(async () => {
     signers = await ethers.signers();
@@ -471,7 +471,7 @@ describe("Advanced Pool Functionality", function () {
         await smartpool.pokeWeights();
         // updating weight down
         const weightsBefore = await smartpool.getDenormalizedWeights();
-        await smartpool.updateWeight(tokens[0].address, weightsBefore[0].div(2))
+        await smartpool.updateWeight(tokens[0].address, weightsBefore[0].div(2));
         await expect(smartpool.pokeWeights()).to.be.revertedWith("ERR_WEIGHT_ADJUSTMENT_FINISHED");
         // weight adjustment should still work
         await smartpool.updateWeightsGradually(weigthsFixturePokeWeightsUp, startBlock, endBlock);
@@ -484,7 +484,7 @@ describe("Advanced Pool Functionality", function () {
         await smartpool.pokeWeights();
         // updating weight up
         const weightsBefore = await smartpool.getDenormalizedWeights();
-        await smartpool.updateWeight(tokens[0].address, weightsBefore[0].mul(2))
+        await smartpool.updateWeight(tokens[0].address, weightsBefore[0].mul(2));
         await expect(smartpool.pokeWeights()).to.be.revertedWith("ERR_WEIGHT_ADJUSTMENT_FINISHED");
         // weight adjustment should still work
         await smartpool.updateWeightsGradually(weigthsFixturePokeWeightsUp, startBlock, endBlock);

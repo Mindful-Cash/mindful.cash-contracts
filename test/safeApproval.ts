@@ -22,7 +22,7 @@ describe("LibSafeApproval", function () {
     signers = await ethers.signers();
     account = await signers[0].getAddress();
 
-    mockToken = await (new MockTokenFactory(signers[0])).deploy("MOCK", "MOCK", 18);
+    mockToken = await new MockTokenFactory(signers[0]).deploy("MOCK", "MOCK", 18);
 
     await mockToken.setDoKyberLikeApproval(true);
 
@@ -33,12 +33,12 @@ describe("LibSafeApproval", function () {
     )) as TestLibSafeApprove;
   });
 
-  it("Doing double approvals which are not \"safe\" should fail", async () => {
+  it('Doing double approvals which are not "safe" should fail', async () => {
     // no reason
     await expect(testContract.doubleApprovalUnsafe(mockToken.address)).to.be.reverted;
   });
 
-  it("Doing double approvals which are \"safe\" should work", async() => {
+  it('Doing double approvals which are "safe" should work', async () => {
     await testContract.doubleApprovalSafe(mockToken.address);
   });
 });
