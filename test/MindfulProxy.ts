@@ -8,20 +8,20 @@ import chai from "chai";
 import {deployContract, solidity} from "ethereum-waffle";
 
 import {deployBalancerPool, deployBalancerFactory, linkArtifact} from "../utils";
-import {PProxiedFactory} from "../typechain/PProxiedFactory";
+import {MindfulProxy} from "../typechain/MindfulProxy";
 import {Pv2SmartPool} from "../typechain/Pv2SmartPool";
 import PV2SmartPoolArtifact from "../artifacts/PV2SmartPool.json";
-import PProxiedFactoryArtifact from "../artifacts/PProxiedFactory.json";
+import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
 
 chai.use(solidity);
 
 const INITIAL_SUPPLY = constants.WeiPerEther;
 const PLACE_HOLDER_ADDRESS = "0x0000000000000000000000000000000000000001";
 
-describe("PProxiedFactory", () => {
+describe("MindfulProxy", () => {
   let signers: Signer[];
   let account: string;
-  let factory: PProxiedFactory;
+  let factory: MindfulProxy;
   const tokenAddresses: string[] = [];
   const amounts: BigNumberish[] = [];
   const weights: BigNumberish[] = [];
@@ -32,9 +32,9 @@ describe("PProxiedFactory", () => {
 
     const balancerFactoryAddress = await deployBalancerFactory(signers[0]);
 
-    factory = (await deployContract(signers[0] as Wallet, PProxiedFactoryArtifact, [], {
+    factory = (await deployContract(signers[0] as Wallet, MindfulProxyArtifact, [], {
       gasLimit: 100000000,
-    })) as PProxiedFactory;
+    })) as MindfulProxy;
 
     const libraries = await run("deploy-libraries");
     const linkedArtifact = linkArtifact(PV2SmartPoolArtifact, libraries);
