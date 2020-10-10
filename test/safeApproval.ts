@@ -1,15 +1,15 @@
 // This way of importing is a bit funky. We should fix this in the Mock Contracts package
-import {ethers} from "@nomiclabs/buidler";
-import {Signer, Wallet, utils, constants} from "ethers";
+import { ethers } from "@nomiclabs/buidler";
+import { Signer, Wallet, utils, constants } from "ethers";
 import chai from "chai";
-import {deployContract, solidity} from "ethereum-waffle";
-import {MockTokenFactory} from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
-import {MockToken} from "@pie-dao/mock-contracts/typechain/MockToken";
-import {TestLibSafeApprove} from "../typechain/TestLibSafeApprove";
+import { deployContract, solidity } from "ethereum-waffle";
+import { MockTokenFactory } from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
+import { MockToken } from "@pie-dao/mock-contracts/typechain/MockToken";
+import { TestLibSafeApprove } from "../typechain/TestLibSafeApprove";
 import TestLibSafeApproveArtifact from "../artifacts/TestLibSafeApprove.json";
 
 chai.use(solidity);
-const {expect} = chai;
+const { expect } = chai;
 
 describe("LibSafeApproval", function () {
   this.timeout(300000);

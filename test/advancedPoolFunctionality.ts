@@ -1,21 +1,21 @@
 // This way of importing is a bit funky. We should fix this in the Mock Contracts package
-import {MockTokenFactory} from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
-import {MockToken} from "@pie-dao/mock-contracts/typechain/MockToken";
-import {ethers, run, ethereum} from "@nomiclabs/buidler";
-import {Signer, Wallet, utils, constants} from "ethers";
-import {BigNumber, BigNumberish, parseEther} from "ethers/utils";
+import { MockTokenFactory } from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
+import { MockToken } from "@pie-dao/mock-contracts/typechain/MockToken";
+import { ethers, run, ethereum } from "@nomiclabs/buidler";
+import { Signer, Wallet, utils, constants } from "ethers";
+import { BigNumber, BigNumberish, parseEther } from "ethers/utils";
 import chai from "chai";
-import {deployContract, solidity} from "ethereum-waffle";
+import { deployContract, solidity } from "ethereum-waffle";
 
-import {deployBalancerPool, linkArtifact, TimeTraveler} from "../utils";
-import {IbPool} from "../typechain/IbPool";
-import {IbPoolFactory} from "../typechain/IbPoolFactory";
-import {Pv2SmartPool} from "../typechain/Pv2SmartPool";
+import { deployBalancerPool, linkArtifact, TimeTraveler } from "../utils";
+import { IbPool } from "../typechain/IbPool";
+import { IbPoolFactory } from "../typechain/IbPoolFactory";
+import { Pv2SmartPool } from "../typechain/Pv2SmartPool";
 import PV2SmartPoolArtifact from "../artifacts/PV2SmartPool.json";
-import {MaxUint256} from "ethers/constants";
+import { MaxUint256 } from "ethers/constants";
 
 chai.use(solidity);
-const {expect} = chai;
+const { expect } = chai;
 
 const NAME = "TEST POOL";
 const SYMBOL = "TPL";

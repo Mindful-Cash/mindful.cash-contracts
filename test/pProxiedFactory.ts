@@ -1,20 +1,20 @@
 // This way of importing is a bit funky. We should fix this in the Mock Contracts package
-import {MockTokenFactory} from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
-import {MockToken} from "@pie-dao/mock-contracts/typechain/MockToken";
-import {ethers, run} from "@nomiclabs/buidler";
-import {Signer, Wallet, utils, constants} from "ethers";
-import {BigNumber, BigNumberish} from "ethers/utils";
+import { MockTokenFactory } from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
+import { MockToken } from "@pie-dao/mock-contracts/typechain/MockToken";
+import { ethers, run } from "@nomiclabs/buidler";
+import { Signer, Wallet, utils, constants } from "ethers";
+import { BigNumber, BigNumberish } from "ethers/utils";
 import chai from "chai";
-import {deployContract, solidity} from "ethereum-waffle";
+import { deployContract, solidity } from "ethereum-waffle";
 
-import {deployBalancerPool, deployBalancerFactory, linkArtifact} from "../utils";
-import {PProxiedFactory} from "../typechain/PProxiedFactory";
-import {Pv2SmartPool} from "../typechain/Pv2SmartPool";
+import { deployBalancerPool, deployBalancerFactory, linkArtifact } from "../utils";
+import { PProxiedFactory } from "../typechain/PProxiedFactory";
+import { Pv2SmartPool } from "../typechain/Pv2SmartPool";
 import PV2SmartPoolArtifact from "../artifacts/PV2SmartPool.json";
 import PProxiedFactoryArtifact from "../artifacts/PProxiedFactory.json";
 
 chai.use(solidity);
-const {expect} = chai;
+const { expect } = chai;
 
 const INITIAL_SUPPLY = constants.WeiPerEther;
 const PLACE_HOLDER_ADDRESS = "0x0000000000000000000000000000000000000001";
