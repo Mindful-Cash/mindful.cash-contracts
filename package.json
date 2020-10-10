@@ -48,7 +48,9 @@
     "ts-node": "^8.6.2",
     "tslint": "^6.1.2",
     "typechain": "^2.0.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0"
   },
   "directories": {
     "test": "test"
@@ -58,5 +60,20 @@
     "@pie-dao/mock-contracts": "0.0.9",
     "@pie-dao/proxy": "0.0.6",
     "dotenv": "^8.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.sol": [
+      "yarn run prettier:solidity",
+      "git add"
+    ],
+    "test/**": [
+      "yarn run prettier:typescript",
+      "git add"
+    ]
   }
 }

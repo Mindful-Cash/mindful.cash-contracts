@@ -454,9 +454,12 @@ contract PV2SmartPool is IPV2SmartPool, PCToken, ReentryProtection {
     @notice Set the circuit breaker address. Can only be called by the controller
     @param _newCircuitBreaker Address of the new circuit breaker
   */
-  function setCircuitBreaker(
-    address _newCircuitBreaker
-  ) external override onlyController noReentry {
+  function setCircuitBreaker(address _newCircuitBreaker)
+    external
+    override
+    onlyController
+    noReentry
+  {
     emit CircuitBreakerChanged(P2Storage.load().circuitBreaker, _newCircuitBreaker);
     P2Storage.load().circuitBreaker = _newCircuitBreaker;
   }
