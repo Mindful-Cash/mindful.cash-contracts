@@ -13,11 +13,21 @@ contract PProxiedFactory is Ownable {
   using LibSafeApprove for IERC20;
 
   IBFactory public balancerFactory;
+
   address public smartPoolImplementation;
+
+  mapping(address => address) public poolManager;
   mapping(address => bool) public isPool;
+
   address[] public pools;
 
   event SmartPoolCreated(address indexed poolAddress, string name, string symbol);
+
+  modifier onlyPoolManager(address _sender, address _bpool) {
+    require(poolManager[_bpool] == _sender, "Sender is not pool manager");
+
+    _;
+  }
 
   function init(address _balancerFactory, address _implementation) public {
     require(smartPoolImplementation == address(0), "Already initialised");
