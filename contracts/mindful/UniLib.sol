@@ -1,6 +1,7 @@
 pragma solidity ^0.6.4;
 
 import "../libraries/SafeMath.sol";
+import "../interfaces/IUniswapV2Pair.sol";
 
 // Taken from: https://etherscan.io/address/0xca9af520706a57cecde6f596852eabb5a0e6bb0e#code
 
