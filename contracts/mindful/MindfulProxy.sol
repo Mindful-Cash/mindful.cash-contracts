@@ -9,7 +9,7 @@ import "../Ownable.sol";
 import "../interfaces/IPV2SmartPool.sol";
 import "../libraries/LibSafeApprove.sol";
 
-contract PProxiedFactory is Ownable {
+contract MindfulProxy is Ownable {
   using LibSafeApprove for IERC20;
 
   IBFactory public balancerFactory;
@@ -21,7 +21,7 @@ contract PProxiedFactory is Ownable {
 
   address[] public pools;
 
-  event SmartPoolCreated(address indexed poolAddress, string name, string symbol);
+  event SmartPoolCreated(address indexed poolAddress, address indexed poolManager, string name, string symbol);
 
   modifier onlyPoolManager(address _sender, address _bpool) {
     require(poolManager[_bpool] == _sender, "Sender is not pool manager");
@@ -49,7 +49,7 @@ contract PProxiedFactory is Ownable {
     uint256[] memory _amounts,
     uint256[] memory _weights,
     uint256 _cap
-  ) public onlyOwner returns (address) {
+  ) external returns (address) {
     // Deploy proxy contract
     PProxyPausable proxy = new PProxyPausable();
 
@@ -84,9 +84,10 @@ contract PProxiedFactory is Ownable {
     smartPool.approveTokens();
 
     isPool[address(smartPool)] = true;
+    poolManager[address(smartPool)] = msg.sender;
     pools.push(address(smartPool));
 
-    emit SmartPoolCreated(address(smartPool), _name, _symbol);
+    emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
 
     smartPool.transfer(msg.sender, _initialSupply);
 
