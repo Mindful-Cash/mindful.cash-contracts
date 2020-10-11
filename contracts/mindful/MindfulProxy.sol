@@ -40,6 +40,14 @@ contract MindfulProxy is Ownable {
 
     address[] public pools;
 
+    struct SellStrategy {
+        uint256[] prices;
+        bool[] isExecuted;
+    }
+
+    // mapping between chakra and sell strategy
+    mapping(address => SellStrategy) public chakraSellStrategy;
+
     function togglePause() public onlyOwner {
         isPaused = !isPaused;
     }
