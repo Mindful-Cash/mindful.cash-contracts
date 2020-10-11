@@ -33,7 +33,7 @@ contract MindfulProxy is Ownable {
 
     address public smartPoolImplementation;
 
-    bool private isPaused = false;
+    bool public isPaused;
 
     mapping(address => address) public poolManager;
     mapping(address => bool) public isPool;
@@ -135,7 +135,6 @@ contract MindfulProxy is Ownable {
         return address(smartPool);
     }
 
-    // Max eth amount enforced by msg.value
     function toChakra(
         address _chakra,
         address _baseToken,
