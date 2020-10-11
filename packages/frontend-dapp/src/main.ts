@@ -8,20 +8,22 @@ import "vue-material/dist/vue-material.min.css";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
 import "typeface-space-mono";
+
 import ToggleButton from "vue-js-toggle-button";
 import VModal from "vue-js-modal";
 
 // Non- typescript imports:
 // @ts-ignore-start
 import Jazzicon from "vue-jazzicon";
-import { DeFiSDK } from 'defi-sdk';
+import VueApexCharts from "vue-apexcharts";
 // @ts-ignore-end
 
+Vue.component("apexchart", VueApexCharts);
 Vue.component("VueSlider", VueSlider);
 Vue.component("jazzicon", Jazzicon);
 
 Vue.use(ToggleButton);
-
+Vue.use(VueApexCharts);
 Vue.use(VueMaterial);
 Vue.use(VModal);
 Vue.config.productionTip = false;
