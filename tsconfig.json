@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2019",
     "module": "commonjs",
     "strict": false,
     "esModuleInterop": true,
     "outDir": "dist",
     "resolveJsonModule": true,
     "strictNullChecks": false,
+    "sourceMap": true,
   },
   "include": ["./scripts", "./test", "./mainnet-test"],
   "files": [

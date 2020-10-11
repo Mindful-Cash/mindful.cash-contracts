@@ -1,7 +1,7 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.6.4;
 
-import "../interfaces/IERC20.sol";
+import "./IERC20.sol";
 import { PV2SmartPoolStorage as P2Storage } from "../storage/PV2SmartPoolStorage.sol";
 
 interface IPV2SmartPool is IERC20 {
@@ -395,10 +395,7 @@ interface IPV2SmartPool is IERC20 {
     @param _amount Amount of underlying asset to deposit
     @return Pool amount out
   */
-    function calcPoolOutGivenSingleIn(address _token, uint256 _amount)
-        external
-        view
-        returns (uint256);
+    function calcPoolOutGivenSingleIn(address _token, uint256 _amount) external view returns (uint256);
 
     /**
     @notice Calculate underlying deposit amount given pool amount out
@@ -406,10 +403,7 @@ interface IPV2SmartPool is IERC20 {
     @param _amount Amount of pool out
     @return Underlying asset deposit amount
   */
-    function calcSingleInGivenPoolOut(address _token, uint256 _amount)
-        external
-        view
-        returns (uint256);
+    function calcSingleInGivenPoolOut(address _token, uint256 _amount) external view returns (uint256);
 
     /**
     @notice Calculate underlying amount out given pool amount in
@@ -417,10 +411,7 @@ interface IPV2SmartPool is IERC20 {
     @param _amount Pool amount to burn
     @return Amount of underlying to withdraw
   */
-    function calcSingleOutGivenPoolIn(address _token, uint256 _amount)
-        external
-        view
-        returns (uint256);
+    function calcSingleOutGivenPoolIn(address _token, uint256 _amount) external view returns (uint256);
 
     /**
     @notice Calculate pool amount in given underlying input
@@ -428,8 +419,5 @@ interface IPV2SmartPool is IERC20 {
     @param _amount Underlying output amount
     @return Pool burn amount
   */
-    function calcPoolInGivenSingleOut(address _token, uint256 _amount)
-        external
-        view
-        returns (uint256);
+    function calcPoolInGivenSingleOut(address _token, uint256 _amount) external view returns (uint256);
 }

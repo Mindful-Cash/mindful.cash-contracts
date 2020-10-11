@@ -44,6 +44,7 @@
     "prettier-plugin-solidity": "^1.0.0-alpha.52",
     "solhint": "^3.0.0",
     "solidity-coverage": "^0.7.9",
+    "source-map-support": "^0.5.19",
     "ts-generator": "0.0.8",
     "ts-node": "^8.6.2",
     "tslint": "^6.1.2",
