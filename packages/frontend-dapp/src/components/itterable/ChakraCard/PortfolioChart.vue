@@ -4,7 +4,7 @@
       chart
       {{ chartData }}
       <div class="main-section" style="padding-top: 20px" v-if="chartData">
-        <!-- <apexchart width="500" type="line" :options="options" :series="series"></apexchart> -->
+        <apexchart width="500" type="line" :options="options" :series="series"></apexchart>
       </div>
     </div>
   </div>
@@ -22,23 +22,26 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-    //   options: {
-    //     chart: {
-    //       id: "vuechart-example"
-    //     },
-    //     xaxis: {
-    //       categories: chartData.map(x => x[0])
-    //     }
-    //   },
-    //   series: [
-    //     {
-    //       name: "series-1",
-    //       data: chartData.map(x => x[1])
-    //     }
-    //   ]
-    };
+
+  computed: {
+    options: function() {
+      return {
+        chart: {
+          id: "vuechart-example"
+        },
+        xaxis: {
+          categories: chartData.map(x => x[0])
+        }
+      };
+    },
+    series: function() {
+      return [
+        {
+          name: "series-1",
+          data: chartData.map(x => x[1])
+        }
+      ];
+    }
   }
 };
 </script>

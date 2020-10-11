@@ -110,10 +110,10 @@ export default new Vuex.Store({
             if (wallet.provider) {
               const ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
               commit("setProvider", ethersProvider);
-              commit("setNetwork", await ethersProvider.getNetwork());
+              commit("setCurrentNetwork", await ethersProvider.getNetwork());
             } else {
               commit("setProvider", null);
-              commit("setNetwork", null);
+              commit("setCurrentNetwork", null);
             }
           }
         },
