@@ -132,23 +132,16 @@ export default {
       ethers: null,
       provider: null,
       signer: null,
-      menuVisible: false,
+      menuVisible: false
     };
   },
   methods: {
-    ...mapActions(["SET_UP", "SET_ETHERS"]),
+    ...mapActions(["setUp"]),
     connectWallet() {
-      this.SET_UP();
-    },
-  },
-  async mounted() {
-    if (window.ethereum) {
-      this.ethers = ethers;
-      this.SET_ETHERS(this.ethers);
-      // this.provider = new ethers.providers.Web3Provider(window.ethereum);
-      // this.SET_UP(this.provider);
+      this.setUp();
     }
   },
+
   computed: {
     ...mapState(["currentNetwork", "userAddress", "userProfile", "userNeedsAccount"]),
     monitorState() {
@@ -157,8 +150,8 @@ export default {
         return "routing...";
       }
       return null;
-    },
-  },
+    }
+  }
 };
 </script>
 
