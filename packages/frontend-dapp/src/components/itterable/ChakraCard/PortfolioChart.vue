@@ -2,7 +2,6 @@
   <div class="about">
     <div>
       chart
-      {{ chartData }}
       <div class="main-section" style="padding-top: 20px" v-if="chartData">
         <apexchart width="500" type="line" :options="options" :series="series"></apexchart>
       </div>
@@ -25,20 +24,22 @@ export default {
 
   computed: {
     options: function() {
+      if (!this.chartData) return null;
       return {
         chart: {
           id: "vuechart-example"
         },
         xaxis: {
-          categories: chartData.map(x => x[0])
+          categories: this.chartData.map(x => x[0])
         }
       };
     },
     series: function() {
+      if (!this.chartData) return null;
       return [
         {
           name: "series-1",
-          data: chartData.map(x => x[1])
+          data: this.chartData.map(x => x[1])
         }
       ];
     }
