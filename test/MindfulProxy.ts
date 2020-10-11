@@ -19,6 +19,9 @@ import { Ipv2SmartPool } from "../typechain/Ipv2SmartPool";
 
 import Pv2SmartPoolArtifact from "../artifacts/Pv2SmartPool.json";
 import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
+import { Ierc20Factory } from "../typechain/Ierc20Factory";
+import { TestPcToken } from "../typechain/TestPcToken";
+import { TestPcTokenFactory } from "../typechain/TestPcTokenFactory";
 
 chai.use(solidity);
 const { expect } = chai;
@@ -95,13 +98,13 @@ describe("MindfulProxy", () => {
       smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.pools(0), signers[0]);
     });
     it("bpt token settings", async () => {
-      // NOT SURE WHY THESE dont work? smartPoolProxy IS an erc20?!
-      // const name = await smartpoolProxy.name();
-      // expect(name).to.eq(NAME);
-      // const symbol = await smartpoolProxy.symbol();
-      // expect(symbol).to.eq(SYMBOL);
-      // const initialSupply = await smartpoolProxy.totalSupply();
-      // expect(initialSupply).to.eq(INITIAL_SUPPLY);
+      const token : TestPcToken = TestPcTokenFactory.connect(await mindfulProxy.pools(0), signers[0])
+      const name = await token.name();
+      expect(name).to.eq(NAME);
+      const symbol = await token.symbol();
+      expect(symbol).to.eq(SYMBOL);
+      const initialSupply = await token.totalSupply();
+      expect(initialSupply).to.eq(INITIAL_SUPPLY);
     });
     it("permissioning is set correctly", async () => {
       expect(await smartpoolProxy.getController()).to.eq(mindfulProxy.address);
