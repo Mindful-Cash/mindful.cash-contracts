@@ -11,9 +11,11 @@ import "../interfaces/IUniswapV2Factory.sol";
 import "../interfaces/IUniswapV2Exchange.sol";
 import "../interfaces/IWETH.sol";
 import "../interfaces/IPSmartPool.sol";
-import "../Ownable.sol";
 import "../interfaces/IPV2SmartPool.sol";
+
 import "../libraries/LibSafeApprove.sol";
+
+import "../Ownable.sol";
 
 contract MindfulProxy is Ownable {
     using SafeMath for uint256;
