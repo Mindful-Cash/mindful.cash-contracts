@@ -3,37 +3,41 @@ import { MockTokenFactory } from "@pie-dao/mock-contracts/dist/typechain/MockTok
 import { MockToken } from "@pie-dao/mock-contracts/typechain/MockToken";
 import { ethers, run } from "@nomiclabs/buidler";
 import { Signer, Wallet, constants } from "ethers";
-import { BigNumberish } from "ethers/utils";
+import { BigNumberish, BigNumber } from "ethers/utils";
 import chai from "chai";
 import { deployContract, solidity } from "ethereum-waffle";
 
 import { deployBalancerPool, deployBalancerFactory, linkArtifact } from "../utils";
-import { IbPool } from "../typechain/IbPool";
 import { Ierc20 } from "../typechain/Ierc20";
+import { IbPool } from "../typechain/IbPool";
 import { IbPoolFactory } from "../typechain/IbPoolFactory";
+import { Ipv2SmartPoolFactory } from "../typechain/Ipv2SmartPoolFactory";
 import { MindfulProxy } from "../typechain/MindfulProxy";
-import { Pv2SmartPool } from "../typechain/Pv2SmartPool";
-import Ipv2SmartPool from "../typechain/Ipv2SmartPool";
+import { Pv2SmartPool } from "../typechain/PV2SmartPool";
+import { Ipv2SmartPool } from "../typechain/Ipv2SmartPool";
+
 import Pv2SmartPoolArtifact from "../artifacts/Pv2SmartPool.json";
 import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
 
 chai.use(solidity);
+const { expect } = chai;
 
 const INITIAL_SUPPLY = constants.WeiPerEther;
 const PLACE_HOLDER_ADDRESS = "0x0000000000000000000000000000000000000001";
+const NAME = "DeFi Energy Chakra";
+const SYMBOL = "DEC";
 
 describe("MindfulProxy", () => {
   let signers: Signer[];
   let account: string;
   let mindfulProxy: MindfulProxy;
-  // let bPool: IbPool;
   let smartpool: Pv2SmartPool;
-  // let smartpoolProxy: Ipv2SmartPool;
-  let tokenAddresses: string[] = [];
+  let smartpoolProxy: Ipv2SmartPool;
+  let tokens: MockToken[];
   let amounts: BigNumberish[] = [];
   let weights: BigNumberish[] = [];
   beforeEach(async () => {
-    tokenAddresses = [];
+    tokens = [];
     amounts = [];
     weights = [];
 
@@ -45,6 +49,7 @@ describe("MindfulProxy", () => {
     mindfulProxy = (await deployContract(signers[0] as Wallet, MindfulProxyArtifact, [], {
       gasLimit: 100000000,
     })) as MindfulProxy;
+    console.log("mindfulProxy", mindfulProxy.address);
 
     const libraries = await run("deploy-libraries");
     const linkedArtifact = linkArtifact(Pv2SmartPoolArtifact, libraries);
@@ -52,7 +57,7 @@ describe("MindfulProxy", () => {
     // Deploy this way to get the coverage provider to pick it up
     smartpool = (await deployContract(signers[0] as Wallet, linkedArtifact, [], {
       gasLimit: 100000000,
-    })) as PV2SmartPool;
+    })) as Pv2SmartPool;
 
     await smartpool.init(PLACE_HOLDER_ADDRESS, "IMP", "IMP", 1337);
     await mindfulProxy.init(balancerFactoryAddress, smartpool.address);
@@ -62,40 +67,98 @@ describe("MindfulProxy", () => {
       const token: MockToken = await tokenFactory.deploy(`Mock ${i}`, `M${i}`, 18);
       await token.mint(account, constants.WeiPerEther.mul(10000000000));
       await token.approve(mindfulProxy.address, constants.MaxUint256);
-      tokenAddresses.push(token.address);
+      tokens.push(token);
       weights.push(constants.WeiPerEther.mul(3));
       amounts.push(constants.WeiPerEther.mul(10));
     }
   });
+  describe("init new pool proxy", async () => {
+    before(async () => {
+      console.log("mindfulProxyzzz", mindfulProxy.address);
+      await mindfulProxy.newProxiedSmartPool(
+        NAME,
+        SYMBOL,
+        constants.WeiPerEther,
+        tokens.map((token) => token.address),
+        amounts,
+        weights,
+        INITIAL_SUPPLY
+      );
+      console.log("TOP");
+      console.log((await mindfulProxy.getPools()).length);
+      console.log(await mindfulProxy.getPools());
+      expect((await mindfulProxy.getPools()).length).to.eq(1);
+      smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.pools(0), signers[0]);
+    });
+    it("Token symbol should be correct", async () => {
+      const name = await smartpoolProxy.name();
+      expect(name).to.eq(NAME);
+    });
+    // it("Token name should be correct", async () => {
+    //   const symbol = await smartpoolProxy.symbol();
+    //   expect(symbol).to.eq(SYMBOL);
+    // });
+    // it("Initial supply should be correct", async () => {
+    //   const initialSupply = await smartpoolProxy.totalSupply();
+    //   expect(initialSupply).to.eq(INITIAL_SUPPLY);
+    // });
+    // it("Controller should be correctly set", async () => {
+    //   const controller = await smartpoolProxy.getController();
+    //   expect(controller).to.eq(account);
+    // });
+    // it("Public swap setter should be correctly set", async () => {
+    //   const publicSwapSetter = await smartpoolProxy.getPublicSwapSetter();
+    //   expect(publicSwapSetter).to.eq(account);
+    // });
+    // it("Token binder should be correctly set", async () => {
+    //   const tokenBinder = await smartpoolProxy.getTokenBinder();
+    //   expect(tokenBinder).to.eq(account);
+    // });
 
-  it("Creating a new proxied pool should work", async () => {
-    console.log("mindfulProxyzzz", mindfulProxy.address);
+    // it("Tokens should be correctly set", async () => {
+    //   const actualTokens = await smartpoolProxy.getTokens();
+    //   const tokenAddresses = tokens.map((token) => token.address);
+    //   expect(actualTokens).eql(tokenAddresses);
+    // });
+    // it("calcTokensForAmount should work", async () => {
+    //   const amountAndTokens = await smartpoolProxy.calcTokensForAmount(constants.WeiPerEther);
+    //   const tokenAddresses = tokens.map((token) => token.address);
+    //   const expectedAmounts = tokenAddresses.map(() => constants.WeiPerEther.div(2));
+    //   expect(amountAndTokens.tokens).to.eql(tokenAddresses);
+    //   expect(amountAndTokens.amounts).to.eql(expectedAmounts);
+    // });
+    // it("Calling init when already initialized should fail", async () => {
+    //   await expect(smartpoolProxy.init(PLACE_HOLDER_ADDRESS, NAME, SYMBOL, constants.WeiPerEther)).to.be.revertedWith(
+    //     "PV2smartpool.init: already initialised"
+    //   );
+    // });
+    // it("Smart pool should not hold any non balancer pool tokens after init", async () => {
+    //   const smartPoolBalances = await getTokenBalances(smartpoolProxy.address);
+    //   expectZero(smartPoolBalances);
+    // });
+  });
+  async function getTokenBalances(address: string) {
+    const balances: BigNumber[] = [];
 
-    await mindfulProxy.newProxiedSmartPool(
-      "TEST",
-      "TST",
-      constants.WeiPerEther,
-      tokenAddresses,
-      amounts,
-      weights,
-      INITIAL_SUPPLY
-    );
-  });
-  it("new proxied pool ownership", async () => {
-    console.log("mindfulProxyzzz", mindfulProxy.address);
-    await mindfulProxy.newProxiedSmartPool(
-      "TEST",
-      "TST",
-      constants.WeiPerEther,
-      tokenAddresses,
-      amounts,
-      weights,
-      INITIAL_SUPPLY
-    );
-    console.log("JUST GBEFORFE");
-    smartpoolProxy = Ipv2SmartPool.connect(await mindfulProxy.pools(0), signers[0]);
-    console.log(bPool);
-    // const token: Pv2SmartPool;
-  });
-  console.log("SSSAA");
+    for (const token of tokens) {
+      balances.push(await token.balanceOf(address));
+    }
+
+    return balances;
+  }
+
+  function expectZero(amounts: BigNumber[]) {
+    for (const amount of amounts) {
+      expect(amount).to.eq(0);
+    }
+  }
+
+  function createBigNumberArray(length: number, value: BigNumber): BigNumber[] {
+    const result: BigNumber[] = [];
+    for (let i = 0; i < length; i++) {
+      result.push(value);
+    }
+
+    return result;
+  }
 });
