@@ -162,8 +162,6 @@ contract MindfulProxy is Ownable {
         return address(smartPool);
     }
 
-    // check if sender is relayer
-    // if so return startegy amount, override buy timestamp
     function isRelayerBuying(
         address _chakra,
         address _baseToken,
@@ -199,6 +197,10 @@ contract MindfulProxy is Ownable {
         }
 
         return (isRelayer, manager, strategyBaseToken, strategyBaseAmount);
+    }
+
+    function isRelayerSelling() internal {
+
     }
 
     function toChakra(
@@ -293,6 +295,7 @@ contract MindfulProxy is Ownable {
         smartPool.joinPool(_poolAmount);
     }
 
+    // todod: add isRelayer param, add fee calculation, return fee equal to zero if isRelayer = false
     function calcToChakra(
         address _chakra,
         address _curreny,
@@ -319,6 +322,7 @@ contract MindfulProxy is Ownable {
         return totalBaseAmount;
     }
 
+    // add same mechanism to toChakra
     function fromChakra(
         address _chakra,
         address _quoteToken,
