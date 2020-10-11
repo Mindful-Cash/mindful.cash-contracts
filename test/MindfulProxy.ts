@@ -95,37 +95,25 @@ describe("MindfulProxy", () => {
       // expect(initialSupply).to.eq(INITIAL_SUPPLY);
     });
     it("permissioning is set correctly", async () => {
-      const controller = await smartpoolProxy.getController();
-      expect(controller).to.eq(mindfulProxy.address);
-
-      const publicSwapSetter = await smartpoolProxy.getPublicSwapSetter();
-      expect(publicSwapSetter).to.eq(mindfulProxy.address);
-
-      const tokenBinder = await smartpoolProxy.getTokenBinder();
-      expect(tokenBinder).to.eq(mindfulProxy.address);
+      expect(await smartpoolProxy.getController()).to.eq(mindfulProxy.address);
+      expect(await smartpoolProxy.getPublicSwapSetter()).to.eq(mindfulProxy.address);
+      expect(await smartpoolProxy.getTokenBinder()).to.eq(mindfulProxy.address);
     });
 
-    // it("Tokens should be correctly set", async () => {
-    //   const actualTokens = await smartpoolProxy.getTokens();
-    //   const tokenAddresses = tokens.map((token) => token.address);
-    //   expect(actualTokens).eql(tokenAddresses);
-    // });
-    // it("calcTokensForAmount should work", async () => {
-    //   const amountAndTokens = await smartpoolProxy.calcTokensForAmount(constants.WeiPerEther);
-    //   const tokenAddresses = tokens.map((token) => token.address);
-    //   const expectedAmounts = tokenAddresses.map(() => constants.WeiPerEther.div(2));
-    //   expect(amountAndTokens.tokens).to.eql(tokenAddresses);
-    //   expect(amountAndTokens.amounts).to.eql(expectedAmounts);
-    // });
-    // it("Calling init when already initialized should fail", async () => {
-    //   await expect(smartpoolProxy.init(PLACE_HOLDER_ADDRESS, NAME, SYMBOL, constants.WeiPerEther)).to.be.revertedWith(
-    //     "PV2smartpool.init: already initialised"
-    //   );
-    // });
-    // it("Smart pool should not hold any non balancer pool tokens after init", async () => {
-    //   const smartPoolBalances = await getTokenBalances(smartpoolProxy.address);
-    //   expectZero(smartPoolBalances);
-    // });
+    it("Tokens should be correctly set", async () => {
+      const actualTokens = await smartpoolProxy.getTokens();
+      const tokenAddresses = tokens.map((token) => token.address);
+      expect(actualTokens).eql(tokenAddresses);
+    });
+    it("Calling init when already initialized should fail", async () => {
+      await expect(smartpoolProxy.init(PLACE_HOLDER_ADDRESS, NAME, SYMBOL, constants.WeiPerEther)).to.be.revertedWith(
+        "PV2SmartPool.init: already initialised"
+      );
+    });
+    it("Smart pool should not hold any non balancer pool tokens after init", async () => {
+      const smartPoolBalances = await getTokenBalances(smartpoolProxy.address);
+      expectZero(smartPoolBalances);
+    });
   });
 
   async function getTokenBalances(address: string) {
