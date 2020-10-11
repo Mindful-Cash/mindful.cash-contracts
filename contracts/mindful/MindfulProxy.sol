@@ -247,7 +247,7 @@ contract MindfulProxy is Ownable {
         uint256 _poolAmount,
         uint256 _minQuoteToken
     ) external revertIfPaused {
-        uint256 totalAmount = calcToChakra(_chakra, _quoteToken, _poolAmount);
+        uint256 totalAmount = calcFromChakra(_chakra, _quoteToken, _poolAmount);
 
         require(_minQuoteToken <= totalAmount, "Output currency amount too low");
 
@@ -287,23 +287,22 @@ contract MindfulProxy is Ownable {
         }
     }
 
-    // Why is this here ??? same as calcToChakra right ?
-    function calcToEth(address _chakra, uint256 _poolAmountOut) external view returns (uint256) {
+    function calcFromChakra(address _chakra, address _quoteToken, uint256 _poolAmountOut) external view returns (uint256) {
         (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra)
             .calcTokensForAmount(_poolAmountOut);
 
-        uint256 totalEth = 0;
+        uint256 totalQuoteAmount = 0;
 
         for (uint256 i = 0; i < tokens.length; i++) {
             (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
                 address(UNISWAP_FACTORY),
                 tokens[i],
-                address(WETH)
+                _quoteToken
             );
-            totalEth += UniLib.getAmountOut(amounts[i], reserveA, reserveB);
+            totalQuoteAmount += UniLib.getAmountOut(amounts[i], reserveA, reserveB);
         }
 
-        return totalEth;
+        return totalQuoteAmount;
     }
 
     function token0Or1(address tokenA, address tokenB) internal view returns (uint256) {
