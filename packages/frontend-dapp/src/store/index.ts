@@ -25,7 +25,7 @@ export default new Vuex.Store({
     wallet: null,
     charkaInfo: null,
     protocolBalances: null,
-    chakras: [{ address: 0, info: 1234 }]
+    chakras: []
   },
   mutations: {
     setSigner(state, signer) {

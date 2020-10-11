@@ -6,11 +6,11 @@
           <md-card-header>
             <div class="md-title"></div>
           </md-card-header>
-          <md class="box-text">
+          <md-content class="box-text">
             <p>
               view your Chakras
             </p>
-          </md>
+          </md-content>
         </md-content>
         <transition-group name="fadeUp" tag="ul">
           <Chakra-Card v-for="chakra in chakras" :chakraInfo="chakra" style="margin:20px" :key="chakra.address" />
@@ -69,12 +69,7 @@ export default {
   name: "MyChakras",
   components: { ChakraCard },
   data: () => ({}),
-  methods: {
-    ...mapActions(["getMyChakras"])
-  },
-  mounted() {
-    this.getMyChakras();
-  },
+  methods: {},
   computed: {
     ...mapState(["chakras"])
   }

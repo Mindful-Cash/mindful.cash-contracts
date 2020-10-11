@@ -8,8 +8,7 @@
         2
       </div>
     </div>
-    {{ chakraInfo }}
-    <Portfolio-Chart />
+    <Portfolio-Chart :chartData="chakraInfo.chartData"/>
   </md-card>
 </template>
 
