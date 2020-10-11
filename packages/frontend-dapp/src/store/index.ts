@@ -16,15 +16,12 @@ export default new Vuex.Store({
     ethers: null,
     provider: null,
     signer: null,
-    contentIdCounter: 2,
     account: null,
     userAddress: null,
-    userProfile: { firstName: null, lastName: null, set: false },
     currentNetwork: null,
     notify: null,
     onboard: null,
-    wallet: null,
-    userProfileBox: null
+    wallet: null
   },
   mutations: {
     setSigner(state, signer) {

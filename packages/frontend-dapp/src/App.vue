@@ -12,12 +12,9 @@
       <!-- <logo style="margin-left:600px"/> -->
 
       <div class="md-toolbar-section-end">
-        <div class="md-layout md-gutter md-alignment-center-right" style="text-align: right; width: 500px;">
+        <div class="md-layout md-gutter md-alignment-center-right">
           <div class="md-layout-item" v-if="!userAddress">
             <md-button class="md-raised md-accent" @click="connectWallet">🦊Connect</md-button>
-          </div>
-          <div class="md-layout-item" v-if="userAddress">
-            <div class="md-subheading">{{ userProfile.firstName }} {{ userProfile.lastName }}</div>
           </div>
           <div class="md-layout-item" v-if="userAddress">
             <div class="md-subheading">
@@ -92,7 +89,7 @@
         <div class="phone-viewport">
           <md-bottom-bar style="padding-left: 600px; padding-right: 250px;">
             <span>
-              Censorship resistant news made with ❤️ by
+              The future of mindful money with ❤️ by
               <a href="https://github.com/Nicca42/News_Buff_V0.1" target="_blank">News Buff</a>
               📰
             </span>
@@ -143,7 +140,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["currentNetwork", "userAddress", "userProfile", "userNeedsAccount"]),
+    ...mapState(["currentNetwork", "userAddress"]),
     monitorState() {
       if (this.userNeedsAccount) {
         router.push({ path: "/CreateProfile" });
