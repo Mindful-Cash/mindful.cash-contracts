@@ -26,7 +26,6 @@ const INITIAL_SUPPLY = constants.WeiPerEther;
 const PLACE_HOLDER_ADDRESS = "0x0000000000000000000000000000000000000001";
 const NAME = "DeFi Energy Chakra";
 const SYMBOL = "DEC";
-console.log("TOP0");
 
 describe("MindfulProxy", () => {
   let signers: Signer[];
@@ -37,9 +36,7 @@ describe("MindfulProxy", () => {
   let tokens: MockToken[];
   let amounts: BigNumberish[] = [];
   let weights: BigNumberish[] = [];
-  console.log("TOP1");
   beforeEach(async () => {
-    console.log("before");
     tokens = [];
     amounts = [];
     weights = [];
@@ -52,8 +49,6 @@ describe("MindfulProxy", () => {
     mindfulProxy = (await deployContract(signers[0] as Wallet, MindfulProxyArtifact, [], {
       gasLimit: 100000000,
     })) as MindfulProxy;
-    console.log("Z");
-    console.log("mindfulProxy", mindfulProxy.address);
 
     const libraries = await run("deploy-libraries");
     const linkedArtifact = linkArtifact(Pv2SmartPoolArtifact, libraries);
