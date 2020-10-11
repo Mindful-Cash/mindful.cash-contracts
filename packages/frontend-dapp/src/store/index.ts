@@ -1,4 +1,7 @@
 import { config } from "../utils/Config";
+import CharkaInfo from "../utils/FetchCharkaInfo";
+
+const charkaInfo = new CharkaInfo();
 
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
@@ -21,7 +24,8 @@ export default new Vuex.Store({
     currentNetwork: null,
     notify: null,
     onboard: null,
-    wallet: null
+    wallet: null,
+    chakras: [{ address: 0, info: 1234 }]
   },
   mutations: {
     setSigner(state, signer) {
@@ -63,6 +67,8 @@ export default new Vuex.Store({
       // Setting up Onboard.js
       // await setUpOnboard();
       await dispatch("setUpOnboard");
+
+      await dispatch("getUserChakras");
 
       // Setting up the Smart contracts
       await dispatch("setUpContracts");
@@ -132,14 +138,14 @@ export default new Vuex.Store({
       //   commit(mutations.SET_MOCK_CONTRACT_INSTANCE, mockInstance);
 
       //   console.log("> Successfully set up Smart Contract instances");
-    }
+    },
 
     // LOADING ACTIONS
 
-    /**
-     * @notice Pulls all the posts from the ThreadDB and adds any posts that the
-     * state does not currently have.
-     */
+    async getUserChakras({ commit, state }) {
+      console.log("Getting chakras...", state.userAddress);
+      await charkaInfo.fetchChartInfo(state.userAddress);
+    }
   },
   modules: {}
 });

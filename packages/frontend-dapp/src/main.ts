@@ -14,6 +14,7 @@ import VModal from "vue-js-modal";
 // Non- typescript imports:
 // @ts-ignore-start
 import Jazzicon from "vue-jazzicon";
+import { DeFiSDK } from 'defi-sdk';
 // @ts-ignore-end
 
 Vue.component("VueSlider", VueSlider);
