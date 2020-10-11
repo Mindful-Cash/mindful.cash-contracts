@@ -1,8 +1,6 @@
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
 
-const charkaInfo = new CharkaInfo();
-
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
 import Notify from "bnc-notify";
@@ -25,11 +23,17 @@ export default new Vuex.Store({
     notify: null,
     onboard: null,
     wallet: null,
+    charkaInfo: null,
+    protocolBalances: null,
     chakras: [{ address: 0, info: 1234 }]
   },
   mutations: {
     setSigner(state, signer) {
       state.signer = signer;
+      console.log("signer set to: ", state.signer);
+    },
+    setCharkaInfo(state, charkaInfo) {
+      state.charkaInfo = charkaInfo;
       console.log("signer set to: ", state.signer);
     },
     setUserAddress(state, address) {
@@ -46,19 +50,29 @@ export default new Vuex.Store({
       console.log("ethers set to: ", state.ethers);
     },
     setProvider(state, provider) {
-      state.provider = provider;
       console.log("provider set to: ", state.provider);
+      state.provider = provider;
     },
 
     setOnboard(state, onboard) {
-      state.onboard = onboard;
       console.log("onboard set to: ");
+      state.onboard = onboard;
       console.log(state.onboard);
     },
     setWallet(state, wallet) {
-      state.wallet = wallet;
       console.log("wallet set to: ");
+      state.wallet = wallet;
       console.log(state.wallet);
+    },
+    setChakras(state, chakras) {
+      console.log("chakras set to: ");
+      state.chakras = chakras;
+      console.log(state.chakras);
+    },
+    setProtocolBalances(state, protocolBalances) {
+      state.protocolBalances = protocolBalances;
+      console.log("protocolBalances set to: ");
+      console.log(state.protocolBalances);
     }
   },
   actions: {
@@ -109,6 +123,8 @@ export default new Vuex.Store({
 
       await onboardInstance.walletSelect();
       await onboardInstance.walletCheck();
+      const charkaInfo = new CharkaInfo(state.provider);
+      commit("setCharkaInfo", charkaInfo);
       commit("setOnboard", onboardInstance);
 
       console.log("> Successfully run onboard.js");
@@ -144,7 +160,11 @@ export default new Vuex.Store({
 
     async getUserChakras({ commit, state }) {
       console.log("Getting chakras...", state.userAddress);
-      await charkaInfo.fetchChartInfo(state.userAddress);
+
+      // commit("setProtocolBalances", await state.charkaInfo.fetchProtocolBalance(state.userAddress));
+
+      commit("setChakras", await state.charkaInfo.fetchChartInfo(state.userAddress, 30));
+      console.log("setChartInfo", state.chakras);
     }
   },
   modules: {}
