@@ -90,7 +90,7 @@ describe("MindfulProxy", () => {
       amounts.push(constants.WeiPerEther.mul(10));
     }
   });
-  
+
   describe("init smart pool proxy", async () => {
     beforeEach(async () => {
       await mindfulProxy.newProxiedSmartPool(
@@ -102,12 +102,15 @@ describe("MindfulProxy", () => {
         weights,
         INITIAL_SUPPLY
       );
-      expect((await mindfulProxy.getPools()).length).to.eq(1);
-      smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.pools(0), signers[0]);
+      expect((await mindfulProxy.getChakras()).length).to.eq(1);
+      smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.chakras(0), signers[0]);
     });
 
     it("bpt token settings", async () => {
-      const token : TestPcToken = TestPcTokenFactory.connect(await mindfulProxy.pools(0), signers[0])
+      const token: TestPcToken = TestPcTokenFactory.connect(
+        await mindfulProxy.chakras(0),
+        signers[0]
+      );
       const name = await token.name();
       expect(name).to.eq(NAME);
       const symbol = await token.symbol();
@@ -119,8 +122,10 @@ describe("MindfulProxy", () => {
     it("permissioning is set correctly", async () => {
       expect(await smartpoolProxy.getController()).to.eq(mindfulProxy.address);
       expect(await smartpoolProxy.getPublicSwapSetter()).to.eq(mindfulProxy.address);
-      expect(await smartpoolProxy.getTokenBinder()).to.eq(mindfulProxy.address)
-      expect(await mindfulProxy.poolManager(await mindfulProxy.pools(0))).to.eq(mindfulDeployer);
+      expect(await smartpoolProxy.getTokenBinder()).to.eq(mindfulProxy.address);
+      expect(await mindfulProxy.chakraManager(await mindfulProxy.chakras(0))).to.eq(
+        mindfulDeployer
+      );
       expect(await smartpoolProxy.getCap()).to.eq(INITIAL_SUPPLY);
     });
 
@@ -131,9 +136,9 @@ describe("MindfulProxy", () => {
     });
 
     it("Calling init when already initialized should fail", async () => {
-      await expect(smartpoolProxy.init(PLACE_HOLDER_ADDRESS, NAME, SYMBOL, constants.WeiPerEther)).to.be.revertedWith(
-        "PV2SmartPool.init: already initialised"
-      );
+      await expect(
+        smartpoolProxy.init(PLACE_HOLDER_ADDRESS, NAME, SYMBOL, constants.WeiPerEther)
+      ).to.be.revertedWith("PV2SmartPool.init: already initialised");
     });
 
     it("Smart pool should not hold any non balancer pool tokens after init", async () => {
@@ -149,9 +154,9 @@ describe("MindfulProxy", () => {
       await expect(localMindfulProxy.togglePause()).to.be.revertedWith(
         "Ownable.onlyOwner: msg.sender not owner"
       );
-    })
+    });
 
-    it('toggle pause', async () => {
+    it("toggle pause", async () => {
       expect(await mindfulProxy.isPaused()).to.eq(false);
 
       await mindfulProxy.togglePause();
@@ -161,12 +166,12 @@ describe("MindfulProxy", () => {
       // reset
       await mindfulProxy.togglePause();
       expect(await mindfulProxy.isPaused()).to.eq(false);
-    })
-  })
+    });
+  });
 
   describe("DCA in", () => {
-    it("")
-  })
+    it("");
+  });
 
   async function getTokenBalances(address: string) {
     const balances: BigNumber[] = [];
