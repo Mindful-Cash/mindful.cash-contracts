@@ -2,6 +2,7 @@
 import { MockTokenFactory } from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
 import { MockToken } from "@pie-dao/mock-contracts/typechain/MockToken";
 import { ethers, run } from "@nomiclabs/buidler";
+ethers.errors.setLogLevel("error"); // HACK prevent ethers from printing 'Multiple definitions for
 import { Signer, Wallet, constants } from "ethers";
 import { BigNumberish, BigNumber } from "ethers/utils";
 import chai from "chai";
