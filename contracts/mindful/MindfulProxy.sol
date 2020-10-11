@@ -212,8 +212,8 @@ contract MindfulProxy is Ownable {
             IERC20(tokens[i]).safeApprove(_chakra, amounts[i]);
         }
 
-        IPSmartPool pie = IPSmartPool(_chakra);
-        pie.joinPool(_poolAmount);
+        IPSmartPool smartPool = IPSmartPool(_chakra);
+        smartPool.joinPool(_poolAmount);
     }
 
     function calcToChakra(
