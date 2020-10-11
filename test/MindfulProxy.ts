@@ -30,7 +30,12 @@ const SYMBOL = "DEC";
 
 describe("MindfulProxy", () => {
   let signers: Signer[];
-  let account: string;
+
+  let mindfulDeployer: string;
+  let chakraOwner: string;
+  let relayer: string;
+  let random: string;
+
   let mindfulProxy: MindfulProxy;
   let smartpool: Pv2SmartPool;
   let smartpoolProxy: Ipv2SmartPool;
@@ -43,7 +48,10 @@ describe("MindfulProxy", () => {
     weights = [];
 
     signers = await ethers.signers();
-    account = await signers[0].getAddress();
+    mindfulDeployer = await signers[0].getAddress();
+    chakraOwner = await signers[1].getAddress();
+    relayer = await signers[2].getAddress();
+    random = await signers[3].getAddress();
 
     const balancerFactoryAddress = await deployBalancerFactory(signers[0]);
 
@@ -65,8 +73,8 @@ describe("MindfulProxy", () => {
     const tokenFactory = new MockTokenFactory(signers[0]);
     for (let i = 0; i < 3; i++) {
       const token: MockToken = await tokenFactory.deploy(`Mock ${i}`, `M${i}`, 18);
-      await token.mint(account, constants.WeiPerEther.mul(10000000000));
-      await token.approve(mindfulProxy.address, constants.MaxUint256);
+      await token.mint(chakraOwner, constants.WeiPerEther.mul(10000000000));
+      await MockTokenFactory.connect(token.address, signers[1]).approve(mindfulProxy.address, constants.MaxUint256);
       tokens.push(token);
       weights.push(constants.WeiPerEther.mul(3));
       amounts.push(constants.WeiPerEther.mul(10));
@@ -99,6 +107,7 @@ describe("MindfulProxy", () => {
       expect(await smartpoolProxy.getController()).to.eq(mindfulProxy.address);
       expect(await smartpoolProxy.getPublicSwapSetter()).to.eq(mindfulProxy.address);
       expect(await smartpoolProxy.getTokenBinder()).to.eq(mindfulProxy.address);
+      expect(await mindfulProxy.poolManager());
     });
 
     it("Tokens should be correctly set", async () => {
