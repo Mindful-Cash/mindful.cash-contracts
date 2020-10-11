@@ -1,5 +1,7 @@
-// Onboard JS stuff
+import { config } from "../utils/Config";
+
 import Onboard from "bnc-onboard";
+import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
 import Notify from "bnc-notify";
 // Ethers
 import ethers from "ethers";
@@ -69,91 +71,43 @@ export default new Vuex.Store({
       await dispatch("setUpContracts");
     },
 
-    setUpOnboard({ commit, state }) {
+    async setUpOnboard({ commit, state }) {
       console.log("Onboard.js flow...");
-      const apiKey = process.env.REACT_APP_ONBOARD_API_KEY
-        ? process.env.REACT_APP_ONBOARD_API_KEY
-        : "12153f55-f29e-4f11-aa07-90f10da5d778";
-      const infuraId = process.env.REACT_APP_INFURA_ID || "d5e29c9b9a9d4116a7348113f57770a8";
-      const infuraRpc = `https://${state.currentNetwork?.name}.infura.io/v3/${infuraId}`;
-      const onboard = await Onboard({
-        dappId: apiKey,
+      const SUPPORTED_NETWORK_IDS: number[] = [1, 42];
+
+      const onboardInstance = Onboard({
+        dappId: config(state.currentNetwork).onboardConfig.apiKey,
         hideBranding: true,
         networkId: 1, // Default to main net. If on a different network will change with the subscription.
         subscriptions: {
-          address: address => {
+          address: (address: string | null) => {
             commit("setUserAddress", address);
           },
-          network: async networkId => {
-            onboard.config({ networkId: networkId });
+          network: async (networkId: any) => {
+            if (!SUPPORTED_NETWORK_IDS.includes(networkId)) {
+              alert("This dApp will work only with the Mainnet or Kovan network");
+            }
+            state.onboard?.config({ networkId: networkId });
           },
-          wallet: async (wallet, networkId) => {
+          wallet: async (wallet: Wallet) => {
             if (wallet.provider) {
-              commit("setWallet", wallet);
               const ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
               commit("setProvider", ethersProvider);
-              // Converts the network ID into human readable label
-              let network = await getNetIdString(networkId);
-              commit("setCurrentNetwork", network);
-              // Gets the signer from the ethersProvider
-              let signer = await ethersProvider.getSigner();
-              commit("setSigner", signer);
-              // Requests the address to connect to from the user
-              await state.provider.send("eth_requestAccounts", []);
-              const address = await state.signer.getAddress();
-              commit("setUserAddress", address);
+              commit("setNetwork", await ethersProvider.getNetwork());
             } else {
               commit("setProvider", null);
-              commit("setCurrentNetwork", null);
-              commit("setSigner", null);
-              commit("setUserAddress", null);
+              commit("setNetwork", null);
             }
           }
         },
-        walletSelect: {
-          wallets: [
-            { walletName: "metamask", preferred: true },
-            {
-              walletName: "imToken",
-              rpcUrl:
-                !!state.network && state.network.chainId === 1
-                  ? "https://mainnet-eth.token.im"
-                  : "https://eth-testnet.tokenlon.im",
-              preferred: true
-            },
-            { walletName: "coinbase", preferred: true },
-            {
-              walletName: "portis",
-              apiKey: process.env.REACT_APP_PORTIS_API_KEY
-            },
-            { walletName: "trust", rpcUrl: infuraRpc },
-            { walletName: "dapper" },
-            {
-              walletName: "walletConnect",
-              rpc: { [state.network?.chainId || 1]: infuraRpc }
-            },
-            { walletName: "walletLink", rpcUrl: infuraRpc },
-            { walletName: "opera" },
-            { walletName: "operaTouch" },
-            { walletName: "torus" },
-            { walletName: "status" },
-            { walletName: "unilogin" },
-            {
-              walletName: "ledger",
-              rpcUrl: infuraRpc
-            }
-          ]
-        },
-        walletCheck: [
-          { checkName: "connect" },
-          { checkName: "accounts" },
-          { checkName: "network" },
-          { checkName: "balance", minimumBalance: "0" }
-        ]
+        walletSelect: config(state.currentNetwork).onboardConfig.onboardWalletSelect,
+        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck
       });
-      await onboard.walletSelect();
-      commit(mutations.SET_ONBOARD, onboard);
-      await onboard.walletCheck();
+
+      await onboardInstance.walletSelect();
+      await onboardInstance.walletCheck();
+      commit("setOnboard", onboardInstance);
+
       console.log("> Successfully run onboard.js");
     },
 
