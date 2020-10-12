@@ -161,7 +161,7 @@ export default new Vuex.Store({
     async getUserChakras({ commit, state }) {
       console.log("Getting chakras...", state.userAddress);
 
-      // commit("setProtocolBalances", await state.charkaInfo.fetchProtocolBalance(state.userAddress));
+      commit("setProtocolBalances", await state.charkaInfo.fetchProtocolBalance(state.userAddress));
 
       commit("setChakras", await state.charkaInfo.fetchChartInfo(state.userAddress, 30));
       console.log("setChartInfo", state.chakras);

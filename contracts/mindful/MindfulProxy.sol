@@ -21,9 +21,7 @@ contract MindfulProxy is Ownable {
     using SafeMath for uint256;
     using LibSafeApprove for IERC20;
 
-    IUniswapV2Factory constant UNISWAP_FACTORY = IUniswapV2Factory(
-        0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
-    );
+    IUniswapV2Factory constant UNISWAP_FACTORY = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
     // ISmartPoolRegistry public constant REGISTRY = ISmartPoolRegistry(
     //   0x412a5d5eC35fF185D6BfF32a367a985e1FB7c296
     // );
@@ -31,7 +29,7 @@ contract MindfulProxy is Ownable {
 
     struct SellStrategy {
         uint256 id;
-        uint256[] prices; // pric ethreshold
+        uint256[] prices; // price threshold
         address[] sellTokens; // token to sell to for each price point
         bool[] isExecuted;
     }
@@ -75,12 +73,7 @@ contract MindfulProxy is Ownable {
         _setOwner(msg.sender);
     }
 
-    event SmartPoolCreated(
-        address indexed poolAddress,
-        address indexed chakraManager,
-        string name,
-        string symbol
-    );
+    event SmartPoolCreated(address indexed poolAddress, address indexed chakraManager, string name, string symbol);
 
     // Pauzer
     modifier revertIfPaused {
@@ -199,9 +192,7 @@ contract MindfulProxy is Ownable {
         return (isRelayer, manager, strategyBaseToken, strategyBaseAmount);
     }
 
-    function isRelayerSelling() internal {
-
-    }
+    function isRelayerSelling() internal {}
 
     function toChakra(
         address _chakra,
@@ -229,10 +220,7 @@ contract MindfulProxy is Ownable {
         uint256 totalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
 
         if (baseToken == address(WETH)) {
-            require(
-                (msg.value == baseAmount) && (baseAmount >= totalBaseAmount),
-                "Base currency amount too low"
-            );
+            require((msg.value == baseAmount) && (baseAmount >= totalBaseAmount), "Base currency amount too low");
 
             WETH.deposit{ value: totalBaseAmount }();
 
@@ -260,8 +248,7 @@ contract MindfulProxy is Ownable {
         address _baseToken,
         uint256 _poolAmount
     ) internal {
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra)
-            .calcTokensForAmount(_poolAmount);
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             if (isChakra[tokens[i]]) {
@@ -299,16 +286,17 @@ contract MindfulProxy is Ownable {
     function calcToChakra(
         address _chakra,
         address _curreny,
-        uint256 _poolAmount
+        uint256 _poolAmount,
+        bool isRelayer
     ) public view returns (uint256) {
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra)
-            .calcTokensForAmount(_poolAmount);
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
 
         uint256 totalBaseAmount = 0;
 
         for (uint256 i = 0; i < tokens.length; i++) {
+            // enable recursive chakras
             if (isChakra[tokens[i]]) {
-                totalBaseAmount += calcToChakra(tokens[i], _curreny, amounts[i]);
+                totalBaseAmount += calcToChakra(tokens[i], _curreny, amounts[i], isRelayer);
             } else {
                 (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
                     address(UNISWAP_FACTORY),
@@ -329,23 +317,19 @@ contract MindfulProxy is Ownable {
         uint256 _poolAmount,
         uint256 _minQuoteToken
     ) external revertIfPaused {
-        uint256 totalAmount = calcToChakra(_chakra, _quoteToken, _poolAmount);
+        bool isRelayer = false;
+        uint256 totalAmount = calcToChakra(_chakra, _quoteToken, _poolAmount, isRelayer);
 
         require(_minQuoteToken <= totalAmount, "Output currency amount too low");
 
         IPSmartPool chakra = IPSmartPool(_chakra);
 
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra)
-            .calcTokensForAmount(_poolAmount);
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
         chakra.transferFrom(msg.sender, address(this), _poolAmount);
         chakra.exitPool(_poolAmount);
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
-                address(UNISWAP_FACTORY),
-                tokens[i],
-                _quoteToken
-            );
+            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], _quoteToken);
             uint256 tokenAmountOut = UniLib.getAmountOut(amounts[i], reserveA, reserveB);
             IUniswapV2Exchange pair = IUniswapV2Exchange(
                 UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], _quoteToken)
@@ -374,17 +358,12 @@ contract MindfulProxy is Ownable {
         address _quoteToken,
         uint256 _poolAmountOut
     ) external view returns (uint256) {
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra)
-            .calcTokensForAmount(_poolAmountOut);
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmountOut);
 
         uint256 totalQuoteAmount = 0;
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
-                address(UNISWAP_FACTORY),
-                tokens[i],
-                _quoteToken
-            );
+            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], _quoteToken);
             totalQuoteAmount += UniLib.getAmountOut(amounts[i], reserveA, reserveB);
         }
 
