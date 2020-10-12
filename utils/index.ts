@@ -2,7 +2,6 @@ import ethers from "ethers";
 import balancerFactoryBytecode from "./balancerFactoryBytecode";
 import balancerPoolBytecode from "./balancerPoolBytecode";
 import TimeTraveler from "./TimeTraveler";
-import { DeployOptions, DeployResult } from "@nomiclabs/buidler/types";
 
 export const deployBalancerFactory = async (signer: ethers.Signer) => {
   const tx = (await signer.sendTransaction({ data: balancerFactoryBytecode })) as any;
