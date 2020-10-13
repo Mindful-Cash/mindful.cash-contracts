@@ -211,29 +211,28 @@ contract MindfulProxy is Ownable {
             uint256 strategyBaseAmount
         ) = isRelayerBuying(_chakra, _baseToken, _buyStrategyId);
 
-        // if sender is relayer, amount to trade is the amount specified in startegy
+        // if sender is relayer, amount to trade is the amount specified in strategy
         // otherwise can be overwritten from function arg
         uint256 baseAmount = isRelayer ? strategyBaseAmount : _baseAmount;
         // same for baseToken
         address baseToken = isRelayer ? strategyBaseToken : _baseToken;
+
         // this function below should return totalBaseAmount + fee in case sender relayer
-        uint256 totalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
+        uint256 requiredTotalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
 
-        if (baseToken == address(WETH)) {
-            require((msg.value == baseAmount) && (baseAmount >= totalBaseAmount), "Base currency amount too low");
+        // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
+        // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
+        // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
+        // the requested number of pool tokens.
+        require(baseAmount >= requiredTotalBaseAmount, "Base currency amount too low");
 
-            WETH.deposit{ value: totalBaseAmount }();
-
-            // return excess ETH
-            if (address(this).balance != 0) {
-                // Send any excess ETH back to chakra manager
-                manager.transfer(address(this).balance);
-            }
-        } else {
-            require(baseAmount >= totalBaseAmount, "Base currency amount too low");
-
-            require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
+        // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
+        // (buying too little pool tokens).
+        if (isRelayer) {
+            require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount, "Pool token amount too low");
         }
+
+        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount), "Transfer from manager failed");
 
         _toChakra(_chakra, baseToken, _poolAmount);
 
