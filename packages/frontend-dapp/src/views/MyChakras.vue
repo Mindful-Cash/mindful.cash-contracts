@@ -6,11 +6,9 @@
           <md-card-header>
             <div class="md-title"></div>
           </md-card-header>
-          <md-content class="box-text">
-            <p>
-              view your Chakras
-            </p>
-          </md-content>
+          <p>
+            view your Chakras
+          </p>
         </md-content>
         <transition-group name="fadeUp" tag="ul">
           <Chakra-Card v-for="chakra in chakras" :chakraInfo="chakra" style="margin:20px" :key="chakra.address" />
@@ -34,6 +32,7 @@
 .box-text {
   text-align: justify;
   text-justify: inter-word;
+  background: none;
 }
 
 // Link styling

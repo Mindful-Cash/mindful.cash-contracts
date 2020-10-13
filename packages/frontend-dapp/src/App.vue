@@ -1,16 +1,10 @@
 <template>
-  <md-app id="app" md-mode="reveal" style="min-height: 100vh;">
+  <md-app id="app" md-mode="reveal">
     {{ monitorState }}
-    <md-app-toolbar class="md-primary">
-      <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
-        <md-icon>menu</md-icon>
-      </md-button>
-      <span
-        ><h1>{{ $route.name }}</h1></span
-      >
-
-      <!-- <logo style="margin-left:600px"/> -->
-
+    <custom-navbar slot="md-app-toolbar">
+      <span>
+        <img src="@/assets/svg/logo.svg" alt="logo" />
+      </span>
       <div class="md-toolbar-section-end">
         <div class="md-layout md-gutter md-alignment-center-right">
           <div class="md-layout-item" v-if="!userAddress">
@@ -23,72 +17,15 @@
           </div>
         </div>
       </div>
-    </md-app-toolbar>
+    </custom-navbar>
 
-    <md-app-drawer :md-active.sync="menuVisible">
-      <md-list>
-        <md-list-item>
-          <md-icon>home</md-icon>
-          <span class="md-list-item-text">
-            <router-link to="/">Home</router-link>
-          </span>
-        </md-list-item>
-        <md-list-item>
-          <md-icon>account_box</md-icon>
-          <span class="md-list-item-text">
-            <router-link to="/CreateProfile">Profile</router-link>
-          </span>
-        </md-list-item>
-
-        <md-list-item>
-          <md-icon>search</md-icon>
-          <span class="md-list-item-text">
-            <router-link to="/BrowsePosts">Browse Posts</router-link>
-          </span>
-        </md-list-item>
-
-        <md-divider></md-divider>
-
-        <md-list-item>
-          <md-icon>create</md-icon>
-          <span class="md-list-item-text">
-            <router-link to="/ListPost">Create New Post</router-link>
-          </span>
-        </md-list-item>
-
-        <md-list-item>
-          <md-icon>format_list_bulleted</md-icon>
-          <span class="md-list-item-text">
-            <router-link to="/ManagePosts">Manage Posts</router-link>
-          </span>
-        </md-list-item>
-
-        <md-divider></md-divider>
-
-        <md-list-item>
-          <md-icon>code</md-icon>
-          <span class="md-list-item-text">
-            <a href="https://github.com/Nicca42/News_Buff_V0.1" target="__blank">Github</a>
-          </span>
-        </md-list-item>
-
-        <md-list-item>
-          <md-icon>chat</md-icon>
-          <span class="md-list-item-text">
-            <a href="https://github.com/Nicca42/News_Buff_V0.1/blob/trunk/README.md" target="__blank">Documentation</a>
-          </span>
-        </md-list-item>
-        <md-divider></md-divider>
-      </md-list>
-    </md-app-drawer>
-
-    <md-app-content style="background-color: #f5f9f9; padding-left: 0px; padding-right: 0px;">
+    <md-app-content>
       <div v-if="userAddress">
         <!-- <mining-transaction /> -->
         <router-view />
         <div class="phone-viewport">
-          <md-bottom-bar style="padding-left: 600px; padding-right: 250px;">
-            <span>
+          <md-bottom-bar style="background: none">
+            <span style="text-align: center; width: 100%">
               The future of mindful money with ❤️ by
               <a href="https://github.com/Nicca42/News_Buff_V0.1" target="_blank">News Buff</a>
               📰
@@ -118,7 +55,6 @@ import ClickableAddress from "@/components/widgets/ClickableAddress";
 
 import { mapActions, mapState } from "vuex";
 import router from "@/router";
-
 import ethers from "ethers";
 
 export default {
@@ -156,7 +92,7 @@ export default {
 @import url("https://fonts.googleapis.com/css?family=Space+Mono");
 @import url("https://fonts.googleapis.com/css?family=Coiny|Rubik");
 @import url("https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap");
-// @import "/styles/variables.scss";
+@import "@/styles/variables.scss";
 @import "~vue-material/dist/theme/engine"; // Import the theme engine
 @include md-register-theme(
   "default",
@@ -168,22 +104,46 @@ export default {
 );
 @import "~vue-material/dist/theme/all"; // Apply the theme
 
-html,
-h1 {
-  font-family: "Permanent Marker", cursive;
+html {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  color: red;
+  font-size: 16px;
 }
 
 body {
-  font-family: "Space Mono", sans-serif;
+  background: linear-gradient(180deg, #f5feff 0%, #f8f5ff 100%);
+}
+
+custom-navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1.5rem 0;
+  box-sizing: border-box;
 }
 
 #app {
   text-align: center;
-  color: #454a50;
+  min-height: 100vh;
+  max-width: 1024px;
+  margin: 0px auto;
+  background: none;
+  overflow: visible !important;
 }
 
-#app {
-  font-family: "Space Mono", sans-serif;
+.md-app-container {
+  overflow: visible !important;
+}
+
+.md-content {
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+}
+
+.md-toolbar {
+  min-height: 100px !important;
 }
 
 .phone-viewport {
@@ -204,5 +164,9 @@ nav li.router-link-exact-active {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+}
+
+.md-theme-default a {
+  color: $darkgray;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="ethAddress" class="md-layout eth-address">
-    <jazzicon :address="ethAddress" :diameter="25"/>
-    <a class="md-subheading" :href="buildLink" target="_blank" style="color: white;"> {{ dotDotDot }}</a>
+    <a class="md-subheading" :href="buildLink" target="_blank"> {{ dotDotDot }}</a>
+    <jazzicon :address="ethAddress" :diameter="25" />
   </div>
 </template>
 
@@ -24,10 +24,7 @@ export default {
         return (
           this.ethAddress.substr(0, 6) +
           "..." +
-          this.ethAddress.substr(
-            this.ethAddress.length - 6,
-            this.ethAddress.length
-          )
+          this.ethAddress.substr(this.ethAddress.length - 4, this.ethAddress.length)
         );
       }
       return "";
@@ -48,16 +45,18 @@ export default {
   padding-top: 7px;
   padding-left: 10px;
   padding-right: 10px;
-  background: rgba($darkgray, 0.05);
   border-radius: 25px;
 
+  a {
+    font-weight: 600;
+  }
+
   &:hover {
-    background: rgba($darkgray, 0.1);
     border-bottom: none;
   }
 }
 .md-subheading {
   font-size: 14px;
-  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>
