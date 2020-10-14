@@ -156,6 +156,29 @@ contract MindfulProxy is Ownable {
         // return address(smartPool);
     }
 
+    function addBuyStrategy(address _chakra, uint256[] calldata _prices, address[] calldata _sellTokens) external onlyChakraManager(msg.sender, _chakra) {
+        require(_prices.length == _sellTokens.length, "Invalid buy strategy arrays");
+
+        uint256[] memory prices;
+        address[] memory sellTokens;
+        bool[] memory isExecuted;
+
+        for(uint256 i = 0; i < _prices.length; i++) {
+            require(_prices[i] > 0, "Invalid sell strategy price");
+            // should we check if _sellTokens[i] is in chakra ?
+            require(_sellTokens[i] != address(0), "Invalid sell strategy token");
+
+            prices[i]= _prices[i];
+            sellTokens[i]= _sellTokens[i];
+            isExecuted[i]= true;
+        }
+
+        uint256 strategyId = sellStrategies.length.add(1);
+        SellStrategy memory sellStrategy = SellStrategy(strategyId, prices, sellTokens, isExecuted);
+        sellStrategyChakra[strategyId] = _chakra;
+        sellStrategies.push(sellStrategy);
+    }
+
     function isRelayerBuying(
         address _chakra,
         address _baseToken,
