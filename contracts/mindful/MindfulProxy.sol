@@ -111,7 +111,6 @@ contract MindfulProxy is Ownable {
         uint256[] memory _weights,
         uint256 _cap
     ) public revertIfPaused returns (address) {
-        return address(0);
         // Deploy proxy contract
         PProxyPausable proxy = new PProxyPausable();
 
@@ -124,53 +123,57 @@ contract MindfulProxy is Ownable {
         address balancerPoolAddress = balancerFactory.newBPool();
         IBPool bPool = IBPool(balancerPoolAddress);
 
-        // for (uint256 i = 0; i < _tokens.length; i++) {
-        //     IERC20 token = IERC20(_tokens[i]);
-        //     // Transfer tokens to this contract
-        //     token.transferFrom(msg.sender, address(this), _amounts[i]);
-        //     // Approve the balancer pool
-        //     token.safeApprove(balancerPoolAddress, uint256(-1));
-        //     // Bind tokens
-        //     bPool.bind(_tokens[i], _amounts[i], _weights[i]);
-        // }
-        // bPool.setController(address(proxy));
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            IERC20 token = IERC20(_tokens[i]);
+            // Transfer tokens to this contract
+            token.transferFrom(msg.sender, address(this), _amounts[i]);
+            // Approve the balancer pool
+            token.safeApprove(balancerPoolAddress, uint256(-1));
+            // Bind tokens
+            bPool.bind(_tokens[i], _amounts[i], _weights[i]);
+        }
+        bPool.setController(address(proxy));
 
-        // // Setup smart pool
-        // IPV2SmartPool smartPool = IPV2SmartPool(address(proxy));
+        // Setup smart pool
+        IPV2SmartPool smartPool = IPV2SmartPool(address(proxy));
 
-        // smartPool.init(balancerPoolAddress, _name, _symbol, _initialSupply);
-        // smartPool.setCap(_cap);
-        // smartPool.setPublicSwapSetter(address(this));
-        // smartPool.setTokenBinder(address(this));
-        // smartPool.setController(address(this));
-        // smartPool.approveTokens();
+        smartPool.init(balancerPoolAddress, _name, _symbol, _initialSupply);
+        smartPool.setCap(_cap);
+        smartPool.setPublicSwapSetter(address(this));
+        smartPool.setTokenBinder(address(this));
+        smartPool.setController(address(this));
+        smartPool.approveTokens();
 
-        // isChakra[address(smartPool)] = true;
-        // chakraManager[address(smartPool)] = msg.sender;
-        // chakras.push(address(smartPool));
+        isChakra[address(smartPool)] = true;
+        chakraManager[address(smartPool)] = msg.sender;
+        chakras.push(address(smartPool));
 
-        // emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
+        emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
 
-        // smartPool.transfer(msg.sender, _initialSupply);
+        smartPool.transfer(msg.sender, _initialSupply);
 
-        // return address(smartPool);
+        return address(smartPool);
     }
 
-    function addBuyStrategy(address _chakra, uint256[] calldata _prices, address[] calldata _sellTokens) external onlyChakraManager(msg.sender, _chakra) {
+    function addBuyStrategy(
+        address _chakra,
+        uint256[] calldata _prices,
+        address[] calldata _sellTokens
+    ) external onlyChakraManager(msg.sender, _chakra) {
         require(_prices.length == _sellTokens.length, "Invalid buy strategy arrays");
 
         uint256[] memory prices;
         address[] memory sellTokens;
         bool[] memory isExecuted;
 
-        for(uint256 i = 0; i < _prices.length; i++) {
+        for (uint256 i = 0; i < _prices.length; i++) {
             require(_prices[i] > 0, "Invalid sell strategy price");
             // should we check if _sellTokens[i] is in chakra ?
             require(_sellTokens[i] != address(0), "Invalid sell strategy token");
 
-            prices[i]= _prices[i];
-            sellTokens[i]= _sellTokens[i];
-            isExecuted[i]= true;
+            prices[i] = _prices[i];
+            sellTokens[i] = _sellTokens[i];
+            isExecuted[i] = true;
         }
 
         uint256 strategyId = sellStrategies.length.add(1);
