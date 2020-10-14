@@ -170,7 +170,7 @@ describe("MindfulProxy", () => {
   });
 
   describe("DCA in", () => {
-    it("");
+    it("chakra owner can send in single currency to add to pool");
   });
 
   async function getTokenBalances(address: string) {

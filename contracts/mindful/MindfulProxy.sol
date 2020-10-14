@@ -111,6 +111,7 @@ contract MindfulProxy is Ownable {
         uint256[] memory _weights,
         uint256 _cap
     ) public revertIfPaused returns (address) {
+        return address(0);
         // Deploy proxy contract
         PProxyPausable proxy = new PProxyPausable();
 
@@ -123,36 +124,36 @@ contract MindfulProxy is Ownable {
         address balancerPoolAddress = balancerFactory.newBPool();
         IBPool bPool = IBPool(balancerPoolAddress);
 
-        for (uint256 i = 0; i < _tokens.length; i++) {
-            IERC20 token = IERC20(_tokens[i]);
-            // Transfer tokens to this contract
-            token.transferFrom(msg.sender, address(this), _amounts[i]);
-            // Approve the balancer pool
-            token.safeApprove(balancerPoolAddress, uint256(-1));
-            // Bind tokens
-            bPool.bind(_tokens[i], _amounts[i], _weights[i]);
-        }
-        bPool.setController(address(proxy));
+        // for (uint256 i = 0; i < _tokens.length; i++) {
+        //     IERC20 token = IERC20(_tokens[i]);
+        //     // Transfer tokens to this contract
+        //     token.transferFrom(msg.sender, address(this), _amounts[i]);
+        //     // Approve the balancer pool
+        //     token.safeApprove(balancerPoolAddress, uint256(-1));
+        //     // Bind tokens
+        //     bPool.bind(_tokens[i], _amounts[i], _weights[i]);
+        // }
+        // bPool.setController(address(proxy));
 
-        // Setup smart pool
-        IPV2SmartPool smartPool = IPV2SmartPool(address(proxy));
+        // // Setup smart pool
+        // IPV2SmartPool smartPool = IPV2SmartPool(address(proxy));
 
-        smartPool.init(balancerPoolAddress, _name, _symbol, _initialSupply);
-        smartPool.setCap(_cap);
-        smartPool.setPublicSwapSetter(address(this));
-        smartPool.setTokenBinder(address(this));
-        smartPool.setController(address(this));
-        smartPool.approveTokens();
+        // smartPool.init(balancerPoolAddress, _name, _symbol, _initialSupply);
+        // smartPool.setCap(_cap);
+        // smartPool.setPublicSwapSetter(address(this));
+        // smartPool.setTokenBinder(address(this));
+        // smartPool.setController(address(this));
+        // smartPool.approveTokens();
 
-        isChakra[address(smartPool)] = true;
-        chakraManager[address(smartPool)] = msg.sender;
-        chakras.push(address(smartPool));
+        // isChakra[address(smartPool)] = true;
+        // chakraManager[address(smartPool)] = msg.sender;
+        // chakras.push(address(smartPool));
 
-        emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
+        // emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
 
-        smartPool.transfer(msg.sender, _initialSupply);
+        // smartPool.transfer(msg.sender, _initialSupply);
 
-        return address(smartPool);
+        // return address(smartPool);
     }
 
     function isRelayerBuying(
