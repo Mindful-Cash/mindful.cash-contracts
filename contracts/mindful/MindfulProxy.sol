@@ -86,20 +86,20 @@ contract MindfulProxy is Ownable {
     // Pauzer
     modifier revertIfPaused {
         if (isPaused) {
-            revert("[UniswapV2Recipe] is Paused");
+            revert();
         } else {
             _;
         }
     }
 
     modifier onlyChakraManager(address _chakra, address _sender) {
-        require(chakraManager[_chakra] == _sender, "Sender is not chakra manager");
+        require(chakraManager[_chakra] == _sender);
 
         _;
     }
 
     function init(address _balancerFactory, address _implementation) public {
-        require(smartPoolImplementation == address(0), "Already initialised");
+        require(smartPoolImplementation == address(0));
         _setOwner(msg.sender);
         balancerFactory = IBFactory(_balancerFactory);
 
@@ -207,17 +207,17 @@ contract MindfulProxy is Ownable {
         address[] calldata _sellTokens,
         uint256[] calldata _prices
     ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra], "Not a Chakra");
-        require(_prices.length == _sellTokens.length, "Invalid sell strategy arrays");
+        require(isChakra[_chakra]);
+        require(_prices.length == _sellTokens.length);
 
         uint256[] memory prices = new uint256[](_prices.length);
         address[] memory sellTokens = new address[](_prices.length);
         bool[] memory isExecuted = new bool[](_prices.length);
 
         for (uint256 i = 0; i < _prices.length; i++) {
-            require(_prices[i] > 0, "Invalid sell strategy price");
+            require(_prices[i] > 0);
             // should we check if _sellTokens[i] is in chakra ?
-            require(_sellTokens[i] != address(0), "Invalid sell strategy token");
+            require(_sellTokens[i] != address(0));
 
             prices[i] = _prices[i];
             sellTokens[i] = _sellTokens[i];
@@ -236,9 +236,9 @@ contract MindfulProxy is Ownable {
         address _chakra,
         uint256 _sellStrategyId
     ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra], "Not a Chakra");
-        require(_sellStrategyId <= sellStrategies.length, "Invalid sell strategy id");
-        require(sellStrategyChakra[_sellStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
+        require(isChakra[_chakra]);
+        require(_sellStrategyId <= sellStrategies.length);
+        require(sellStrategyChakra[_sellStrategyId] == _chakra);
 
         uint256 sellStrategyIndex = _sellStrategyId.sub(1);
         SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
@@ -251,9 +251,9 @@ contract MindfulProxy is Ownable {
         address _chakra,
         uint256 _buyStrategyId
     ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra], "Not a Chakra");
-        require(_buyStrategyId <= buyStrategies.length, "Invalid buy strategy id");
-        require(buyStrategyChakra[_buyStrategyId] == _chakra, "Buy strategy id does not belong to specified chakra");
+        require(isChakra[_chakra]);
+        require(_buyStrategyId <= buyStrategies.length);
+        require(buyStrategyChakra[_buyStrategyId] == _chakra);
 
         uint256 buyStrategyIndex = _buyStrategyId.sub(1);
         BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
@@ -266,9 +266,9 @@ contract MindfulProxy is Ownable {
         address _chakra,
         uint256 _sellStrategyId
     ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra], "Not a Chakra");
-        require(_sellStrategyId <= sellStrategies.length, "Invalid sell strategy id");
-        require(sellStrategyChakra[_sellStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
+        require(isChakra[_chakra]);
+        require(_sellStrategyId <= sellStrategies.length);
+        require(sellStrategyChakra[_sellStrategyId] == _chakra);
 
         uint256 sellStrategyIndex = _sellStrategyId.sub(1);
         SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
@@ -281,9 +281,9 @@ contract MindfulProxy is Ownable {
         address _chakra,
         uint256 _buyStrategyId
     ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra], "Not a Chakra");
-        require(_buyStrategyId <= buyStrategies.length, "Invalid sell strategy id");
-        require(buyStrategyChakra[_buyStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
+        require(isChakra[_chakra]);
+        require(_buyStrategyId <= buyStrategies.length);
+        require(buyStrategyChakra[_buyStrategyId] == _chakra);
 
         uint256 buyStrategyIndex = _buyStrategyId.sub(1);
         BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
@@ -298,10 +298,10 @@ contract MindfulProxy is Ownable {
         address[] calldata _sellTokens,
         uint256[] calldata _prices
     ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra], "Not a Chakra");
-        require(_sellStrategyId <= sellStrategies.length, "Invalid sell strategy id");
-        require(sellStrategyChakra[_sellStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
-        require(_prices.length == _sellTokens.length, "Invalid sell strategy arrays");
+        require(isChakra[_chakra]);
+        require(_sellStrategyId <= sellStrategies.length);
+        require(sellStrategyChakra[_sellStrategyId] == _chakra);
+        require(_prices.length == _sellTokens.length);
 
         uint256 sellStrategyIndex = _sellStrategyId.sub(1);
         SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
@@ -311,11 +311,11 @@ contract MindfulProxy is Ownable {
         // if _sellTokens[i] == address(0) then remove that token and it's price
         for(uint256 i = 0; i < _sellTokens.length; i++) { 
             uint256 arrayLength = sellStrategy.sellTokens.length;           
-            require(arrayLength > 0, "Can not update empty arrays");
+            require(arrayLength > 0);
 
             if(i >= arrayLength) {
-                require(_sellTokens[i] != address(0), "Invalid sell token address");
-                require(_prices[i] > 0, "Invalid sell price");
+                require(_sellTokens[i] != address(0));
+                require(_prices[i] > 0);
 
                 sellStrategy.sellTokens.push(_sellTokens[i]);
                 sellStrategy.prices.push(_prices[i]);
@@ -340,8 +340,8 @@ contract MindfulProxy is Ownable {
         uint256 _baseAmount,
         uint256 _buyStrategyId
     ) external payable revertIfPaused {
-        require(_baseToken != address(0), "Invalid base token");
-        require(isChakra[_chakra], "Not a Chakra");
+        require(_baseToken != address(0));
+        require(isChakra[_chakra]);
 
         (
             bool isRelayer,
@@ -363,15 +363,15 @@ contract MindfulProxy is Ownable {
         // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
         // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
         // the requested number of pool tokens.
-        require(baseAmount >= requiredTotalBaseAmount, "Base currency amount too low");
+        require(baseAmount >= requiredTotalBaseAmount);
 
         // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
         // (buying too little pool tokens).
         if (isRelayer) {
-            require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount, "Pool token amount too low");
+            require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount);
         }
 
-        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount), "Transfer from manager failed");
+        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
 
         _toChakra(_chakra, baseToken, _poolAmount);
 
@@ -391,7 +391,7 @@ contract MindfulProxy is Ownable {
         bool isRelayer = false;
         uint256 totalAmount = calcToChakra(_chakra, _quoteToken, _poolAmount, isRelayer);
 
-        require(_minQuoteToken <= totalAmount, "Output currency amount too low");
+        require(_minQuoteToken <= totalAmount);
 
         IPSmartPool chakra = IPSmartPool(_chakra);
 
@@ -530,14 +530,13 @@ contract MindfulProxy is Ownable {
         bool isRelayer = msg.sender != manager;
 
         if (isRelayer) {
-            require(buyStrategyChakra[_buyStrategyId] == _chakra, "Invalid strategy id for chakra");
+            require(buyStrategyChakra[_buyStrategyId] == _chakra);
             BuyStrategy storage buyStrategy = buyStrategies[_buyStrategyId];
 
-            require(buyStrategy.isActive, "Strategy is not active");
-            require(buyStrategy.buyToken == _baseToken, "Buy token mismatch");
+            require(buyStrategy.isActive);
+            require(buyStrategy.buyToken == _baseToken);
             require(
-                buyStrategy.lastBuyTimestamp.add(buyStrategy.interBuyDelay) <= now,
-                "Can not buy during active delay"
+                buyStrategy.lastBuyTimestamp.add(buyStrategy.interBuyDelay) <= now
             );
 
             buyStrategy.lastBuyTimestamp = now;
