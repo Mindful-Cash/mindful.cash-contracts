@@ -3,8 +3,8 @@
     <h1 class="title">New Chakra</h1>
     <md-steppers style="width-100%">
       <md-step id="first" md-label="Setup">
-        <div class="md-layout">
-          <div class="md-layout-item md-size-60">
+        <div class="md-layout gutter">
+          <div class="md-layout-item md-size-55">
             <h2 class="title">Chakra Name</h2>
             <p>Choose a name for your Chakra. This will be viewable by other users.</p>
             <input placeholder="Enter Name" v-model="initial" />
@@ -54,6 +54,7 @@
             <button>replace me</button>
           </div>
 
+          <div class="md-layout-item md-size-5"/>
           <div class="md-layout-item md-size-40">
             <div class="md-layout-item">
               <apexchart
@@ -63,6 +64,26 @@
                 :series="pieValues.values"
                 class="center"
               />
+            </div>
+            <div class="md-layout-item" style="text-align: center">
+              <span class="assetBreakdownText">Asset Breakdown</span>
+              <md-table class="md-caption" style="padding-top: 25px">
+                <md-table-row>
+                  <md-table-head>Key</md-table-head>
+                  <md-table-head>Symbol</md-table-head>
+                  <md-table-head>USD</md-table-head>
+                  <md-table-head>Allocation</md-table-head>
+                </md-table-row>
+
+                <md-table-row v-for="(item, index) in selectedCoins" :key="index">
+                  <md-table-cell>
+                    <span class="dot" :style="'background:' + colors[index]" />
+                  </md-table-cell>
+                  <md-table-cell>{{ item.symbol }}</md-table-cell>
+                  <md-table-cell>${{ "500" }}</md-table-cell>
+                  <md-table-cell>{{ item.ratio }}%</md-table-cell>
+                </md-table-row>
+              </md-table>
             </div>
           </div>
         </div>
@@ -270,7 +291,7 @@ input {
   border-radius: 8px;
   height: 2.5rem;
   box-sizing: border-box;
-  width: 100%;
+  width: 95%;
   padding: 0 1rem;
   font-size: 1rem;
 
@@ -299,7 +320,7 @@ h1.title {
   border: 1px solid #aaa;
   color: #aaa;
   text-align: center;
-  width: 100%;
+  width: 95%;
   background: none;
   box-shadow: none;
   border-radius: 0.5rem;
@@ -344,5 +365,20 @@ h1.title {
   line-height: 19px;
   text-align: right;
   color: #aaaaaa;
+}
+
+.assetBreakdownText {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.dot {
+  vertical-align: middle;
+  text-align: center;
+  height: 15px;
+  width: 15px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
 }
 </style>
