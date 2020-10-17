@@ -54,7 +54,7 @@
             <button>replace me</button>
           </div>
 
-          <div class="md-layout-item md-size-5"/>
+          <div class="md-layout-item md-size-5" />
           <div class="md-layout-item md-size-40">
             <div class="md-layout-item">
               <apexchart
@@ -65,7 +65,7 @@
                 class="center"
               />
             </div>
-            <div class="md-layout-item" style="text-align: center">
+            <div class="md-layout-item" style="text-align: center" v-if="selectedCoins.length > 0">
               <span class="assetBreakdownText">Asset Breakdown</span>
               <md-table class="md-caption" style="padding-top: 25px">
                 <md-table-row>
