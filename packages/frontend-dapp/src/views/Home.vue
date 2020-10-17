@@ -7,6 +7,7 @@
       </md-tabs>
       <div class="main-section" style="padding-top: 20px">
         <My-Chakras v-if="tabIndex == 0" />
+        <Add-Coin-Modal v-if="tabIndex == 0" />
       </div>
     </div>
   </div>
@@ -14,9 +15,10 @@
 
 <script>
 import MyChakras from "@/views/MyChakras";
+import AddCoinModal from "@/components/AddCoinModal";
 export default {
   name: "Home",
-  components: { MyChakras },
+  components: { MyChakras, AddCoinModal },
   data() {
     return { tabIndex: 0 };
   }

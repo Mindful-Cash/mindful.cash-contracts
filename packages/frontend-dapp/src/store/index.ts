@@ -1,5 +1,6 @@
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
+import { fetchWalletTokens, fetchAllTokens } from "../utils/FetchWalletTokens";
 
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
@@ -25,7 +26,9 @@ export default new Vuex.Store({
     wallet: null,
     charkaInfo: null,
     protocolBalances: null,
-    chakras: []
+    walletTokens: [],
+    chakras: [],
+    allTokens: []
   },
   mutations: {
     setSigner(state, signer) {
@@ -69,6 +72,16 @@ export default new Vuex.Store({
       state.chakras = chakras;
       console.log(state.chakras);
     },
+    setWalletTokens(state, walletTokens) {
+      console.log("walletTokens set to: ");
+      state.walletTokens = walletTokens;
+      console.log(state.walletTokens);
+    },
+    setAllTokens(state, allTokens) {
+      console.log("allTokens set to: ");
+      state.allTokens = allTokens;
+      console.log(state.allTokens);
+    },
     setProtocolBalances(state, protocolBalances) {
       state.protocolBalances = protocolBalances;
       console.log("protocolBalances set to: ");
@@ -82,10 +95,17 @@ export default new Vuex.Store({
       // await setUpOnboard();
       await dispatch("setUpOnboard");
 
-      await dispatch("getUserChakras");
+      // Fetch the user chakras
+      // await dispatch("getUserChakras");
 
-      // Setting up the Smart contracts
-      await dispatch("setUpContracts");
+      // // Setting up the Smart contracts
+      // await dispatch("setUpContracts");
+
+      // Fetch the user tokens balances and info
+      // await dispatch("getUserWalletTokens");
+
+      // Fetch all compatible tokens
+      await dispatch("getAllTokens");
     },
 
     async setUpOnboard({ commit, state }) {
@@ -165,6 +185,37 @@ export default new Vuex.Store({
 
       commit("setChakras", await state.charkaInfo.fetchChartInfo(state.userAddress, 30));
       console.log("setChartInfo", state.chakras);
+    },
+
+    async getAllTokens({ commit, state }) {
+      console.log("Getting setWalletTokens...", state.walletTokens);
+
+      // TODO: parallzalize this call
+      const walletTokens = await fetchWalletTokens(state.userAddress);
+      console.log("walletTokenswalletTokenswalletTokenswalletTokens", walletTokens);
+      console.log("Getting getAllTokens...", state.allTokens);
+
+      const allTokens = await fetchAllTokens();
+
+      console.log("allTokens", allTokens);
+
+      const joinedTokenArrays = allTokens.map(tokenObject => {
+        console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
+        const index = walletTokens;
+        tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
+          ? walletTokens[tokenObject.address.toLowerCase()]
+          : "0";
+
+        if (tokenObject.amount !== "0") {
+          console.log("tokenObject", tokenObject);
+        }
+        return tokenObject;
+      });
+      console.log(ethers.BigNumber.from(joinedTokenArrays[0].amount).lt(ethers.BigNumber.from(1)));
+      const sortedWalletBalances = joinedTokenArrays.sort((a, b) =>
+        ethers.BigNumber.from(a.amount).lt(ethers.BigNumber.from(b.amount)) ? 1 : -1
+      );
+      commit("setAllTokens", sortedWalletBalances);
     }
   },
   modules: {}
