@@ -1,6 +1,7 @@
 <template>
   <div class="page-container">
-    <div class="md-layout" v-if="chakras.length != 0">
+    {{ createFlow }}
+    <div class="md-layout" v-if="chakras.length != 0 && !createFlow">
       <div class="md-layout-item">
         <md-content style="padding: 20px">
           <md-card-header>
@@ -15,16 +16,18 @@
         </transition-group>
       </div>
     </div>
-    <div class="md-layout" v-if="chakras.length == 0">
+    <div class="md-layout" v-if="chakras.length == 0 && !createFlow">
       <div class="md-layout-item">
         <md-content style="padding: 20px">
           <p>
             You don’t have any Chakras yet...
           </p>
         </md-content>
-        <md-button>Create Chakra </md-button>
+        <md-button @click="createFlow = true">Create Chakra </md-button>
       </div>
     </div>
+
+    <Chakra-Flow v-if="createFlow == true" />
   </div>
 </template>
 
@@ -78,7 +81,7 @@ import ChakraCard from "@/components/itterable/ChakraCard/ChakraCard.vue";
 export default {
   name: "MyChakras",
   components: { ChakraCard, ChakraFlow },
-  data: () => ({}),
+  data: () => ({ createFlow: false }),
   methods: {},
   computed: {
     ...mapState(["chakras"])

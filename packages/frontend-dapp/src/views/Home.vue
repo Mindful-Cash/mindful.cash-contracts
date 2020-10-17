@@ -1,6 +1,7 @@
 <template>
   <div class="about">
     <div>
+      {{ tabIndex }}
       <md-tabs md-sync-route>
         <md-tab id="tab-home" md-label="My Chakras" @click="tabIndex = 0" exact></md-tab>
         <md-tab md-label="Find Gurus" @click="tabIndex = 1" exact></md-tab>
@@ -8,8 +9,6 @@
       </md-tabs>
       <div class="main-section" style="padding-top: 20px">
         <My-Chakras v-if="tabIndex == 0" />
-        <!-- <My-Chakras v-if="tabIndex == 0" /> -->
-        <Chakra-Flow v-if="tabIndex == 1" />
       </div>
     </div>
   </div>
@@ -17,10 +16,9 @@
 
 <script>
 import MyChakras from "@/views/MyChakras";
-import ChakraFlow from "@/views/ChakraFlow";
 export default {
   name: "Home",
-  components: { MyChakras, ChakraFlow },
+  components: { MyChakras },
   data() {
     return { tabIndex: 0 };
   }

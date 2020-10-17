@@ -32,7 +32,7 @@ export default {
   methods: {
     rowClicked() {
       console.log("emmiting");
-      this.$emit("rowClicked", this.asset.address);
+      this.$emit("rowClicked", this.asset);
     }
   },
   computed: {}

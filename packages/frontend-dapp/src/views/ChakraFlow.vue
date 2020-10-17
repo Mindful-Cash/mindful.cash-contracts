@@ -14,7 +14,7 @@
           <p>
             Select the tokens you want to add to your Chakra, and choose your distribution ratios.
           </p>
-          <button class="add-asset-btn"><span>+ Add Asset</span></button>
+          <button class="add-asset-btn" @click="showTokenDialog = true"><span>+ Add Asset</span></button>
           <Separator />
           <h2 class="title">Initial Contribution</h2>
           <button>replace me</button><button>with switch</button>
@@ -60,14 +60,34 @@
         </p>
       </md-step>
     </md-steppers>
+    <md-dialog class="text-center roundedDialog" :md-active.sync="showTokenDialog">
+      <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
+
+      <md-dialog-content style="width:750px;padding-top:15px;padding-left:0px;padding-right:0px;">
+        <Add-Coin-Modal @rowItemClicked="handelCoinChosen" />
+      </md-dialog-content>
+    </md-dialog>
   </div>
 </template>
 
 <script>
 import Separator from "@/components/elements/Separator";
+import AddCoinModal from "@/components/AddCoinModal";
 export default {
   name: "ChakraFlow",
-  components: { Separator }
+  components: { Separator, AddCoinModal },
+  data: () => ({
+    initial: null,
+    showTokenDialog: false,
+    selectedCoins: []
+  }),
+  methods: {
+    handelCoinChosen(coinObject) {
+      console.log("clickedz", coinObject);
+      this.selectedCoins.push(coinObject);
+      this.showTokenDialog = false;
+    }
+  }
 };
 </script>
 
@@ -177,5 +197,10 @@ h1.title {
       -webkit-text-fill-color: transparent;
     }
   }
+}
+.roundedDialog {
+  background: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px !important;
 }
 </style>
