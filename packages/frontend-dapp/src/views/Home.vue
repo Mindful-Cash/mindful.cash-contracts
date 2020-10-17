@@ -5,8 +5,9 @@
         <md-tab id="tab-home" md-label="Home" @click="tabIndex = 0" exact></md-tab>
         <md-tab md-label="Home2" @click="tabIndex = 1" exact></md-tab>
       </md-tabs>
-      <div class="main-section" style="padding-top: 20px">
-        <My-Chakras v-if="tabIndex == 0" />
+      <div class="main-section">
+        <!-- <My-Chakras v-if="tabIndex == 0" /> -->
+        <Chakra-Flow v-if="tabIndex == 0" />
       </div>
     </div>
   </div>
@@ -14,9 +15,11 @@
 
 <script>
 import MyChakras from "@/views/MyChakras";
+import ChakraFlow from "@/views/ChakraFlow";
+
 export default {
   name: "Home",
-  components: { MyChakras },
+  components: { MyChakras, ChakraFlow },
   data() {
     return { tabIndex: 0 };
   }
