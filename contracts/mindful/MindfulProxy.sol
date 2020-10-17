@@ -28,6 +28,7 @@ contract MindfulProxy is Ownable {
     IWETH public constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
     struct SellStrategy {
+        string name;
         uint256 id;
         uint256[] prices; // price threshold
         address[] sellTokens; // token to sell to for each price point
@@ -36,6 +37,7 @@ contract MindfulProxy is Ownable {
     }
 
     struct BuyStrategy {
+        string name;
         uint256 id;
         uint256 interBuyDelay;
         uint256 buyAmount;
@@ -51,7 +53,7 @@ contract MindfulProxy is Ownable {
     bool public isPaused;
 
     /// @notice mapping between chakra and manager address
-    mapping(address => address payable) public chakraManager;
+    mapping(address => address) public chakraManager;
     /// @notice mapping of chakra
     mapping(address => bool) public isChakra;
     // mapping between sell strategy id and chakra (strategy id = index in strategies array)
@@ -72,7 +74,7 @@ contract MindfulProxy is Ownable {
 
     event SmartPoolCreated(address indexed poolAddress, address indexed chakraManager, string name, string symbol);
     event BuyStrategyAdded(address indexed chakra, uint256 indexed buyStrategyId);
-    event SellStrategyAdded(address indexed chakra, uint256 indexed sellStrategyId);
+    event SellStrategyAdded(address indexed chakra, string sellStrategyName, uint256 indexed sellStrategyId);
     event BuyStrategyDisabled(address indexed chakra, uint256 indexed buyStrategyId);
     event SellStrategyDisabled(address indexed chakra, uint256 indexed buyStrategyId);
 
@@ -85,7 +87,7 @@ contract MindfulProxy is Ownable {
         }
     }
 
-    modifier onlyChakraManager(address _sender, address _chakra) {
+    modifier onlyChakraManager(address _chakra, address _sender) {
         require(chakraManager[_chakra] == _sender, "Sender is not chakra manager");
 
         _;
@@ -163,14 +165,16 @@ contract MindfulProxy is Ownable {
 
     function addSellStrategy(
         address _chakra,
+        string calldata _name,
         uint256[] calldata _prices,
         address[] calldata _sellTokens
-    ) external onlyChakraManager(msg.sender, _chakra) {
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra], "Not a Chakra");
         require(_prices.length == _sellTokens.length, "Invalid sell strategy arrays");
 
-        uint256[] memory prices;
-        address[] memory sellTokens;
-        bool[] memory isExecuted;
+        uint256[] memory prices = new uint256[](_prices.length);
+        address[] memory sellTokens = new address[](_prices.length);
+        bool[] memory isExecuted = new bool[](_prices.length);
 
         for (uint256 i = 0; i < _prices.length; i++) {
             require(_prices[i] > 0, "Invalid sell strategy price");
@@ -183,17 +187,18 @@ contract MindfulProxy is Ownable {
         }
 
         uint256 sellStrategyId = sellStrategies.length.add(1);
-        SellStrategy memory sellStrategy = SellStrategy(sellStrategyId, prices, sellTokens, isExecuted, true);
+        SellStrategy memory sellStrategy = SellStrategy(_name, sellStrategyId, prices, sellTokens, isExecuted, true);
         sellStrategyChakra[sellStrategyId] = _chakra;
         sellStrategies.push(sellStrategy);
 
-        emit SellStrategyAdded(_chakra, sellStrategyId);
+        emit SellStrategyAdded(_chakra, _name, sellStrategyId);
     }
 
     function disableSellStrategy(
         address _chakra,
         uint256 _sellStrategyId
-    ) external onlyChakraManager(msg.sender, _chakra) {
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra], "Not a Chakra");
         require(_sellStrategyId <= buyStrategies.length, "Invalid sell strategy id");
         require(sellStrategyChakra[_sellStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
 
@@ -216,7 +221,7 @@ contract MindfulProxy is Ownable {
             uint256
         )
     {
-        address payable manager = chakraManager[_chakra];
+        address payable manager = payable(chakraManager[_chakra]);
         address strategyBaseToken;
         uint256 strategyBaseAmount;
         bool isRelayer = msg.sender != manager;

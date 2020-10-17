@@ -46,6 +46,10 @@ describe("MindfulProxy", () => {
   let tokens: MockToken[];
   let amounts: BigNumberish[] = [];
   let weights: BigNumberish[] = [];
+  let umaToken: MockToken;
+  let compToken: MockToken;
+  let yfiToken: MockToken;
+  let usdcToken: MockToken;
 
   beforeEach(async () => {
     tokens = [];
@@ -79,16 +83,28 @@ describe("MindfulProxy", () => {
     const tokenFactorySigner1 = new MockTokenFactory(signers[0]);
     const tokenFactorySigner2 = new MockTokenFactory(signers[0]);
 
-    for (let i = 0; i < 3; i++) {
-      const token: MockToken = await tokenFactorySigner0.deploy(`Mock ${i}`, `M${i}`, 18);
-      await token.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
-      // await token.mint(chakraOwner, constants.WeiPerEther.mul(10000000000));
-      await token.approve(mindfulProxy.address, constants.MaxUint256);
-      // await token.approve(mindfulProxy.address, constants.MaxUint256);
-      tokens.push(token);
-      weights.push(constants.WeiPerEther.mul(3));
-      amounts.push(constants.WeiPerEther.mul(10));
-    }
+    let umaToken = await tokenFactorySigner0.deploy('UMA', 'UMA', 18);
+    let compToken = await tokenFactorySigner0.deploy('COMP', 'COMP', 18);
+    let yfiToken = await tokenFactorySigner0.deploy('YFI', 'YFI', 18);
+    let usdcToken = await tokenFactorySigner0.deploy('USDC', 'USDC', 18);
+
+    await umaToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
+    await compToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
+    await yfiToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
+    await umaToken.approve(mindfulProxy.address, constants.MaxUint256);
+    await compToken.approve(mindfulProxy.address, constants.MaxUint256);
+    await yfiToken.approve(mindfulProxy.address, constants.MaxUint256);
+
+    tokens.push(umaToken);
+    tokens.push(compToken);
+    tokens.push(yfiToken);
+
+    weights.push(constants.WeiPerEther.mul(3));
+    weights.push(constants.WeiPerEther.mul(3));
+    weights.push(constants.WeiPerEther.mul(3));
+    amounts.push(constants.WeiPerEther.mul(10));
+    amounts.push(constants.WeiPerEther.mul(10));
+    amounts.push(constants.WeiPerEther.mul(10));
   });
 
   describe("init smart pool proxy", async () => {
@@ -147,6 +163,25 @@ describe("MindfulProxy", () => {
     });
   });
 
+  describe('Add sell strategy', () => {
+    it('should add sell strategy', async () => {
+      const chakraAddress = await mindfulProxy.chakras(0);
+
+      let startegyName = "Strategy 1";
+      let prices = [];
+      let sellOtokens = [];
+
+      prices.push(constants.WeiPerEther.mul(10000000000));
+      prices.push(constants.WeiPerEther.mul(12000000000));
+      prices.push(constants.WeiPerEther.mul(20000000000));
+      sellOtokens.push(usdcToken.address);
+      sellOtokens.push(usdcToken.address);
+      sellOtokens.push(usdcToken.address);
+
+      await mindfulProxy.addSellStrategy(chakraAddress, startegyName, prices, sellOtokens);
+    })
+  })
+
   describe("Toggle pause", () => {
     it("should revert pausing from non-owner", async () => {
       const localMindfulProxy = MindfulProxyFactory.connect(mindfulProxy.address, signers[3]);
@@ -169,9 +204,9 @@ describe("MindfulProxy", () => {
     });
   });
 
-  describe("DCA in", () => {
-    it("chakra owner can send in single currency to add to pool");
-  });
+  // describe("DCA in", () => {
+  //   it("chakra owner can send in single currency to add to pool");
+  // });
 
   async function getTokenBalances(address: string) {
     const balances: BigNumber[] = [];
