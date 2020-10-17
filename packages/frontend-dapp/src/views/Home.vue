@@ -7,7 +7,7 @@
       </md-tabs>
       <div class="main-section" style="padding-top: 20px">
         <My-Chakras v-if="tabIndex == 0" />
-        <Add-Coin-Modal v-if="tabIndex == 0" />
+        <Add-Coin-Modal v-if="tabIndex == 0" style="border-radius: 50px;" />
       </div>
     </div>
   </div>
