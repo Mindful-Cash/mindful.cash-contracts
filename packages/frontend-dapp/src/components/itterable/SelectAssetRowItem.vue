@@ -1,6 +1,9 @@
 <template>
   <div class="about">
-    <div>Asset in wallet :{{ asset }}</div>
+    <div>
+      <img :width="25" :src="asset.logoURI" />
+      {{ asset.name }}({{ asset.symbol }}) {asset.usd}{asset.amount}
+    </div>
   </div>
 </template>
 
