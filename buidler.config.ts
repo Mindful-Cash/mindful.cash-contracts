@@ -54,6 +54,7 @@ const config: ExtendedBuidlerConfig = {
   networks: {
     local: {
       url: "http://127.0.0.1:8545/",
+      blockGasLimit: 100000000,
     },
     buidlerevm: {
       gasPrice: 0,
