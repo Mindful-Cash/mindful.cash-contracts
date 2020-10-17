@@ -225,22 +225,21 @@ export default new Vuex.Store({
           ? Number(
               ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
             ).toFixed(4)
-          : "0";
+          : "0.0000";
 
         tokenObject.price = tokenPrices[tokenObject.address.toLowerCase()]
           ? tokenPrices[tokenObject.address.toLowerCase()].usd
           : "0";
 
-        tokenObject.value = Number(tokenObject.amountRounded) * Number(tokenObject.price);
+        tokenObject.value = (Number(tokenObject.amountRounded) * Number(tokenObject.price)).toFixed(2);
 
         if (tokenObject.amount !== "0") {
           console.log("tokenObject", tokenObject);
         }
         return tokenObject;
       });
-      console.log(ethers.BigNumber.from(joinedTokenArrays[0].amount).lt(ethers.BigNumber.from(1)));
       const sortedWalletBalances = joinedTokenArrays.sort((a, b) =>
-        ethers.BigNumber.from(a.amount).lt(ethers.BigNumber.from(b.amount)) ? 1 : -1
+        ethers.BigNumber.from(a.value).lt(ethers.BigNumber.from(b.value)) ? 1 : -1
       );
       commit("setAllTokens", sortedWalletBalances);
     }
