@@ -1,60 +1,71 @@
 <template>
   <div class="wrapper">
     <h1 class="title">New Chakra</h1>
-    <md-steppers>
+    <md-steppers style="width-100%">
       <md-step id="first" md-label="Setup">
-        <div class="left">
-          <h2 class="title">Chakra Name</h2>
-          <p>Choose a name for your Chakra. This will be viewable by other users.</p>
-          <input placeholder="Enter Name" v-model="initial" />
-          <Separator />
-          <h2 class="title">Select Distribution</h2>
-          <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
+        <div class="md-layout">
+          <div class="md-layout-item md-size-60">
+            <h2 class="title">Chakra Name</h2>
+            <p>Choose a name for your Chakra. This will be viewable by other users.</p>
+            <input placeholder="Enter Name" v-model="initial" />
+            <Separator />
+            <h2 class="title">Select Distribution</h2>
+            <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
 
-          <div v-for="coin in selectedCoins" :key="coin.address">{{ coin }}</div>
-          <div v-for="(coin, index) in selectedCoins" :key="index" style="padding-top: 20px">
-            <div class="md-layout md-gutter md-alignment-center-center">
-              <div class="md-layout-item md-size-15 md-layout">
-                <div class="md-layout-item">
-                  <img :width="30" :src="coin.logoURI" />
+            <div v-for="(coin, index) in selectedCoins" :key="index" style="padding-top: 20px; padding-bottom: 20px">
+              <div class="md-layout">
+                <div class="md-layout-item md-size-20 md-layout" style="text-align: left">
+                  <div class="md-layout-item" style="text-align: left">
+                    <img :width="30" :height="30" :src="coin.logoURI" style="margin-left: 10px" />
+                  </div>
+                  <div class="md-layout-item" style="padding-top: 5px">
+                    <span class="secondaryText"> {{ coin.symbol }}</span>
+                  </div>
                 </div>
-                <div class="md-layout-item">
-                  <span class="secondaryText">({{ coin.symbol }}) </span>
+                <div class="md-layout-item" style="padding-top: 5px">
+                  <vue-slider
+                    v-model="coin.ratio"
+                    v-bind="selectorOptions"
+                    :dotOptions="{ max: coin.ratio + unselectedPercent }"
+                    :max="100"
+                    :tooltip="'always'"
+                    :process-style="{ backgroundColor: colors[index] }"
+                    :tooltip-style="{ backgroundColor: colors[index], borderColor: colors[index] }"
+                  ></vue-slider>
                 </div>
-              </div>
-              <div class="md-layout-item">
-                <vue-slider
-                  v-model="coin.ratio"
-                  v-bind="selectorOptions"
-                  :dotOptions="{ max: coin.ratio + unselectedPercent }"
-                  :max="100"
-                  :tooltip="'always'"
-                  :process-style="{ backgroundColor: colors[index] }"
-                  :tooltip-style="{ backgroundColor: colors[index], borderColor: colors[index] }"
-                ></vue-slider>
-              </div>
-              <div class="md-layout-item md-size-10">
-                <md-button class="md-icon-button md-raised md-accent" @click="removeCoinFromSelected(index)">
-                  <md-icon>remove</md-icon>
-                </md-button>
+                <div class="md-layout-item md-size-10">
+                  <md-button class="md-icon-button md-raised md-dense" @click="removeCoinFromSelected(index)">
+                    <md-icon>remove</md-icon>
+                  </md-button>
+                </div>
               </div>
             </div>
+
+            <button class="add-asset-btn" @click="showCoinDialog = true"><span>+ Add Asset</span></button>
+            <Separator />
+            <h2 class="title">Initial Contribution</h2>
+            <button>replace me</button><button>with switch</button>
+            <p>
+              Deposit any asset to fund your Chakra. The assets you deposit will be used to buy the assets in your
+              Chakra in accordance with your specified distribution.
+            </p>
+            <p><b>Slippage may occur during this process.</b></p>
+            <p><b>An extra 5% ETH is sent with the TX to avoid unexpected errors - unused ETH will be returned.</b></p>
+            <button>replace me</button>
           </div>
 
-          <button class="add-asset-btn" @click="showCoinDialog = true"><span>+ Add Asset</span></button>
-          <Separator />
-          <h2 class="title">Initial Contribution</h2>
-          <button>replace me</button><button>with switch</button>
-          <p>
-            Deposit any asset to fund your Chakra. The assets you deposit will be used to buy the assets in your Chakra
-            in accordance with your specified distribution.
-          </p>
-          <p><b>Slippage may occur during this process.</b></p>
-          <p><b>An extra 5% ETH is sent with the TX to avoid unexpected errors - unused ETH will be returned.</b></p>
-          <button>replace me</button>
+          <div class="md-layout-item md-size-40">
+            <div class="md-layout-item">
+              <apexchart
+                type="donut"
+                width="420"
+                :options="pieValues.options"
+                :series="pieValues.values"
+                class="center"
+              />
+            </div>
+          </div>
         </div>
-
-        <div class="right"></div>
       </md-step>
 
       <md-step id="second" md-label="DCA Strategy">
@@ -165,6 +176,48 @@ export default {
     unselectedPercent() {
       return 100 - this.totalSelected;
     },
+    pieValues() {
+      let pieValues = [];
+      let pieLabels = [];
+      let pieColors = [];
+      let count = 0;
+      let colors = this.colors;
+      this.selectedCoins.forEach(function (token) {
+        pieValues.push(token.ratio);
+        pieLabels.push(token.symbol);
+        pieColors.push(colors[count]);
+        count++;
+      });
+      pieValues.push(this.unselectedPercent);
+      pieLabels.push("Remaining");
+      pieColors.push("#999");
+      return {
+        values: pieValues,
+        options: {
+          labels: pieLabels,
+          colors: pieColors,
+          dataLabels: {
+            enabled: true,
+          },
+          responsive: [
+            {
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 200,
+                },
+                legend: {
+                  show: false,
+                },
+              },
+            },
+          ],
+          legend: {
+            show: false,
+          },
+        },
+      };
+    },
   },
 };
 </script>
@@ -206,14 +259,6 @@ export default {
 
 ::v-deep .md-steppers .md-stepper-content {
   display: flex;
-}
-
-.left {
-  flex: 3;
-}
-
-.right {
-  flex: 2;
 }
 
 input {
