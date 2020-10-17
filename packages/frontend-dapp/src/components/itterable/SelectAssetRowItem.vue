@@ -2,7 +2,7 @@
   <div class="about">
     <div>
       <img :width="25" :src="asset.logoURI" />
-      {{ asset.name }}({{ asset.symbol }}) {asset.usd}{asset.amount}
+      {{ asset.name }}({{ asset.symbol }}) {{ asset.usd }}{{ asset.amount }}
     </div>
   </div>
 </template>
