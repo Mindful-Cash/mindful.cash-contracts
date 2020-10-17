@@ -81,6 +81,7 @@ contract MindfulProxy is Ownable {
     event SellStrategyDisabled(address indexed chakra, uint256 indexed sellStrategyId);
     event BuyStrategyEnabled(address indexed chakra, uint256 indexed buyStrategyId);
     event SellStrategyEnabled(address indexed chakra, uint256 indexed sellStrategyId);
+    event SellStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId);
 
     // Pauzer
     modifier revertIfPaused {
@@ -289,6 +290,47 @@ contract MindfulProxy is Ownable {
         buyStrategy.isActive = true;
 
         emit BuyStrategyEnabled(_chakra, _buyStrategyId);
+    }
+
+    function updateSellStrategy(
+        address _chakra,
+        uint256 _sellStrategyId,
+        address[] calldata _sellTokens,
+        uint256[] calldata _prices
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra], "Not a Chakra");
+        require(_sellStrategyId <= sellStrategies.length, "Invalid sell strategy id");
+        require(sellStrategyChakra[_sellStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
+        require(_prices.length == _sellTokens.length, "Invalid sell strategy arrays");
+
+        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
+        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
+
+        // loop through arrays and update
+        // if i > sellStrategy.sellTokens.length => push to array
+        // if _sellTokens[i] == address(0) then remove that token and it's price
+        for(uint256 i = 0; i < _sellTokens.length; i++) { 
+            uint256 arrayLength = sellStrategy.sellTokens.length;           
+            require(arrayLength > 0, "Can not update empty arrays");
+
+            if(i >= arrayLength) {
+                require(_sellTokens[i] != address(0), "Invalid sell token address");
+                require(_prices[i] > 0, "Invalid sell price");
+
+                sellStrategy.sellTokens.push(_sellTokens[i]);
+                sellStrategy.prices.push(_prices[i]);
+            }
+            else {
+                if(_sellTokens[i] == address(0)) {
+                    sellStrategy.sellTokens[i] = sellStrategy.sellTokens[arrayLength.sub(1)];
+                    sellStrategy.prices[i] = sellStrategy.prices[arrayLength.sub(1)];
+                    sellStrategy.sellTokens.pop();
+                    sellStrategy.prices.pop();
+                }
+            }
+        }
+
+        emit SellStrategyUpdated(_chakra, _sellStrategyId);
     }
 
     function toChakra(
