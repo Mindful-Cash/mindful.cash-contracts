@@ -1,5 +1,5 @@
 <template>
-  <div class="rowItem gradient-border">
+  <div class="rowItem gradient-border" @click="rowClicked">
     <div class="md-layout  md-alignment-center-right">
       <div class="md-layout-item md-size-10">
         <img :width="30" :src="asset.logoURI" />

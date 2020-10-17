@@ -4,8 +4,14 @@
 
     <md-dialog class="text-center roundedDialog" :md-active.sync="showDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
+
       <md-dialog-content style="width:750px;padding-top:15px;padding-left:0px;padding-right:0px;">
-        <Select-Asset-Row-Item v-for="token in allTokens" :asset="token" :key="token.address"></Select-Asset-Row-Item>
+        <Select-Asset-Row-Item
+          v-for="token in allTokens"
+          :asset="token"
+          @click="rowItemClicked(token.address)"
+          :key="token.address"
+        ></Select-Asset-Row-Item>
       </md-dialog-content>
     </md-dialog>
   </div>
@@ -26,6 +32,9 @@ export default {
     modalClosed() {
       console.log("CLOSED");
       this.CLOSE_MINING_DIALOG();
+    },
+    rowItemClicked(address) {
+      this.$emit("rowItemClicked", address);
     }
   },
   mounted() {},
