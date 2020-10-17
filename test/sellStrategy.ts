@@ -32,7 +32,7 @@ const PLACE_HOLDER_ADDRESS = "0x0000000000000000000000000000000000000001";
 const NAME = "DeFi Energy Chakra";
 const SYMBOL = "DEC";
 
-describe("MindfulProxy", () => {
+describe("Sell strategy", () => {
   let signers: Signer[];
 
   let mindfulDeployer: string;
@@ -51,7 +51,7 @@ describe("MindfulProxy", () => {
   let yfiToken: MockToken;
   let usdcToken: MockToken;
 
-  beforeEach(async () => {
+  before(async () => {
     tokens = [];
     amounts = [];
     weights = [];
@@ -83,10 +83,10 @@ describe("MindfulProxy", () => {
     const tokenFactorySigner1 = new MockTokenFactory(signers[0]);
     const tokenFactorySigner2 = new MockTokenFactory(signers[0]);
 
-    let umaToken = await tokenFactorySigner0.deploy('UMA', 'UMA', 18);
-    let compToken = await tokenFactorySigner0.deploy('COMP', 'COMP', 18);
-    let yfiToken = await tokenFactorySigner0.deploy('YFI', 'YFI', 18);
-    let usdcToken = await tokenFactorySigner0.deploy('USDC', 'USDC', 18);
+    umaToken = await tokenFactorySigner0.deploy('UMA', 'UMA', 18);
+    compToken = await tokenFactorySigner0.deploy('COMP', 'COMP', 18);
+    yfiToken = await tokenFactorySigner0.deploy('YFI', 'YFI', 18);
+    usdcToken = await tokenFactorySigner0.deploy('USDC', 'USDC', 18);
 
     await umaToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await compToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
@@ -105,104 +105,61 @@ describe("MindfulProxy", () => {
     amounts.push(constants.WeiPerEther.mul(10));
     amounts.push(constants.WeiPerEther.mul(10));
     amounts.push(constants.WeiPerEther.mul(10));
+
+    await mindfulProxy.newProxiedSmartPool(
+      NAME,
+      SYMBOL,
+      constants.WeiPerEther,
+      tokens.map((token) => token.address),
+      amounts,
+      weights,
+      INITIAL_SUPPLY
+    );
+    expect((await mindfulProxy.getChakras()).length).to.eq(1);
   });
 
-  describe("init smart pool proxy", async () => {
-    beforeEach(async () => {
-      await mindfulProxy.newProxiedSmartPool(
-        NAME,
-        SYMBOL,
-        constants.WeiPerEther,
-        tokens.map((token) => token.address),
-        amounts,
-        weights,
-        INITIAL_SUPPLY
-      );
-      expect((await mindfulProxy.getChakras()).length).to.eq(1);
-      smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.chakras(0), signers[0]);
-    });
+  it('should create a sell startegy', async () => {
+    const chakraAddress = (await mindfulProxy.getChakras())[0];
 
-    it("bpt token settings", async () => {
-      const token: TestPcToken = TestPcTokenFactory.connect(
-        await mindfulProxy.chakras(0),
-        signers[0]
-      );
-      const name = await token.name();
-      expect(name).to.eq(NAME);
-      const symbol = await token.symbol();
-      expect(symbol).to.eq(SYMBOL);
-      const initialSupply = await token.totalSupply();
-      expect(initialSupply).to.eq(INITIAL_SUPPLY);
-    });
+    let startegyName = "Strategy 1";
+    let prices = [];
+    let sellOtokens = [];
 
-    it("permissioning is set correctly", async () => {
-      expect(await smartpoolProxy.getController()).to.eq(mindfulProxy.address);
-      expect(await smartpoolProxy.getPublicSwapSetter()).to.eq(mindfulProxy.address);
-      expect(await smartpoolProxy.getTokenBinder()).to.eq(mindfulProxy.address);
-      expect(await mindfulProxy.chakraManager(await mindfulProxy.chakras(0))).to.eq(
-        mindfulDeployer
-      );
-      expect(await smartpoolProxy.getCap()).to.eq(INITIAL_SUPPLY);
-    });
+    prices.push(constants.WeiPerEther.mul(10000000000));
+    prices.push(constants.WeiPerEther.mul(12000000000));
+    prices.push(constants.WeiPerEther.mul(20000000000));
+    sellOtokens.push(usdcToken.address);
+    sellOtokens.push(usdcToken.address);
+    sellOtokens.push(usdcToken.address);
 
-    it("Tokens should be correctly set", async () => {
-      const actualTokens = await smartpoolProxy.getTokens();
-      const tokenAddresses = tokens.map((token) => token.address);
-      expect(actualTokens).eql(tokenAddresses);
-    });
+    await mindfulProxy.addSellStrategy(chakraAddress, startegyName, sellOtokens, prices);
 
-    it("Calling init when already initialized should fail", async () => {
-      await expect(
-        smartpoolProxy.init(PLACE_HOLDER_ADDRESS, NAME, SYMBOL, constants.WeiPerEther)
-      ).to.be.revertedWith("PV2SmartPool.init: already initialised");
-    });
-
-    it("Smart pool should not hold any non balancer pool tokens after init", async () => {
-      const smartPoolBalances = await getTokenBalances(smartpoolProxy.address);
-      expectZero(smartPoolBalances);
-    });
+    expect((await mindfulProxy.getSellStrategies()).length).to.eq(1);
+    expect((await mindfulProxy.getSellStrategies())[0].name).to.eq(startegyName);
+    expect(await mindfulProxy.sellStrategyChakra(1)).to.eq(chakraAddress);
   });
+  
+  it('should disable created startegy', async () => {
+    const chakraAddress = (await mindfulProxy.getChakras())[0];
+    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
 
-  describe('Add sell strategy', () => {
-    it('should add sell strategy', async () => {
-      const chakraAddress = await mindfulProxy.chakras(0);
+    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
 
-      let startegyName = "Strategy 1";
-      let prices = [];
-      let sellOtokens = [];
+    await mindfulProxy.disableSellStrategy(chakraAddress, sellStrategyid);
 
-      prices.push(constants.WeiPerEther.mul(10000000000));
-      prices.push(constants.WeiPerEther.mul(12000000000));
-      prices.push(constants.WeiPerEther.mul(20000000000));
-      sellOtokens.push(usdcToken.address);
-      sellOtokens.push(usdcToken.address);
-      sellOtokens.push(usdcToken.address);
-
-      await mindfulProxy.addSellStrategy(chakraAddress, startegyName, prices, sellOtokens);
-    })
+    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
   })
+  
+  it('should enable a disabled sell startegy', async () => {
+    const chakraAddress = (await mindfulProxy.getChakras())[0];
+    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
 
-  describe("Toggle pause", () => {
-    it("should revert pausing from non-owner", async () => {
-      const localMindfulProxy = MindfulProxyFactory.connect(mindfulProxy.address, signers[3]);
+    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
 
-      await expect(localMindfulProxy.togglePause()).to.be.revertedWith(
-        "Ownable.onlyOwner: msg.sender not owner"
-      );
-    });
+    await mindfulProxy.enableSellStrategy(chakraAddress, sellStrategyid);
 
-    it("toggle pause", async () => {
-      expect(await mindfulProxy.isPaused()).to.eq(false);
-
-      await mindfulProxy.togglePause();
-
-      expect(await mindfulProxy.isPaused()).to.eq(true);
-
-      // reset
-      await mindfulProxy.togglePause();
-      expect(await mindfulProxy.isPaused()).to.eq(false);
-    });
-  });
+    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
+  })
 
   // describe("DCA in", () => {
   //   it("chakra owner can send in single currency to add to pool");
