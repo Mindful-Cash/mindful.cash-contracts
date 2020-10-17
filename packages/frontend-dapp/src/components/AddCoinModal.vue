@@ -9,7 +9,7 @@
         <Select-Asset-Row-Item
           v-for="token in allTokens"
           :asset="token"
-          @click="rowItemClicked(token.address)"
+          @rowClicked="handelCoinChosen"
           :key="token.address"
         ></Select-Asset-Row-Item>
       </md-dialog-content>
@@ -25,24 +25,18 @@ export default {
   name: "AddCoinModal",
   components: { SelectAssetRowItem },
   data: () => ({
-    showDialog: true
+    showDialog: false
   }),
   methods: {
-    ...mapActions(["CLOSE_MINING_DIALOG"]),
-    modalClosed() {
-      console.log("CLOSED");
-      this.CLOSE_MINING_DIALOG();
-    },
-    rowItemClicked(address) {
+    handelCoinChosen(address) {
+      console.log("clicked", address);
+      this.showDialog = false;
       this.$emit("rowItemClicked", address);
     }
   },
   mounted() {},
   computed: {
-    ...mapState(["allTokens"]),
-    allTokensInWallet() {
-      return [{ address: 1 }, { address: 2 }];
-    }
+    ...mapState(["allTokens"])
   }
 };
 </script>
