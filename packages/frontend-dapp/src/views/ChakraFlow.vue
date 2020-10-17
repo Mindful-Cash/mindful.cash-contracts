@@ -44,7 +44,27 @@
             <button class="add-asset-btn" @click="showCoinDialog = true"><span>+ Add Asset</span></button>
             <Separator />
             <h2 class="title">Initial Contribution</h2>
-            <button>replace me</button><button>with switch</button>
+
+            <div class="SelectToggle">
+              <div class="md-layout">
+                <div
+                  class="md-layout-item"
+                  :class="contributionMode == 'single' ? 'selectedSection' : 'notSelectedSection'"
+                  @click="contributionMode = 'single'"
+                >
+                  Any Asset
+                </div>
+                <div
+                  class="md-layout-item"
+                  :class="contributionMode == 'multi' ? 'selectedSection' : 'notSelectedSection'"
+                  @click="contributionMode = 'multi'"
+                >
+                  Exact Assets
+                </div>
+                <!-- <div class="md-layout-item">Pool</div> -->
+              </div>
+            </div>
+
             <p>
               Deposit any asset to fund your Chakra. The assets you deposit will be used to buy the assets in your
               Chakra in accordance with your specified distribution.
@@ -137,6 +157,7 @@ export default {
   components: { Separator, AddCoinModal },
   data: () => ({
     initial: null,
+    contributionMode: "single",
     showCoinDialog: false,
     selectedCoins: [],
     colors: [
@@ -380,5 +401,51 @@ h1.title {
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
+}
+
+.SelectToggle {
+  width: 500px;
+  height: 40px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.selectedSection {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  border-radius: 8px;
+  width: 265px;
+  height: 40px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+  vertical-align: middle;
+  display: inline-block;
+  padding-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.notSelectedSection {
+  width: 250px;
+  height: 40px;
+  border-radius: 8px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  align-items: center;
+  text-align: center;
+  line-height: 19px;
+  vertical-align: middle;
+  padding-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #aaaaaa;
 }
 </style>
