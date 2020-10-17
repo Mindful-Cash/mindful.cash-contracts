@@ -73,7 +73,7 @@
             <p><b>An extra 5% ETH is sent with the TX to avoid unexpected errors - unused ETH will be returned.</b></p>
 
             <div class="md-layout">
-              <div class="md-layout-item md-size-25" style="margin-right: 20px">
+              <div class="md-layout-item md-size-25" style="margin-right: 10px">
                 <div class="initialContributionToken" @click="showSelectInitialContributionDialog = true">
                   <img
                     :width="20"
@@ -83,11 +83,35 @@
                     style="padding-bottom: 5px"
                   />
                   <span style="padding-bottom: 5px"> {{ initialContributionCoin.symbol }} </span>
+
                   <md-icon style="padding-bottom: 5px">keyboard_arrow_down</md-icon>
                 </div>
               </div>
-              <div class="md-layout-item mx-dize-90">
+              <div class="md-layout-item md-size">
                 <input placeholder="0" type="number" v-model="initialContribution" />
+              </div>
+              <div class="md-layout-item md-size-20" style="margin-left: 5px">
+                <md-button class="approve-button">Approve</md-button>
+              </div>
+            </div>
+
+            <div
+              class="md-layout md-alignment-center-right"
+              style="padding-top: 20px; margin-bottom: 30px; text-align: right"
+            >
+              <div class="md-layout-item">
+                <span class="totalContributionText">Total Contribution:</span
+                ><span class="totalContributionNumber">$0.00</span>
+              </div>
+            </div>
+
+            <div class="md-layout" style="padding-top: 20px; margin-bottom: 30px">
+              <div class="md-layout-item md-size-60"></div>
+              <div class="md-layout-item">
+                <md-button :disabled="true" class="approve-button">Next</md-button>
+              </div>
+              <div class="md-layout-item">
+                <md-button :disabled="true">Cancel</md-button>
               </div>
             </div>
           </div>
@@ -514,5 +538,27 @@ h1.title {
       -webkit-text-fill-color: transparent;
     }
   }
+}
+
+.totalContributionText {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: right;
+  color: rgba(41, 41, 41, 0.75);
+  border: 1px solid #ffffff;
+}
+
+.totalContributionNumber {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 31px;
+  text-align: right;
+  color: #292929;
+  border: 1px solid #ffffff;
 }
 </style>
