@@ -78,8 +78,9 @@ contract MindfulProxy is Ownable {
     event BuyStrategyAdded(address indexed chakra, uint256 indexed buyStrategyId);
     event SellStrategyAdded(address indexed chakra, string sellStrategyName, uint256 indexed sellStrategyId);
     event BuyStrategyDisabled(address indexed chakra, uint256 indexed buyStrategyId);
-    event SellStrategyDisabled(address indexed chakra, uint256 indexed buyStrategyId);
-    event SellStrategyEnabled(address indexed chakra, uint256 indexed buyStrategyId);
+    event SellStrategyDisabled(address indexed chakra, uint256 indexed sellStrategyId);
+    event BuyStrategyEnabled(address indexed chakra, uint256 indexed buyStrategyId);
+    event SellStrategyEnabled(address indexed chakra, uint256 indexed sellStrategyId);
 
     // Pauzer
     modifier revertIfPaused {
@@ -245,6 +246,21 @@ contract MindfulProxy is Ownable {
         emit SellStrategyDisabled(_chakra, _sellStrategyId);
     }
 
+    function disableBuyStrategy(
+        address _chakra,
+        uint256 _buyStrategyId
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra], "Not a Chakra");
+        require(_buyStrategyId <= buyStrategies.length, "Invalid buy strategy id");
+        require(buyStrategyChakra[_buyStrategyId] == _chakra, "Buy strategy id does not belong to specified chakra");
+
+        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+        buyStrategy.isActive = false;
+
+        emit BuyStrategyDisabled(_chakra, _buyStrategyId);
+    }
+
     function enableSellStrategy(
         address _chakra,
         uint256 _sellStrategyId
@@ -258,6 +274,21 @@ contract MindfulProxy is Ownable {
         sellStrategy.isActive = true;
 
         emit SellStrategyEnabled(_chakra, _sellStrategyId);
+    }
+
+    function enableBuyStrategy(
+        address _chakra,
+        uint256 _buyStrategyId
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra], "Not a Chakra");
+        require(_buyStrategyId <= buyStrategies.length, "Invalid sell strategy id");
+        require(buyStrategyChakra[_buyStrategyId] == _chakra, "Sell strategy id does not belong to specified chakra");
+
+        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+        buyStrategy.isActive = true;
+
+        emit BuyStrategyEnabled(_chakra, _buyStrategyId);
     }
 
     function toChakra(
