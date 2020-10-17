@@ -1,6 +1,6 @@
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
-import { fetchWalletTokens, fetchAllTokens } from "../utils/FetchWalletTokens";
+import { fetchWalletTokens, fetchAllTokens, fetchTokenPrices } from "../utils/FetchWalletTokens";
 
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
@@ -21,6 +21,7 @@ export default new Vuex.Store({
     account: null,
     userAddress: null,
     currentNetwork: null,
+    currentNetworkId: null,
     notify: null,
     onboard: null,
     wallet: null,
@@ -47,6 +48,10 @@ export default new Vuex.Store({
     setCurrentNetwork(state, network) {
       state.currentNetwork = network;
       console.log("network set to: " + state.currentNetwork);
+    },
+    setCurrentNetworkId(state, networkId) {
+      state.currentNetworkId = networkId;
+      console.log("networkId set to: " + state.currentNetworkId);
     },
     setEthers(state, ethers) {
       state.ethers = ethers;
@@ -125,6 +130,7 @@ export default new Vuex.Store({
               alert("This dApp will work only with the Mainnet or Kovan network");
             }
             state.onboard?.config({ networkId: networkId });
+            commit("setCurrentNetworkId", networkId);
           },
           wallet: async (wallet: Wallet) => {
             if (wallet.provider) {
@@ -196,15 +202,36 @@ export default new Vuex.Store({
       console.log("Getting getAllTokens...", state.allTokens);
 
       const allTokens = await fetchAllTokens();
+      const tokenPrices = await fetchTokenPrices(allTokens.map(token => token.address.toLowerCase()));
 
+      console.log("THE PRICE OF THE P", tokenPrices);
       console.log("allTokens", allTokens);
 
-      const joinedTokenArrays = allTokens.map(tokenObject => {
+      const allTokensRightNetwork = allTokens.filter(token => {
+        console.log("token.chainId", token.chainId, state.currentNetworkId);
+        return token.chainId === state.currentNetworkId;
+      });
+
+      console.log("allTokensRightNetwork", allTokensRightNetwork);
+
+      const joinedTokenArrays = allTokensRightNetwork.map(tokenObject => {
         console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
         const index = walletTokens;
         tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
           ? walletTokens[tokenObject.address.toLowerCase()]
           : "0";
+
+        tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
+          ? Number(
+              ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+            ).toFixed(4)
+          : "0";
+
+        tokenObject.price = tokenPrices[tokenObject.address.toLowerCase()]
+          ? tokenPrices[tokenObject.address.toLowerCase()].usd
+          : "0";
+
+        tokenObject.value = Number(tokenObject.amountRounded) * Number(tokenObject.price);
 
         if (tokenObject.amount !== "0") {
           console.log("tokenObject", tokenObject);

@@ -4,7 +4,7 @@
 
     <md-dialog class="text-center" :md-active.sync="showDialog">
       <md-dialog-title>Select Asset</md-dialog-title>
-      <md-dialog-content>
+      <md-dialog-content style="width:750px">
         <Select-Asset-Row-Item v-for="token in allTokens" :asset="token" :key="token.address"></Select-Asset-Row-Item>
       </md-dialog-content>
     </md-dialog>

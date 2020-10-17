@@ -27,7 +27,7 @@ const fetchWalletTokens = async (userAddress: string) => {
 
 const fetchAllTokens = async () => {
   console.log("the big fetcher");
-  const query = `https://wispy-bird-88a7.uniswap.workers.dev/?url=http://tokens.1inch.eth.link`;
+  const query = `https://gateway.ipfs.io/ipns/tokens.uniswap.org`;
   const response = await fetch(query, {
     headers: {
       Accept: "application/json",
@@ -41,4 +41,25 @@ const fetchAllTokens = async () => {
   return tokenList.tokens;
 };
 
-export { fetchWalletTokens, fetchAllTokens };
+const fetchTokenPrices = async (tokens: []) => {
+  console.log("tthe price fetcher");
+  console.log("tokens", JSON.stringify(tokens));
+  const query = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${tokens.join(
+    "%2C"
+  )}&vs_currencies=usd
+`;
+  console.log("query", query);
+  const response = await fetch(query, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    }
+  });
+
+  const tokensPrices = await response.json();
+
+  console.log("tokensPricesXXXXXXXXX", tokensPrices);
+  return tokensPrices;
+};
+
+export { fetchWalletTokens, fetchAllTokens, fetchTokenPrices };
