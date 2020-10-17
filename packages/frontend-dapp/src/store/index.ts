@@ -29,7 +29,7 @@ export default new Vuex.Store({
     protocolBalances: null,
     walletTokens: [],
     chakras: [],
-    allTokens: []
+    allTokens: [],
   },
   mutations: {
     setSigner(state, signer) {
@@ -91,7 +91,7 @@ export default new Vuex.Store({
       state.protocolBalances = protocolBalances;
       console.log("protocolBalances set to: ");
       console.log(state.protocolBalances);
-    }
+    },
   },
   actions: {
     async setUp({ dispatch, state }) {
@@ -141,10 +141,10 @@ export default new Vuex.Store({
               commit("setProvider", null);
               commit("setCurrentNetwork", null);
             }
-          }
+          },
         },
         walletSelect: config(state.currentNetwork).onboardConfig.onboardWalletSelect,
-        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck
+        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck,
       });
 
       await onboardInstance.walletSelect();
@@ -202,19 +202,18 @@ export default new Vuex.Store({
       console.log("Getting getAllTokens...", state.allTokens);
 
       const allTokens = await fetchAllTokens();
-      const tokenPrices = await fetchTokenPrices(allTokens.map(token => token.address.toLowerCase()));
+      const tokenPrices = await fetchTokenPrices(allTokens.map((token) => token.address.toLowerCase()));
 
       console.log("THE PRICE OF THE P", tokenPrices);
       console.log("allTokens", allTokens);
 
-      const allTokensRightNetwork = allTokens.filter(token => {
-        console.log("token.chainId", token.chainId, state.currentNetworkId);
+      const allTokensRightNetwork = allTokens.filter((token) => {
         return token.chainId === state.currentNetworkId;
       });
 
       console.log("allTokensRightNetwork", allTokensRightNetwork);
 
-      const joinedTokenArrays = allTokensRightNetwork.map(tokenObject => {
+      const joinedTokenArrays = allTokensRightNetwork.map((tokenObject) => {
         console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
         const index = walletTokens;
         tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
@@ -240,7 +239,7 @@ export default new Vuex.Store({
       });
       const sortedWalletBalances = joinedTokenArrays.sort((a, b) => (Number(a.value) < Number(b.value) ? 1 : -1));
       commit("setAllTokens", sortedWalletBalances);
-    }
+    },
   },
-  modules: {}
+  modules: {},
 });

@@ -1,7 +1,7 @@
 <template>
   <div class="text-center">
     <Select-Asset-Row-Item
-      v-for="token in allTokens"
+      v-for="token in allTokensProcessed"
       :asset="token"
       @rowClicked="handelCoinChosen"
       :key="token.address"
@@ -10,21 +10,39 @@
 </template>
 
 <script>
-/* global web3:true */
 import { mapActions, mapState } from "vuex";
 import SelectAssetRowItem from "@/components/itterable/SelectAssetRowItem";
 export default {
   name: "AddCoinModal",
   components: { SelectAssetRowItem },
+  props: {
+    filterOnlyWithBalance: {
+      type: Boolean,
+      required: false,
+    },
+  },
   methods: {
     handelCoinChosen(coinObject) {
       this.$emit("rowItemClicked", coinObject);
-    }
+    },
   },
   mounted() {},
   computed: {
-    ...mapState(["allTokens"])
-  }
+    ...mapState(["allTokens"]),
+    allTokensProcessed() {
+      if (this.allTokens.length == 0) {
+        return [];
+      }
+      if (!this.filterOnlyWithBalance) {
+        return this.allTokens;
+      }
+      if (this.filterOnlyWithBalance) {
+        return this.allTokens.filter((token) => {
+          return token.value != 0;
+        });
+      }
+    },
+  },
 };
 </script>
 

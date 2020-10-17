@@ -7,7 +7,7 @@
           <div class="md-layout-item md-size-55">
             <h2 class="title">Chakra Name</h2>
             <p>Choose a name for your Chakra. This will be viewable by other users.</p>
-            <input placeholder="Enter Name" v-model="initial" />
+            <input placeholder="Enter Name" v-model="chakraName" />
             <Separator />
             <h2 class="title">Select Distribution</h2>
             <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
@@ -71,11 +71,29 @@
             </p>
             <p><b>Slippage may occur during this process.</b></p>
             <p><b>An extra 5% ETH is sent with the TX to avoid unexpected errors - unused ETH will be returned.</b></p>
-            <button>replace me</button>
+
+            <div class="md-layout">
+              <div class="md-layout-item md-size-25" style="margin-right: 20px">
+                <div class="initialContributionToken" @click="showSelectInitialContributionDialog = true">
+                  <img
+                    :width="20"
+                    :height="20"
+                    v-if="initialContributionCoin.logoURI"
+                    :src="initialContributionCoin.logoURI"
+                    style="padding-bottom: 5px"
+                  />
+                  <span style="padding-bottom: 5px"> {{ initialContributionCoin.symbol }} </span>
+                  <md-icon style="padding-bottom: 5px">keyboard_arrow_down</md-icon>
+                </div>
+              </div>
+              <div class="md-layout-item mx-dize-90">
+                <input placeholder="0" type="number" v-model="initialContribution" />
+              </div>
+            </div>
           </div>
 
           <div class="md-layout-item md-size-5" />
-          <div class="md-layout-item md-size-40">
+          <div class="md-layout-item md-size-40" style="padding-top: 20px">
             <div class="md-layout-item">
               <apexchart
                 type="donut"
@@ -146,19 +164,31 @@
         <Add-Coin-Modal @rowItemClicked="handelCoinChosen" />
       </md-dialog-content>
     </md-dialog>
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="showSelectInitialContributionDialog">
+      <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
+
+      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
+        <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handelInitialSendCoinChosen" />
+      </md-dialog-content>
+    </md-dialog>
   </div>
 </template>
 
 <script>
 import Separator from "@/components/elements/Separator";
 import AddCoinModal from "@/components/AddCoinModal";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "ChakraFlow",
   components: { Separator, AddCoinModal },
   data: () => ({
-    initial: null,
+    chakraName: null,
+    initialContribution: 0,
+    initialContributionCoin: { symbol: "SELECT", logoURI: null },
     contributionMode: "single",
     showCoinDialog: false,
+    showSelectInitialContributionDialog: false,
     selectedCoins: [],
     colors: [
       "#A8A2F5",
@@ -174,6 +204,11 @@ export default {
     ],
   }),
   methods: {
+    handelInitialSendCoinChosen(chosenCoin) {
+      console.log("CHOSEN", chosenCoin);
+      this.initialContributionCoin = chosenCoin;
+      this.showSelectInitialContributionDialog = false;
+    },
     handelCoinChosen(coinObject) {
       console.log("clickedz", coinObject);
       if (
@@ -197,6 +232,7 @@ export default {
   },
 
   computed: {
+    ...mapState(["allTokens"]),
     totalSelected() {
       let total = 0;
       this.selectedCoins.forEach(function (selected) {
@@ -447,5 +483,36 @@ h1.title {
   cursor: pointer;
   transition: 0.3s;
   color: #aaaaaa;
+}
+.initialContributionToken {
+  border: 1px solid #dddddd;
+  box-sizing: border-box;
+  border-radius: 8px;
+  padding: 10px;
+  height: 2.5rem;
+  border: 1px solid #aaa;
+  color: #aaa;
+  text-align: center;
+  width: 95%;
+  background: none;
+  box-shadow: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+
+  span {
+    transition: all ease-in-out 0.5s;
+    font-size: 1rem;
+  }
+
+  &:hover {
+    border: 1px solid #00e0ff;
+
+    span {
+      background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
 }
 </style>
