@@ -422,13 +422,6 @@ contract MindfulProxy is Ownable {
         IERC20(chakra).transfer(manager, chakra.balanceOf(address(this)));
     }
 
-    struct FromChakraParam {
-        bool isRelayer;
-        address payable manager;
-        address strategySellToken;
-        uint256 strategySellAmount;
-    }
-
     function fromChakra(
         address _chakra,
         address _sellToken,
