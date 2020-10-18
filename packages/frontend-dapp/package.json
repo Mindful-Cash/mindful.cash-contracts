@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --host localhost",
     "build": "vue-cli-service build"
   },
   "dependencies": {
@@ -36,7 +36,7 @@
     "vue-material": "^1.0.0-beta-10.2",
     "vue-property-decorator": "^8.4.2",
     "vue-router": "^3.2.0",
-    "vue-slider-component": "^3.0.27",
+    "vue-slider-component": "^3.2.7",
     "vuelidate": "^0.7.4",
     "vuex": "^3.4.0",
     "vuex-persistedstate": "^2.5.4",

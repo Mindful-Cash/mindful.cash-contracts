@@ -1,5 +1,6 @@
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
+import { fetchWalletTokens, fetchAllTokens, fetchTokenPrices } from "../utils/FetchWalletTokens";
 
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
@@ -20,12 +21,15 @@ export default new Vuex.Store({
     account: null,
     userAddress: null,
     currentNetwork: null,
+    currentNetworkId: null,
     notify: null,
     onboard: null,
     wallet: null,
     charkaInfo: null,
     protocolBalances: null,
-    chakras: []
+    walletTokens: [],
+    chakras: [],
+    allTokens: [],
   },
   mutations: {
     setSigner(state, signer) {
@@ -44,6 +48,10 @@ export default new Vuex.Store({
     setCurrentNetwork(state, network) {
       state.currentNetwork = network;
       console.log("network set to: " + state.currentNetwork);
+    },
+    setCurrentNetworkId(state, networkId) {
+      state.currentNetworkId = networkId;
+      console.log("networkId set to: " + state.currentNetworkId);
     },
     setEthers(state, ethers) {
       state.ethers = ethers;
@@ -69,11 +77,21 @@ export default new Vuex.Store({
       state.chakras = chakras;
       console.log(state.chakras);
     },
+    setWalletTokens(state, walletTokens) {
+      console.log("walletTokens set to: ");
+      state.walletTokens = walletTokens;
+      console.log(state.walletTokens);
+    },
+    setAllTokens(state, allTokens) {
+      console.log("allTokens set to: ");
+      state.allTokens = allTokens;
+      console.log(state.allTokens);
+    },
     setProtocolBalances(state, protocolBalances) {
       state.protocolBalances = protocolBalances;
       console.log("protocolBalances set to: ");
       console.log(state.protocolBalances);
-    }
+    },
   },
   actions: {
     async setUp({ dispatch, state }) {
@@ -82,10 +100,17 @@ export default new Vuex.Store({
       // await setUpOnboard();
       await dispatch("setUpOnboard");
 
-      await dispatch("getUserChakras");
+      // Fetch the user chakras
+      // await dispatch("getUserChakras");
 
-      // Setting up the Smart contracts
-      await dispatch("setUpContracts");
+      // // Setting up the Smart contracts
+      // await dispatch("setUpContracts");
+
+      // Fetch the user tokens balances and info
+      // await dispatch("getUserWalletTokens");
+
+      // Fetch all compatible tokens
+      await dispatch("getAllTokens");
     },
 
     async setUpOnboard({ commit, state }) {
@@ -105,6 +130,7 @@ export default new Vuex.Store({
               alert("This dApp will work only with the Mainnet or Kovan network");
             }
             state.onboard?.config({ networkId: networkId });
+            commit("setCurrentNetworkId", networkId);
           },
           wallet: async (wallet: Wallet) => {
             if (wallet.provider) {
@@ -115,10 +141,10 @@ export default new Vuex.Store({
               commit("setProvider", null);
               commit("setCurrentNetwork", null);
             }
-          }
+          },
         },
         walletSelect: config(state.currentNetwork).onboardConfig.onboardWalletSelect,
-        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck
+        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck,
       });
 
       await onboardInstance.walletSelect();
@@ -165,7 +191,55 @@ export default new Vuex.Store({
 
       commit("setChakras", await state.charkaInfo.fetchChartInfo(state.userAddress, 30));
       console.log("setChartInfo", state.chakras);
-    }
+    },
+
+    async getAllTokens({ commit, state }) {
+      console.log("Getting setWalletTokens...", state.walletTokens);
+
+      // TODO: parallzalize this call
+      const walletTokens = await fetchWalletTokens(state.userAddress);
+      console.log("walletTokenswalletTokenswalletTokenswalletTokens", walletTokens);
+      console.log("Getting getAllTokens...", state.allTokens);
+
+      const allTokens = await fetchAllTokens();
+      const tokenPrices = await fetchTokenPrices(allTokens.map((token) => token.address.toLowerCase()));
+
+      console.log("THE PRICE OF THE P", tokenPrices);
+      console.log("allTokens", allTokens);
+
+      const allTokensRightNetwork = allTokens.filter((token) => {
+        return token.chainId === state.currentNetworkId;
+      });
+
+      console.log("allTokensRightNetwork", allTokensRightNetwork);
+
+      const joinedTokenArrays = allTokensRightNetwork.map((tokenObject) => {
+        console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
+        const index = walletTokens;
+        tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
+          ? walletTokens[tokenObject.address.toLowerCase()]
+          : "0";
+
+        tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
+          ? Number(
+              ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+            ).toFixed(4)
+          : Number(0).toFixed(4);
+
+        tokenObject.price = tokenPrices[tokenObject.address.toLowerCase()]
+          ? tokenPrices[tokenObject.address.toLowerCase()].usd
+          : "0";
+
+        tokenObject.value = (Number(tokenObject.amountRounded) * Number(tokenObject.price)).toFixed(2);
+
+        if (tokenObject.amount !== "0") {
+          console.log("tokenObject", tokenObject);
+        }
+        return tokenObject;
+      });
+      const sortedWalletBalances = joinedTokenArrays.sort((a, b) => (Number(a.value) < Number(b.value) ? 1 : -1));
+      commit("setAllTokens", sortedWalletBalances);
+    },
   },
-  modules: {}
+  modules: {},
 });
