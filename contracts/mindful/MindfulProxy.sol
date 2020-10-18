@@ -583,5 +583,39 @@ contract MindfulProxy is Ownable {
         return (isRelayer, manager, strategyBaseToken, strategyBaseAmount);
     }
 
-    function isRelayerSelling() internal {}
+    function isRelayerSelling(
+        address _chakra,
+        address _sellToken,
+        uint256 _sellStrategyId,
+        uint256 _tokenIndex,
+        uint256 _sellPrice
+    ) internal returns (
+            bool,
+            address payable,
+            address,
+            uint256
+        ) {
+        address payable manager = payable(chakraManager[_chakra]);
+        address strategySellToken;
+        uint256 strategySellAmount;
+        bool isRelayer = msg.sender != manager;
+
+        SellStrategy storage sellStrategy = sellStrategies[_sellStrategyId];
+
+        if (isRelayer) {
+            require(sellStrategyChakra[_sellStrategyId] == _chakra);
+
+            require(sellStrategy.isActive);
+            require(_tokenIndex < sellStrategy.sellTokens.length);
+            require(sellStrategy.sellTokens[_tokenIndex] == _sellToken);
+            require(!sellStrategy.isExecuted[_tokenIndex]);
+
+            strategySellToken = sellStrategy.sellTokens[_tokenIndex];
+            strategySellAmount = sellStrategy.prices[_tokenIndex];
+        }
+
+        sellStrategy.isExecuted[_tokenIndex] = true;
+
+        return (isRelayer, manager, strategySellToken, strategySellAmount);
+    }
 }
