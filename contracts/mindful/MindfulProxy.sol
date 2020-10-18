@@ -422,17 +422,40 @@ contract MindfulProxy is Ownable {
         IERC20(chakra).transfer(manager, chakra.balanceOf(address(this)));
     }
 
-    // add same mechanism to toChakra
+    struct FromChakraParam {
+        bool isRelayer;
+        address payable manager;
+        address strategySellToken;
+        uint256 strategySellAmount;
+    }
+
     function fromChakra(
         address _chakra,
-        address _quoteToken,
+        address _sellToken,
+        uint256 _sellStrategyId,
+        uint256 _sellTokenIndex,
         uint256 _poolAmount,
         uint256 _minQuoteToken
     ) external revertIfPaused {
-        bool isRelayer = false;
-        uint256 totalAmount = calcToChakra(_chakra, _quoteToken, _poolAmount, isRelayer);
+        require(isChakra[_chakra]);
+        require(_sellToken != address(0));
 
-        require(_minQuoteToken <= totalAmount);
+        (
+            bool isRelayer,
+            address payable manager,
+            address strategySellToken,
+            uint256 strategySellAmount
+        ) = isRelayerSelling(_chakra, _sellToken, _sellStrategyId, _sellTokenIndex, _minQuoteToken);
+
+        // if sender is relayer, amount to trade is the amount specified in strategy
+        // otherwise can be overwritten from function arg
+        uint256 sellAmount = isRelayer ? strategySellAmount : _minQuoteToken;           // is this correct? _minQuoteToken == sellAMount ?
+        // same for sellToken
+        address sellToken = isRelayer ? strategySellToken : _sellToken;
+
+        uint256 totalAmount = calcToChakra(_chakra, sellToken, _poolAmount, isRelayer);
+
+        require(sellAmount <= totalAmount);
 
         IPSmartPool chakra = IPSmartPool(_chakra);
 
@@ -441,23 +464,23 @@ contract MindfulProxy is Ownable {
         chakra.exitPool(_poolAmount);
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], _quoteToken);
+            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], sellToken);
             uint256 tokenAmountOut = UniLib.getAmountOut(amounts[i], reserveA, reserveB);
             IUniswapV2Exchange pair = IUniswapV2Exchange(
-                UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], _quoteToken)
+                UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], sellToken)
             );
 
             // Uniswap V2 does not pull the token
             IERC20(tokens[i]).transfer(address(pair), amounts[i]);
 
-            if (token0Or1(_quoteToken, tokens[i]) == 0) {
+            if (token0Or1(sellToken, tokens[i]) == 0) {
                 pair.swap(0, tokenAmountOut, address(this), new bytes(0));
             } else {
                 pair.swap(tokenAmountOut, 0, address(this), new bytes(0));
             }
         }
 
-        IERC20(_quoteToken).transfer(msg.sender, totalAmount);
+        IERC20(sellToken).transfer(msg.sender, totalAmount);
     }
 
     function saveEth() external onlyOwner {
@@ -471,7 +494,7 @@ contract MindfulProxy is Ownable {
 
     function fromChakra(
         address _chakra,
-        address _quoteToken,
+        address _sellToken,
         uint256 _poolAmountOut
     ) external view returns (uint256) {
         (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmountOut);
@@ -479,7 +502,7 @@ contract MindfulProxy is Ownable {
         uint256 totalQuoteAmount = 0;
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], _quoteToken);
+            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], _sellToken);
             totalQuoteAmount += UniLib.getAmountOut(amounts[i], reserveA, reserveB);
         }
 
