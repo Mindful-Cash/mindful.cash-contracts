@@ -3,7 +3,7 @@
     <div>
       chart
       <div class="main-section" style="padding-top: 20px" v-if="chartInfo">
-        <apexchart width="500" type="line" :options="options" :series="series"></apexchart>
+        <apexchart width="100%" height="500" type="line" :options="options" :series="series"></apexchart>
       </div>
     </div>
   </div>
@@ -26,11 +26,38 @@ export default {
     options: function () {
       if (!this.chartInfo) return null;
       return {
+        colors: ["#2EBAFF"],
+        theme: {
+          palette: "palette1",
+          mode: "light",
+        },
+        stroke: {
+          show: true,
+          curve: "smooth",
+          lineCap: "butt",
+          colors: undefined,
+          width: 2,
+          dashArray: 0,
+        },
         chart: {
-          id: "vuechart-example",
+          toolbar: {
+            show: false,
+          },
         },
         xaxis: {
           categories: this.chartInfo.map((x) => x[0]),
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shade: "light",
+            gradientToColors: ["#7F78FF"],
+            shadeIntensity: 1.0,
+            type: "horizontal",
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 100, 100, 100],
+          },
         },
       };
     },
