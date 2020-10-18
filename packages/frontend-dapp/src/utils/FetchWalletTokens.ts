@@ -9,15 +9,15 @@ const fetchWalletTokens = async (userAddress: string) => {
       Accept: "application/json",
       "Content-Type": "application/json",
       "x-amberdata-blockchain-id": "ethereum-mainnet",
-      "x-api-key": `UAKc873f4aac1791df4e7f488e58ffaefde` //`${process.env.VUE_APP_AMBER_API || "UAKc873f4aac1791df4e7f488e58ffaefde"}`
-    }
+      "x-api-key": `UAKc873f4aac1791df4e7f488e58ffaefde`, //`${process.env.VUE_APP_AMBER_API || "UAKc873f4aac1791df4e7f488e58ffaefde"}`
+    },
   });
 
   const walletTokens = await response.json();
   console.log("walletTokens", walletTokens);
 
   const processedWalletTokens = {};
-  walletTokens.payload.records.forEach(record => {
+  walletTokens.payload.records.forEach((record) => {
     if (record.isERC20) processedWalletTokens[record.address] = record.amount;
   });
 
@@ -27,12 +27,12 @@ const fetchWalletTokens = async (userAddress: string) => {
 
 const fetchAllTokens = async () => {
   console.log("the big fetcher");
-  const query = `https://gateway.ipfs.io/ipns/tokens.uniswap.org`;
+  const query = `https://wispy-bird-88a7.uniswap.workers.dev/?url=http://tokens.1inch.eth.link`;
   const response = await fetch(query, {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   });
 
   const tokenList = await response.json();
@@ -52,8 +52,8 @@ const fetchTokenPrices = async (tokens: []) => {
   const response = await fetch(query, {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   });
 
   const tokensPrices = await response.json();
@@ -62,4 +62,18 @@ const fetchTokenPrices = async (tokens: []) => {
   return tokensPrices;
 };
 
-export { fetchWalletTokens, fetchAllTokens, fetchTokenPrices };
+const fetchHistoricTokenPrices = async (tokenAddress: string, lookbackDays: number) => {
+  const query = `https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}/market_chart/?vs_currency=usd&days=${lookbackDays}`;
+
+  const response = await fetch(query, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+
+  const priceResponse = await response.json();
+  return priceResponse.prices;
+};
+
+export { fetchWalletTokens, fetchAllTokens, fetchTokenPrices, fetchHistoricTokenPrices };

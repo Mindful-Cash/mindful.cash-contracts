@@ -33,14 +33,12 @@
           </md-bottom-bar>
         </div>
       </div>
-      <div style="padding-top: 20px; padding-left: 20px; padding-right: 20px;" v-if="!userAddress">
-        <h1>
-          Please connect your wallet
-        </h1>
+      <div style="padding-top: 20px; padding-left: 20px; padding-right: 20px" v-if="!userAddress">
+        <h1>Please connect your wallet</h1>
         <div
           class="md-layout-item"
           v-if="!userAddress"
-          style="padding-top: 20px; padding-left: 20px; padding-right: 20px;"
+          style="padding-top: 20px; padding-left: 20px; padding-right: 20px"
         >
           <md-button class="md-raised md-accent" @click="connectWallet">🦊Connect</md-button>
         </div>
@@ -65,14 +63,14 @@ export default {
       ethers: null,
       provider: null,
       signer: null,
-      menuVisible: false
+      menuVisible: false,
     };
   },
   methods: {
     ...mapActions(["setUp"]),
     connectWallet() {
       this.setUp();
-    }
+    },
   },
 
   computed: {
@@ -83,8 +81,8 @@ export default {
         return "routing...";
       }
       return null;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -99,7 +97,7 @@ export default {
   (
     primary: #000023,
     // The primary color of your brand
-      accent: #fc6161 // The secondary color of your brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    accent: #fc6161 // The secondary color of your brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
   )
 );
 @import "~vue-material/dist/theme/all"; // Apply the theme

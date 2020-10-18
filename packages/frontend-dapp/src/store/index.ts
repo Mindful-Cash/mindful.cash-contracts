@@ -1,12 +1,17 @@
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
-import { fetchWalletTokens, fetchAllTokens, fetchTokenPrices } from "../utils/FetchWalletTokens";
+import {
+  fetchWalletTokens,
+  fetchAllTokens,
+  fetchTokenPrices,
+  fetchHistoricTokenPrices,
+} from "../utils/FetchWalletTokens";
 
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
 import Notify from "bnc-notify";
-// Ethers
 import ethers from "ethers";
+import moment from "moment";
 
 import Vue from "vue";
 import Vuex from "vuex";
@@ -100,17 +105,14 @@ export default new Vuex.Store({
       // await setUpOnboard();
       await dispatch("setUpOnboard");
 
-      // Fetch the user chakras
-      // await dispatch("getUserChakras");
-
       // // Setting up the Smart contracts
       // await dispatch("setUpContracts");
 
-      // Fetch the user tokens balances and info
-      // await dispatch("getUserWalletTokens");
-
       // Fetch all compatible tokens
       await dispatch("getAllTokens");
+
+      // Fetch the user chakras
+      await dispatch("getUserChakras");
     },
 
     async setUpOnboard({ commit, state }) {
@@ -187,10 +189,119 @@ export default new Vuex.Store({
     async getUserChakras({ commit, state }) {
       console.log("Getting chakras...", state.userAddress);
 
-      commit("setProtocolBalances", await state.charkaInfo.fetchProtocolBalance(state.userAddress));
+      // Get BPT from defiSDK
+      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(state.userAddress);
 
-      commit("setChakras", await state.charkaInfo.fetchChartInfo(state.userAddress, 30));
-      console.log("setChartInfo", state.chakras);
+      // Add in additional token information such as price, logo ect from the all tokens object
+      let userChakras = portfolioBalances.map((portfolioObject) => {
+        return {
+          ...portfolioObject,
+          underlyingTokens: portfolioObject.underlyingTokens.map((token) => {
+            return {
+              ...state.allTokens.filter((obj) => {
+                return obj.address === token.address;
+              })[0],
+              ...token,
+            };
+          }),
+        };
+      });
+
+      // commit("setProtocolBalances", portfolioBalances);
+
+      const lookback = 90; // 30 day lookback. in future will be configurable.
+
+      console.log("userChakras", userChakras);
+      const numDataPoints = 500;
+      const currentTimeStamp = Math.floor(Date.now());
+      const startingTimeStamp = moment(moment().subtract(lookback, "days")).valueOf();
+      const timeBetweenDataPoint = (currentTimeStamp - startingTimeStamp) / numDataPoints;
+
+      function closest(needle, haystack) {
+        return haystack.reduce((a, b) => {
+          const aDiff = Math.abs(a - needle);
+          const bDiff = Math.abs(b - needle);
+
+          if (aDiff == bDiff) {
+            return a > b ? a : b;
+          } else {
+            return bDiff < aDiff ? b : a;
+          }
+        });
+      }
+
+      userChakras.forEach(async (chakra, chakraIndex) => {
+        console.log("FOR");
+        let chakraChartPromises = [];
+        chakra.underlyingTokens.forEach((token) => {
+          console.log("TOKENZZZ", token);
+          chakraChartPromises.push(fetchHistoricTokenPrices(token.address, lookback));
+        });
+        const allChartInfo = await Promise.all(chakraChartPromises);
+        console.log("userChakras", userChakras);
+        console.log("allChartInfo", allChartInfo);
+
+        let cumlativeChartInfo = [];
+        for (let i = 0; i < numDataPoints + 1; i++) {
+          const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
+
+          let cumlativeValuePoint = 0;
+
+          allChartInfo.forEach((chartInfo, index) => {
+            const chartInfoTimeStamps = chartInfo.map((x) => x[0]);
+            const closestChartInfoTimeStamp = closest(dataPointTimeStamp, chartInfoTimeStamps);
+
+            // const chartDataPointPrice = chartInfo[]
+
+            const indexOfClosestTimeStamp = chartInfoTimeStamps.indexOf(closestChartInfoTimeStamp);
+
+            const portfolioValueFromTokenAtTimestamp =
+              chartInfo.map((x) => x[1])[indexOfClosestTimeStamp] *
+              Number(chakra.underlyingTokens[index].amountInCharka);
+            cumlativeValuePoint += portfolioValueFromTokenAtTimestamp;
+          });
+
+          cumlativeChartInfo.push([
+            dataPointTimeStamp, // timestamp
+            Number(cumlativeValuePoint).toFixed(0), // cumlative portfolio value at given timest
+          ]);
+        }
+
+        userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
+        userChakras[chakraIndex].dcaStratergies = [
+          {
+            type: "dcaIn",
+            token: {
+              address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+              amount: "694230902983134993",
+              amountInCharka: "6.511285732428220037",
+              amountRounded: "0.6942",
+              chainId: 1,
+              decimals: 18,
+              logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
+              name: "yearn.finance",
+              price: 15204.79,
+              symbol: "YFI",
+              value: "10555.17",
+            },
+          },
+        ];
+        commit("setChakras", userChakras);
+      });
+
+      // Build the cumlative chart data. For now we sumply use your current token balance over histopric price information
+      // in future this needs to be changed to use historic token balances with historic price info.
+
+      console.log(
+        "currentTimestamp",
+        currentTimeStamp,
+        "startingTimeStamp",
+        startingTimeStamp,
+        "timeBetweenDataPoint",
+        timeBetweenDataPoint
+      );
+
+      // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
     },
 
     async getAllTokens({ commit, state }) {
@@ -202,9 +313,19 @@ export default new Vuex.Store({
       console.log("Getting getAllTokens...", state.allTokens);
 
       const allTokens = await fetchAllTokens();
-      const tokenPrices = await fetchTokenPrices(allTokens.map((token) => token.address.toLowerCase()));
+      console.log("ZETA", await fetchTokenPrices(allTokens.slice(0, 150).map((token) => token.address.toLowerCase())));
 
-      console.log("THE PRICE OF THE P", tokenPrices);
+      const tokenPricesPromiseResponse = await Promise.all([
+        fetchTokenPrices(allTokens.slice(0, 150).map((token) => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(151, 301).map((token) => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(302, allTokens.length - 1).map((token) => token.address.toLowerCase())),
+      ]);
+
+      let tokenPrices = {};
+      tokenPricesPromiseResponse.forEach((response) => {
+        tokenPrices = { ...tokenPrices, ...response };
+      });
+
       console.log("allTokens", allTokens);
 
       const allTokensRightNetwork = allTokens.filter((token) => {
@@ -215,7 +336,7 @@ export default new Vuex.Store({
 
       const joinedTokenArrays = allTokensRightNetwork.map((tokenObject) => {
         console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
-        const index = walletTokens;
+
         tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
           ? walletTokens[tokenObject.address.toLowerCase()]
           : "0";
