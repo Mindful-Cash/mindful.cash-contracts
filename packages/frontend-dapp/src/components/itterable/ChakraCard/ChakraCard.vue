@@ -1,15 +1,71 @@
 <template>
   <md-card style="padding: 30px">
-    <div class="md-layout">
-      <!-- <div class="md-layout-item md-size-20">1</div>
-      <div class="md-layout-item">2</div> -->
+    <div class="md-layout" v-if="chartInfo">
+      <div class="md-layout-item">
+        <!-- <span class="chakra-name-text"> {{ chakraInfo.metaData.nameOfBPT }}</span> -->
+        <span class="chakra-name-text"> Big DeFi Energy</span>
+      </div>
+      <div class="md-layout-item">
+        <Chakra-Coins :underlyingTokens="coinsInfo" :dcaToken="dcaToken" />
+      </div>
+      <div class="md-layout-item md-size-30" style="text-align: center">
+        <div class="md-layout">
+          <div class="md-layout-item md-size"></div>
+          <div class="md-layout-item">
+            <md-button class="md-raised md-dense edit-button">Edit Strategy</md-button>
+          </div>
+          <div class="md-layout-item">
+            <md-button class="md-raised md-dense pause-button">Pause DCA</md-button>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- {{ chakraInfo }} -->
-    <div v-if="chartInfo">
-      <Portfolio-Chart :chartInfo="chartInfo" />
-    </div>
+    <!-- {{ dcaToken }} -->
+    <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" />
   </md-card>
 </template>
+
+<script>
+import { mapActions, mapState } from "vuex";
+
+import PortfolioChart from "./PortfolioChart";
+import ChakraCoins from "@/components/elements/ChakraCoins";
+
+export default {
+  name: "ChakraCard",
+  components: { PortfolioChart, ChakraCoins },
+  data: () => ({ fomoIn: false, offer: 0 }),
+  props: {
+    chakraInfo: {
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    pageUrl() {
+      // return window.location.href;
+    },
+    chartInfo() {
+      if (this.chakraInfo.chartInfo) {
+        return this.chakraInfo.chartInfo;
+      } else return null;
+    },
+    coinsInfo() {
+      if (this.chakraInfo.underlyingTokens) {
+        return this.chakraInfo.underlyingTokens;
+      } else return null;
+    },
+    dcaToken() {
+      if (this.chakraInfo.dcaStratergies) {
+        return this.chakraInfo.dcaStratergies[0].token;
+      } else return null;
+    },
+  },
+  methods: {
+    ...mapActions(["X"]),
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 .card-expansion {
@@ -49,40 +105,47 @@
   color: #fc6161;
   text-decoration: underline;
 }
-</style>
-<script>
-import { mapActions, mapState } from "vuex";
 
-import PortfolioChart from "./PortfolioChart";
-
-export default {
-  name: "ChakraCard",
-  components: { PortfolioChart },
-  data: () => ({ fomoIn: false, offer: 0 }),
-  props: {
-    chakraInfo: {
-      type: Object,
-      required: true,
-    },
-  },
-  computed: {
-    pageUrl() {
-      // return window.location.href;
-    },
-    chartInfo() {
-      if (this.chakraInfo.chartInfo) {
-        return this.chakraInfo.chartInfo;
-      } else return null;
-    },
-  },
-  methods: {
-    ...mapActions(["X"]),
-  },
-};
-</script>
-
-<style lang="scss" scoped>
 .md-dialog {
   max-width: 768px;
+}
+
+.chakra-name-text {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 29px;
+  display: flex;
+  align-items: center;
+  color: #292929;
+}
+
+.edit-button {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  border-radius: 8px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff !important;
+}
+
+.pause-button {
+  background: linear-gradient(45deg, #f67c4b 0%, #e42028 100%);
+  border-radius: 8px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff !important;
 }
 </style>

@@ -250,15 +250,10 @@ export default new Vuex.Store({
           allChartInfo.forEach((chartInfo, index) => {
             const chartInfoTimeStamps = chartInfo.map((x) => x[0]);
             const closestChartInfoTimeStamp = closest(dataPointTimeStamp, chartInfoTimeStamps);
-            console.log("closestChartInfoTimeStamp", closestChartInfoTimeStamp);
+
             // const chartDataPointPrice = chartInfo[]
 
             const indexOfClosestTimeStamp = chartInfoTimeStamps.indexOf(closestChartInfoTimeStamp);
-            console.log("indexOfClosestTimeStamp", indexOfClosestTimeStamp);
-            console.log(
-              "chartInfo.map((x) => [1])[indexOfClosestTimeStamp]",
-              chartInfo.map((x) => x[1])[indexOfClosestTimeStamp]
-            );
 
             const portfolioValueFromTokenAtTimestamp =
               chartInfo.map((x) => x[1])[indexOfClosestTimeStamp] *
@@ -266,17 +261,32 @@ export default new Vuex.Store({
             cumlativeValuePoint += portfolioValueFromTokenAtTimestamp;
           });
 
-          console.log("i", i, "dataPointTimeStamp", dataPointTimeStamp, "cumlativeValuePoint", cumlativeValuePoint);
-
           cumlativeChartInfo.push([
             dataPointTimeStamp, // timestamp
             Number(cumlativeValuePoint).toFixed(0), // cumlative portfolio value at given timest
           ]);
         }
-        console.log("cumlativeChartInfo", cumlativeChartInfo);
+
         userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
+        userChakras[chakraIndex].dcaStratergies = [
+          {
+            type: "dcaIn",
+            token: {
+              address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+              amount: "694230902983134993",
+              amountInCharka: "6.511285732428220037",
+              amountRounded: "0.6942",
+              chainId: 1,
+              decimals: 18,
+              logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
+              name: "yearn.finance",
+              price: 15204.79,
+              symbol: "YFI",
+              value: "10555.17",
+            },
+          },
+        ];
         commit("setChakras", userChakras);
-        console.log("setChartInfo", state.chakras);
       });
 
       // Build the cumlative chart data. For now we sumply use your current token balance over histopric price information
