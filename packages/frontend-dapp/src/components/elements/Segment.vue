@@ -1,0 +1,79 @@
+<template>
+  <div class="segment">
+    <div class="md-layout">
+      <div
+        v-for="(title, index) in titles"
+        class="md-layout-item"
+        :class="selected == index ? 'selectedSection' : 'notSelectedSection'"
+        @click="handleSelection(index)"
+        :key="title + '-' + index"
+      >
+        {{ title }}
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Segment",
+  props: ["titles"],
+  data: () => ({ selected: 0 }),
+  methods: {
+    handleSelection(index) {
+      this.selected = index;
+      this.$emit("update-selected", this.titles[index]);
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.segment {
+  width: 500px;
+  height: 40px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.selectedSection {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  border-radius: 8px;
+  width: 265px;
+  height: 40px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+  vertical-align: middle;
+  display: inline-block;
+  padding-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.notSelectedSection {
+  width: 250px;
+  height: 40px;
+  border-radius: 8px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  align-items: center;
+  text-align: center;
+  line-height: 19px;
+  vertical-align: middle;
+  padding-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #aaaaaa;
+}
+</style>

@@ -45,25 +45,142 @@
             <Separator />
             <h2 class="title">Initial Contribution</h2>
 
-            <div class="SelectToggle">
-              <div class="md-layout">
-                <div
-                  class="md-layout-item"
-                  :class="contributionMode == 'single' ? 'selectedSection' : 'notSelectedSection'"
-                  @click="contributionMode = 'single'"
-                >
-                  Any Asset
+            <Segment :titles="['Any Asset', 'Exact Assets']" v-on:update-selected="contributionMode = $event" />
+
+            <p>
+              Deposit any asset to fund your Chakra. The assets you deposit will be used to buy the assets in your
+              Chakra in accordance with your specified distribution.
+            </p>
+            <p><b>Slippage may occur during this process.</b></p>
+            <p><b>An extra 5% ETH is sent with the TX to avoid unexpected errors - unused ETH will be returned.</b></p>
+
+            <div class="md-layout">
+              <div class="md-layout-item md-size-25" style="margin-right: 10px">
+                <div class="initialContributionToken" @click="showSelectInitialContributionDialog = true">
+                  <img
+                    :width="20"
+                    :height="20"
+                    v-if="initialContributionCoin.logoURI"
+                    :src="initialContributionCoin.logoURI"
+                    style="padding-bottom: 5px"
+                  />
+                  <span style="padding-bottom: 5px"> {{ initialContributionCoin.symbol }} </span>
+
+                  <md-icon style="padding-bottom: 5px">keyboard_arrow_down</md-icon>
                 </div>
-                <div
-                  class="md-layout-item"
-                  :class="contributionMode == 'multi' ? 'selectedSection' : 'notSelectedSection'"
-                  @click="contributionMode = 'multi'"
-                >
-                  Exact Assets
-                </div>
-                <!-- <div class="md-layout-item">Pool</div> -->
+              </div>
+              <div class="md-layout-item md-size">
+                <input placeholder="0" type="number" v-model="initialContribution" />
+              </div>
+              <div class="md-layout-item md-size-20" style="margin-left: 5px">
+                <md-button class="approve-button">Approve</md-button>
               </div>
             </div>
+
+            <div
+              class="md-layout md-alignment-center-right"
+              style="padding-top: 20px; margin-bottom: 30px; text-align: right"
+            >
+              <div class="md-layout-item">
+                <span class="totalContributionText">Total Contribution:</span
+                ><span class="totalContributionNumber">$0.00</span>
+              </div>
+            </div>
+
+            <div class="md-layout" style="padding-top: 20px; margin-bottom: 30px">
+              <div class="md-layout-item md-size-60"></div>
+              <div class="md-layout-item">
+                <md-button :disabled="true" class="approve-button">Next</md-button>
+              </div>
+              <div class="md-layout-item">
+                <md-button :disabled="true">Cancel</md-button>
+              </div>
+            </div>
+          </div>
+          <div class="md-layout-item md-size-5" />
+          <div class="md-layout-item md-size-40" style="padding-top: 20px">
+            <div class="md-layout-item">
+              <apexchart
+                type="donut"
+                width="420"
+                :options="pieValues.options"
+                :series="pieValues.values"
+                class="center"
+              />
+            </div>
+            <div class="md-layout-item" style="text-align: center" v-if="selectedCoins.length > 0">
+              <span class="assetBreakdownText">Asset Breakdown</span>
+              <md-table class="md-caption" style="padding-top: 25px">
+                <md-table-row>
+                  <md-table-head>Key</md-table-head>
+                  <md-table-head>Symbol</md-table-head>
+                  <md-table-head>USD</md-table-head>
+                  <md-table-head>Allocation</md-table-head>
+                </md-table-row>
+
+                <md-table-row v-for="(item, index) in selectedCoins" :key="index">
+                  <md-table-cell>
+                    <span class="dot" :style="'background:' + colors[index]" />
+                  </md-table-cell>
+                  <md-table-cell>{{ item.symbol }}</md-table-cell>
+                  <md-table-cell>${{ "500" }}</md-table-cell>
+                  <md-table-cell>{{ item.ratio }}%</md-table-cell>
+                </md-table-row>
+              </md-table>
+            </div>
+          </div>
+        </div>
+      </md-step>
+
+      <md-step id="second" md-label="DCA Strategy">
+        <div class="md-layout gutter">
+          <div class="md-layout-item md-size-55">
+            <h2 class="title">DCA Strategy</h2>
+            <p>
+              Setup a DCA (dollar cost average) strategy to automatically buy into your Chakra according to a set
+              schedule and budget.
+            </p>
+            <p><b>Note that your DCA can be paused, edited, or updated at any time.</b></p>
+            <h3 class="subtitle">Budget</h3>
+            <p>Choose an asset, amount, and frequency to DCA into your Chakra.</p>
+            <Separator />
+            <h2 class="title">Select Distribution</h2>
+            <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
+
+            <div v-for="(coin, index) in selectedCoins" :key="index" style="padding-top: 20px; padding-bottom: 20px">
+              <div class="md-layout">
+                <div class="md-layout-item md-size-20 md-layout" style="text-align: left">
+                  <div class="md-layout-item" style="text-align: left">
+                    <img :width="30" :height="30" :src="coin.logoURI" style="margin-left: 10px" />
+                  </div>
+                  <div class="md-layout-item" style="padding-top: 5px">
+                    <span class="secondaryText"> {{ coin.symbol }}</span>
+                  </div>
+                </div>
+                <div class="md-layout-item" style="padding-top: 5px">
+                  <vue-slider
+                    v-model="coin.ratio"
+                    v-bind="selectorOptions"
+                    :dotOptions="{ max: coin.ratio + unselectedPercent }"
+                    :max="100"
+                    :tooltip="'always'"
+                    :process-style="{ backgroundColor: colors[index] }"
+                    :tooltip-style="{ backgroundColor: colors[index], borderColor: colors[index] }"
+                  ></vue-slider>
+                </div>
+                <div class="md-layout-item md-size-10">
+                  <md-button class="md-icon-button md-raised md-dense" @click="removeCoinFromSelected(index)">
+                    <md-icon>remove</md-icon>
+                  </md-button>
+                </div>
+              </div>
+            </div>
+
+            <button class="add-asset-btn" @click="showCoinDialog = true"><span>+ Add Asset</span></button>
+            <Separator />
+            <h2 class="title">Initial Contribution</h2>
+
+            <Segment :titles="['Any Asset', 'Exact Assets']" v-on:update-selected="contributionMode = $event" />
 
             <p>
               Deposit any asset to fund your Chakra. The assets you deposit will be used to buy the assets in your
@@ -117,57 +234,8 @@
           </div>
 
           <div class="md-layout-item md-size-5" />
-          <div class="md-layout-item md-size-40" style="padding-top: 20px">
-            <div class="md-layout-item">
-              <apexchart
-                type="donut"
-                width="420"
-                :options="pieValues.options"
-                :series="pieValues.values"
-                class="center"
-              />
-            </div>
-            <div class="md-layout-item" style="text-align: center" v-if="selectedCoins.length > 0">
-              <span class="assetBreakdownText">Asset Breakdown</span>
-              <md-table class="md-caption" style="padding-top: 25px">
-                <md-table-row>
-                  <md-table-head>Key</md-table-head>
-                  <md-table-head>Symbol</md-table-head>
-                  <md-table-head>USD</md-table-head>
-                  <md-table-head>Allocation</md-table-head>
-                </md-table-row>
-
-                <md-table-row v-for="(item, index) in selectedCoins" :key="index">
-                  <md-table-cell>
-                    <span class="dot" :style="'background:' + colors[index]" />
-                  </md-table-cell>
-                  <md-table-cell>{{ item.symbol }}</md-table-cell>
-                  <md-table-cell>${{ "500" }}</md-table-cell>
-                  <md-table-cell>{{ item.ratio }}%</md-table-cell>
-                </md-table-row>
-              </md-table>
-            </div>
-          </div>
+          <div class="md-layout-item md-size-40" style="padding-top: 20px"></div>
         </div>
-      </md-step>
-
-      <md-step id="second" md-label="DCA Strategy">
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias doloribus eveniet quaerat modi cumque quos
-          sed, temporibus nemo eius amet aliquid, illo minus blanditiis tempore, dolores voluptas dolore placeat nulla.
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias doloribus eveniet quaerat modi cumque quos
-          sed, temporibus nemo eius amet aliquid, illo minus blanditiis tempore, dolores voluptas dolore placeat nulla.
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias doloribus eveniet quaerat modi cumque quos
-          sed, temporibus nemo eius amet aliquid, illo minus blanditiis tempore, dolores voluptas dolore placeat nulla.
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias doloribus eveniet quaerat modi cumque quos
-          sed, temporibus nemo eius amet aliquid, illo minus blanditiis tempore, dolores voluptas dolore placeat nulla.
-        </p>
       </md-step>
 
       <md-step id="third" md-label="Complete">
@@ -201,11 +269,12 @@
 
 <script>
 import Separator from "@/components/elements/Separator";
+import Segment from "@/components/elements/Segment";
 import AddCoinModal from "@/components/AddCoinModal";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "ChakraFlow",
-  components: { Separator, AddCoinModal },
+  components: { Separator, AddCoinModal, Segment },
   data: () => ({
     chakraName: null,
     initialContribution: 0,
@@ -224,8 +293,8 @@ export default {
       "#F77D6A",
       "#D5F871",
       "#67E6ED",
-      "#7B66F7",
-    ],
+      "#7B66F7"
+    ]
   }),
   methods: {
     handelInitialSendCoinChosen(chosenCoin) {
@@ -237,7 +306,7 @@ export default {
       console.log("clickedz", coinObject);
       if (
         this.selectedCoins
-          .map((itterationToken) => {
+          .map(itterationToken => {
             return itterationToken.symbol;
           })
           .indexOf(coinObject.symbol) == -1
@@ -252,14 +321,14 @@ export default {
       this.selectedCoins[removeIndex].ratio = 0;
       this.selectedCoins.splice(removeIndex, 1);
       this.showCoinDialog = false;
-    },
+    }
   },
 
   computed: {
     ...mapState(["allTokens"]),
     totalSelected() {
       let total = 0;
-      this.selectedCoins.forEach(function (selected) {
+      this.selectedCoins.forEach(function(selected) {
         if (selected.ratio) {
           total += selected.ratio;
         }
@@ -271,8 +340,8 @@ export default {
       return {
         process: ([pos, i]) => [
           [0, pos],
-          [pos, pos + remaining, { backgroundColor: "#999" }],
-        ],
+          [pos, pos + remaining, { backgroundColor: "#999" }]
+        ]
       };
     },
     unselectedPercent() {
@@ -284,7 +353,7 @@ export default {
       let pieColors = [];
       let count = 0;
       let colors = this.colors;
-      this.selectedCoins.forEach(function (token) {
+      this.selectedCoins.forEach(function(token) {
         pieValues.push(token.ratio);
         pieLabels.push(token.symbol);
         pieColors.push(colors[count]);
@@ -299,28 +368,28 @@ export default {
           labels: pieLabels,
           colors: pieColors,
           dataLabels: {
-            enabled: true,
+            enabled: true
           },
           responsive: [
             {
               breakpoint: 480,
               options: {
                 chart: {
-                  width: 200,
+                  width: 200
                 },
                 legend: {
-                  show: false,
-                },
-              },
-            },
+                  show: false
+                }
+              }
+            }
           ],
           legend: {
-            show: false,
-          },
-        },
+            show: false
+          }
+        }
       };
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -388,6 +457,11 @@ input {
 
 h1.title {
   margin: 1.5rem 0 0 1.5rem;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  font-weight: 500;
 }
 
 .title {
@@ -463,51 +537,6 @@ h1.title {
   display: inline-block;
 }
 
-.SelectToggle {
-  width: 500px;
-  height: 40px;
-  border: 1px solid #dddddd;
-  border-radius: 8px;
-  display: inline-block;
-  vertical-align: middle;
-}
-.selectedSection {
-  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
-  border-radius: 8px;
-  width: 265px;
-  height: 40px;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 19px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #ffffff;
-  vertical-align: middle;
-  display: inline-block;
-  padding-top: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.notSelectedSection {
-  width: 250px;
-  height: 40px;
-  border-radius: 8px;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  align-items: center;
-  text-align: center;
-  line-height: 19px;
-  vertical-align: middle;
-  padding-top: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-  color: #aaaaaa;
-}
 .initialContributionToken {
   border: 1px solid #dddddd;
   box-sizing: border-box;
