@@ -209,12 +209,12 @@ export default new Vuex.Store({
 
       // commit("setProtocolBalances", portfolioBalances);
 
-      const lookback = 30; // 30 day lookback. in future will be configurable.
+      const lookback = 90; // 30 day lookback. in future will be configurable.
 
       console.log("userChakras", userChakras);
-      const numDataPoints = 100;
+      const numDataPoints = 500;
       const currentTimeStamp = Math.floor(Date.now());
-      const startingTimeStamp = moment(moment().subtract(30, "days")).valueOf();
+      const startingTimeStamp = moment(moment().subtract(lookback, "days")).valueOf();
       const timeBetweenDataPoint = (currentTimeStamp - startingTimeStamp) / numDataPoints;
 
       function closest(needle, haystack) {
@@ -269,8 +269,8 @@ export default new Vuex.Store({
           console.log("i", i, "dataPointTimeStamp", dataPointTimeStamp, "cumlativeValuePoint", cumlativeValuePoint);
 
           cumlativeChartInfo.push([
-            Number(dataPointTimeStamp / 1000).toFixed(),
-            Number(cumlativeValuePoint).toFixed(2),
+            dataPointTimeStamp, // timestamp
+            Number(cumlativeValuePoint).toFixed(2), // cumlative portfolio value at given timest
           ]);
         }
         console.log("cumlativeChartInfo", cumlativeChartInfo);

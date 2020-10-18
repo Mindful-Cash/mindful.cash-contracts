@@ -1,10 +1,10 @@
 <template>
   <md-card style="padding: 30px">
     <div class="md-layout">
-      <div class="md-layout-item md-size-20">1</div>
-      <div class="md-layout-item">2</div>
+      <!-- <div class="md-layout-item md-size-20">1</div>
+      <div class="md-layout-item">2</div> -->
     </div>
-    {{ chakraInfo }}
+    <!-- {{ chakraInfo }} -->
     <div v-if="chartInfo">
       <Portfolio-Chart :chartInfo="chartInfo" />
     </div>
