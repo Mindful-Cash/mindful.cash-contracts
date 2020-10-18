@@ -15,17 +15,15 @@ export default {
 
 <style lang="scss" scoped>
 .dropdown {
-  border: 1px solid #dddddd;
+  box-shadow: inset 0 0 0 1px #ddd;
   box-sizing: border-box;
   border-radius: 8px;
   padding: 10px;
   height: 2.5rem;
-  border: 1px solid #aaa;
   color: #aaa;
   text-align: center;
   width: 95%;
   background: none;
-  box-shadow: none;
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: 600;

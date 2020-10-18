@@ -141,10 +141,20 @@
               schedule and budget.
             </p>
             <p><b>Note that your DCA can be paused, edited, or updated at any time.</b></p>
-            <AssetDropdown
-              :asset="initialContributionCoin"
-              v-on:show-modal="showSelectInitialContributionDialog = true"
-            />
+            <div class="md-layout">
+              <div class="md-layout-item md-size-30">
+                <AssetDropdown
+                  :asset="initialContributionCoin"
+                  v-on:show-modal="showSelectInitialContributionDialog = true"
+                />
+              </div>
+              <div class="md-layout-item md-size-50">
+                <TokenInput :state="tokenAllowanceState" v-on:approve-token="handleTokenAllowance($event)" />
+              </div>
+              <div class="md-layout-item md-size-20">
+                <TokenInfo :price="20" :balance="2" />
+              </div>
+            </div>
             <Separator />
           </div>
           <div class="md-layout-item md-size-5" />
@@ -281,11 +291,13 @@
 import Separator from "@/components/elements/Separator";
 import Segment from "@/components/elements/Segment";
 import AssetDropdown from "@/components/elements/AssetDropdown";
+import TokenInput from "@/components/elements/TokenInput";
+import TokenInfo from "@/components/elements/TokenInfo";
 import AddCoinModal from "@/components/AddCoinModal";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "ChakraFlow",
-  components: { Separator, AddCoinModal, Segment, AssetDropdown },
+  components: { Separator, AddCoinModal, Segment, AssetDropdown, TokenInput, TokenInfo },
   data: () => ({
     chakraName: null,
     initialContribution: 0,
@@ -294,6 +306,8 @@ export default {
     showCoinDialog: false,
     showSelectInitialContributionDialog: false,
     selectedCoins: [],
+    tokenAllowance: 0,
+    tokenAllowanceState: "default",
     colors: [
       "#A8A2F5",
       "#E66C82",
@@ -308,6 +322,14 @@ export default {
     ]
   }),
   methods: {
+    handleTokenAllowance(allowance) {
+      // alert(allowance);
+      // demo
+      this.tokenAllowanceState = "loading";
+      setTimeout(() => {
+        this.tokenAllowanceState = "complete";
+      }, 5000);
+    },
     handelInitialSendCoinChosen(chosenCoin) {
       console.log("CHOSEN", chosenCoin);
       this.initialContributionCoin = chosenCoin;
