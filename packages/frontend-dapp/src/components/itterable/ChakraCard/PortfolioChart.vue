@@ -11,12 +11,12 @@
       </div>
       <div class="md-layout-item" />
       <div class="date-selector" style="text-align: center">
-        <span @click="zoomChart(24)" :class="hoursInPast == 24 ? 'date-notselected' : 'date-selected'">1D</span>
-        <span @click="zoomChart(24 * 7)" :class="hoursInPast == 24 * 7 ? 'date-notselected' : 'date-selected'">1W</span>
-        <span @click="zoomChart(24 * 30)" :class="hoursInPast == 24 * 30 ? 'date-notselected' : 'date-selected'"
+        <span @click="zoomChart(24)" :class="hoursInPast == 24 ? 'date-selected' : 'date-notselected'">1D</span>
+        <span @click="zoomChart(24 * 7)" :class="hoursInPast == 24 * 7 ? 'date-selected' : 'date-notselected'">1W</span>
+        <span @click="zoomChart(24 * 30)" :class="hoursInPast == 24 * 30 ? 'date-selected' : 'date-notselected'"
           >1M</span
         >
-        <span @click="zoomChart(24 * 30 * 3)" :class="hoursInPast == 24 * 30 * 3 ? 'date-notselected' : 'date-selected'"
+        <span @click="zoomChart(24 * 30 * 3)" :class="hoursInPast == 24 * 30 * 3 ? 'date-selected' : 'date-notselected'"
           >3M</span
         >
       </div>
