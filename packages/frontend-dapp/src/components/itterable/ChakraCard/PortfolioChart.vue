@@ -1,27 +1,36 @@
 <template>
-  <div class="about">
-    
-      <div class="md-layout" style="text-align: right">
-        <div class="md-layout-item" />
-        <div class="md-layout-item" />
-          <div class="date-selector"  style="text-align: center">
-            <span @click="zoomChart(24)" :class="hoursInPast == 24 ? 'date-notselected' : 'date-selected'">1D</span>
-            <span @click="zoomChart(24 * 7)" :class="hoursInPast == 24*7 ? 'date-notselected' : 'date-selected'">1W</span>
-            <span @click="zoomChart(24 * 30)" :class="hoursInPast == 24 * 30 ? 'date-notselected' : 'date-selected'">1M</span>
-            <span @click="zoomChart(24 * 30 * 3)" :class="hoursInPast == 24 * 30 * 3 ? 'date-notselected' : 'date-selected'">3M</span>
-          </div>
-        </div>
-    
-      <div class="main-section" style="padding-top: 0px" v-if="chartInfo">
-        <apexchart
-          width="100%"
-          id="portfolioChart"
-          height="500"
-          type="line"
-          :options="options"
-          :series="series"
-        ></apexchart>
+  <div>
+    <div class="md-layout" style="text-align: left">
+      <div class="md-layout-item">
+        <span class="current-value-text">Current Value:</span>
+        <br />
+        <span class="current-value-number">${{ currentChakraValue }}</span>
+        <span :class="chakraValueChange > 0 ? 'current-value-change-positive' : 'current-value-change-negative'"
+          >{{ chakraValueChange }}%</span
+        >
       </div>
+      <div class="md-layout-item" />
+      <div class="date-selector" style="text-align: center">
+        <span @click="zoomChart(24)" :class="hoursInPast == 24 ? 'date-notselected' : 'date-selected'">1D</span>
+        <span @click="zoomChart(24 * 7)" :class="hoursInPast == 24 * 7 ? 'date-notselected' : 'date-selected'">1W</span>
+        <span @click="zoomChart(24 * 30)" :class="hoursInPast == 24 * 30 ? 'date-notselected' : 'date-selected'"
+          >1M</span
+        >
+        <span @click="zoomChart(24 * 30 * 3)" :class="hoursInPast == 24 * 30 * 3 ? 'date-notselected' : 'date-selected'"
+          >3M</span
+        >
+      </div>
+    </div>
+
+    <div class="main-section" style="padding-top: 0px" v-if="chartInfo">
+      <apexchart
+        width="100%"
+        id="portfolioChart"
+        height="500"
+        type="line"
+        :options="options"
+        :series="series"
+      ></apexchart>
     </div>
   </div>
 </template>
@@ -40,17 +49,27 @@ export default {
   },
   methods: {
     zoomChart(hoursInPast) {
-      this.hoursInPast = hoursInPast
+      this.hoursInPast = hoursInPast;
       this.minTimeStamp = new Date().getTime() - hoursInPast * 60 * 60 * 1000;
     },
   },
   data: () => ({
     slicedData: [],
-    hoursInPast:24,
+    hoursInPast: 24 * 30,
     minTimeStamp: new Date().getTime() - 1000 * 60 * 60 * 24 * 30, // start the chart 30 days in the past
   }),
 
   computed: {
+    currentChakraValue: function () {
+      return this.chartInfo[this.chartInfo.length - 1][1].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    chakraValueChange: function () {
+      if (this.slicedData.length == 0) return 0;
+      return (
+        ((this.slicedData[this.slicedData.length - 1][1] - this.slicedData[0][1]) / this.slicedData[0][1]) *
+        100
+      ).toFixed(2);
+    },
     options: function () {
       const sliceIndex = this.chartInfo
         .map((x) => x[0])
@@ -149,6 +168,7 @@ export default {
   padding-bottom: 7px;
   padding-top: 7px;
   width: 150px;
+  height: 35px;
   background: #ffffff;
   border: 1px solid rgba(41, 41, 41, 0.1);
   box-sizing: border-box;
@@ -176,5 +196,45 @@ export default {
   line-height: 17px;
   color: #000000;
   cursor: pointer;
+}
+
+.current-value-number {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 39px;
+  color: #292929;
+  border: 5px solid #ffffff;
+}
+
+.current-value-text {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  color: rgba(41, 41, 41, 0.75);
+  border: 5px solid #ffffff;
+}
+
+.current-value-change-positive {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 29px;
+  color: #92ec73;
+  border: 5px solid #ffffff;
+}
+
+.current-value-change-negative {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 29px;
+  color: #e42028;
+  border: 5px solid #ffffff;
 }
 </style>
