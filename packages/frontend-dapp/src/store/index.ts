@@ -1,6 +1,11 @@
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
-import { fetchWalletTokens, fetchAllTokens, fetchTokenPrices } from "../utils/FetchWalletTokens";
+import {
+  fetchWalletTokens,
+  fetchAllTokens,
+  fetchTokenPrices,
+  fetchHistoricTokenPrices,
+} from "../utils/FetchWalletTokens";
 
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
@@ -100,17 +105,14 @@ export default new Vuex.Store({
       // await setUpOnboard();
       await dispatch("setUpOnboard");
 
-      // Fetch the user chakras
-      // await dispatch("getUserChakras");
-
       // // Setting up the Smart contracts
       // await dispatch("setUpContracts");
 
-      // Fetch the user tokens balances and info
-      // await dispatch("getUserWalletTokens");
-
       // Fetch all compatible tokens
       await dispatch("getAllTokens");
+
+      // Fetch the user chakras
+      await dispatch("getUserChakras");
     },
 
     async setUpOnboard({ commit, state }) {
@@ -187,9 +189,44 @@ export default new Vuex.Store({
     async getUserChakras({ commit, state }) {
       console.log("Getting chakras...", state.userAddress);
 
-      commit("setProtocolBalances", await state.charkaInfo.fetchProtocolBalance(state.userAddress));
+      // Get BPT from defiSDK
+      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(state.userAddress);
 
-      commit("setChakras", await state.charkaInfo.fetchChartInfo(state.userAddress, 30));
+      // Add in additional token information such as price, logo ect from the all tokens object
+      let userChakras = portfolioBalances.map((portfolioObject) => {
+        return {
+          ...portfolioObject,
+          underlyingTokens: portfolioObject.underlyingTokens.map((token) => {
+            return {
+              ...state.allTokens.filter((obj) => {
+                return obj.address === token.address;
+              })[0],
+              ...token,
+            };
+          }),
+        };
+      });
+
+      // commit("setProtocolBalances", portfolioBalances);
+
+      const lookback = 30;
+
+      console.log("userChakras", userChakras);
+      userChakras.forEach(async (chakras) => {
+        console.log("FOR");
+        let chakraChartPromises = [];
+        chakras.underlyingTokens.forEach((token) => {
+          console.log("TOKENZZZ", token);
+          chakraChartPromises.push(fetchHistoricTokenPrices(token.address, lookback));
+        });
+        const allPriceInformation = await Promise.all(chakraChartPromises);
+        console.log("userChakras", userChakras);
+        console.log("allPriceInformation", allPriceInformation);
+      });
+
+      // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
+
+      commit("setChakras", userChakras);
       console.log("setChartInfo", state.chakras);
     },
 
@@ -202,9 +239,19 @@ export default new Vuex.Store({
       console.log("Getting getAllTokens...", state.allTokens);
 
       const allTokens = await fetchAllTokens();
-      const tokenPrices = await fetchTokenPrices(allTokens.map((token) => token.address.toLowerCase()));
+      console.log("ZETA", await fetchTokenPrices(allTokens.slice(0, 150).map((token) => token.address.toLowerCase())));
 
-      console.log("THE PRICE OF THE P", tokenPrices);
+      const tokenPricesPromiseResponse = await Promise.all([
+        fetchTokenPrices(allTokens.slice(0, 150).map((token) => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(151, 301).map((token) => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(302, allTokens.length - 1).map((token) => token.address.toLowerCase())),
+      ]);
+
+      let tokenPrices = {};
+      tokenPricesPromiseResponse.forEach((response) => {
+        tokenPrices = { ...tokenPrices, ...response };
+      });
+
       console.log("allTokens", allTokens);
 
       const allTokensRightNetwork = allTokens.filter((token) => {
@@ -215,7 +262,7 @@ export default new Vuex.Store({
 
       const joinedTokenArrays = allTokensRightNetwork.map((tokenObject) => {
         console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
-        const index = walletTokens;
+
         tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
           ? walletTokens[tokenObject.address.toLowerCase()]
           : "0";
