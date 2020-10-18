@@ -118,8 +118,10 @@ describe("Buy strategy", () => {
 
   it('should create a buy startegy', async () => {
     const chakraAddress = (await mindfulProxy.getChakras())[0];
+    
+    let startegyName = "Strategy 1";
 
-    await mindfulProxy.addBuyStrategy(chakraAddress, usdcToken.address, new BigNumber(60*60*24*7), constants.WeiPerEther.mul(10000000000));
+    await mindfulProxy.addBuyStrategy(chakraAddress, usdcToken.address, startegyName, new BigNumber(60*60*24*7), constants.WeiPerEther.mul(10000000000));
 
     expect((await mindfulProxy.getBuyStrategies()).length).to.eq(1);
     expect(await mindfulProxy.buyStrategyChakra(1)).to.eq(chakraAddress);

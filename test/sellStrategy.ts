@@ -121,6 +121,7 @@ describe("Sell strategy", () => {
   it('should create a sell startegy', async () => {
     const chakraAddress = (await mindfulProxy.getChakras())[0];
 
+    let startegyName = "Strategy 1";
     let prices = [];
     let sellOtokens = [];
 
@@ -131,9 +132,10 @@ describe("Sell strategy", () => {
     sellOtokens.push(usdcToken.address);
     sellOtokens.push(usdcToken.address);
 
-    await mindfulProxy.addSellStrategy(chakraAddress, sellOtokens, prices);
+    await mindfulProxy.addSellStrategy(chakraAddress, startegyName, sellOtokens, prices);
 
     expect((await mindfulProxy.getSellStrategies()).length).to.eq(1);
+    expect((await mindfulProxy.getSellStrategies())[0].name).to.eq(startegyName);
     expect(await mindfulProxy.sellStrategyChakra(1)).to.eq(chakraAddress);
   });
   

@@ -30,6 +30,7 @@ contract MindfulProxy is Ownable {
     IWETH public constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
     struct SellStrategy {
+        string name;
         uint256 id;
         uint256[] prices; // price threshold
         address[] sellTokens; // token to sell to for each price point
@@ -38,6 +39,7 @@ contract MindfulProxy is Ownable {
     }
 
     struct BuyStrategy {
+        string name;
         uint256 id;
         uint256 interBuyDelay;
         uint256 buyAmount;
@@ -70,8 +72,8 @@ contract MindfulProxy is Ownable {
     }
 
     event SmartPoolCreated(address indexed chakra, address indexed chakraManager, string name, string symbol);
-    event BuyStrategyAdded(address indexed chakra, uint256 indexed buyStrategyId);
-    event SellStrategyAdded(address indexed chakra, uint256 indexed sellStrategyId);
+    event BuyStrategyAdded(address indexed chakra, string buyStrategyName, uint256 indexed buyStrategyId);
+    event SellStrategyAdded(address indexed chakra, string sellStrategyName, uint256 indexed sellStrategyId);
     event BuyStrategyDisabled(address indexed chakra, uint256 indexed buyStrategyId);
     event SellStrategyDisabled(address indexed chakra, uint256 indexed sellStrategyId);
     event BuyStrategyEnabled(address indexed chakra, uint256 indexed buyStrategyId);
@@ -199,6 +201,7 @@ contract MindfulProxy is Ownable {
 
     function addSellStrategy(
         address _chakra,
+        string calldata _name,
         address[] calldata _sellTokens,
         uint256[] calldata _prices
     ) external onlyChakraManager(_chakra, msg.sender) {
@@ -220,16 +223,17 @@ contract MindfulProxy is Ownable {
         }
 
         uint256 sellStrategyId = sellStrategies.length.add(1);
-        SellStrategy memory sellStrategy = SellStrategy(sellStrategyId, prices, sellTokens, isExecuted, true);
+        SellStrategy memory sellStrategy = SellStrategy(_name, sellStrategyId, prices, sellTokens, isExecuted, true);
         sellStrategyChakra[sellStrategyId] = _chakra;
         sellStrategies.push(sellStrategy);
 
-        emit SellStrategyAdded(_chakra, sellStrategyId);
+        emit SellStrategyAdded(_chakra, _name, sellStrategyId);
     }
 
     function addBuyStrategy(
         address _chakra,
         address _buyToken,
+        string calldata _name,
         uint256 _interBuyDelay,
         uint256 _buyAmount
     ) external onlyChakraManager(_chakra, msg.sender) {
@@ -240,11 +244,11 @@ contract MindfulProxy is Ownable {
         require(_buyToken != address(0)); 
 
         uint256 buyStrategyId = buyStrategies.length.add(1); 
-        BuyStrategy memory buyStrategy = BuyStrategy(buyStrategyId, _interBuyDelay, _buyAmount, uint256(0), _buyToken, true);
+        BuyStrategy memory buyStrategy = BuyStrategy(_name, buyStrategyId, _interBuyDelay, _buyAmount, uint256(0), _buyToken, true);
         buyStrategyChakra[buyStrategyId] = _chakra;
         buyStrategies.push(buyStrategy);
 
-        emit BuyStrategyAdded(_chakra, buyStrategyId);
+        emit BuyStrategyAdded(_chakra, _name, buyStrategyId);
     }
 
     function disableSellStrategy(
