@@ -148,7 +148,7 @@
               v-on:updateOption="methodToRunOnSelect"
               :closeOnOutsideClick="boolean"
             />
-            <div class="md-layout">
+            <div class="md-layout" style="padding-top: 20px">
               <div class="md-layout-item md-size-30">
                 <AssetDropdown
                   :asset="initialContributionCoin"
@@ -223,7 +223,10 @@
                   <p>Take profit after:</p>
                 </div>
                 <div class="md-layout-item md-size-35">
-                  <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                  <div class="percentage">
+                    <span>%</span>
+                    <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                  </div>
                 </div>
                 <div class="md-layout-item md-size-35">
                   <p style="margin-left:1rem">increase in Chakra value.</p>
@@ -234,7 +237,10 @@
                   <p>Profit to take:</p>
                 </div>
                 <div class="md-layout-item md-size-35">
-                  <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                  <div class="percentage">
+                    <span>%</span>
+                    <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                  </div>
                 </div>
                 <div class="md-layout-item md-size-35">
                   <p style="margin-left:1rem">of total Chakra value.</p>
@@ -507,6 +513,18 @@ input {
   }
 
   &::placeholder {
+    color: #aaa;
+  }
+}
+
+.percentage {
+  position: relative;
+
+  span {
+    position: absolute;
+    top: 25%;
+    right: 0.75rem;
+    vertical-align: middle;
     color: #aaa;
   }
 }
