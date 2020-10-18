@@ -56,18 +56,10 @@
 
             <div class="md-layout">
               <div class="md-layout-item md-size-25" style="margin-right: 10px">
-                <div class="initialContributionToken" @click="showSelectInitialContributionDialog = true">
-                  <img
-                    :width="20"
-                    :height="20"
-                    v-if="initialContributionCoin.logoURI"
-                    :src="initialContributionCoin.logoURI"
-                    style="padding-bottom: 5px"
-                  />
-                  <span style="padding-bottom: 5px"> {{ initialContributionCoin.symbol }} </span>
-
-                  <md-icon style="padding-bottom: 5px">keyboard_arrow_down</md-icon>
-                </div>
+                <AssetDropdown
+                  :asset="initialContributionCoin"
+                  v-on:show-modal="showSelectInitialContributionDialog = true"
+                />
               </div>
               <div class="md-layout-item md-size">
                 <input placeholder="0" type="number" v-model="initialContribution" />
@@ -132,7 +124,7 @@
         </div>
       </md-step>
 
-      <md-step id="second" md-label="DCA Strategy">
+      <md-step id="second" md-label="Mindful Strategy">
         <div class="md-layout gutter">
           <div class="md-layout-item md-size-55">
             <h2 class="title">DCA Strategy</h2>
@@ -141,8 +133,10 @@
               schedule and budget.
             </p>
             <p><b>Note that your DCA can be paused, edited, or updated at any time.</b></p>
-            <h3 class="subtitle">Budget</h3>
-            <p>Choose an asset, amount, and frequency to DCA into your Chakra.</p>
+            <AssetDropdown
+              :asset="initialContributionCoin"
+              v-on:show-modal="showSelectInitialContributionDialog = true"
+            />
             <Separator />
             <h2 class="title">Select Distribution</h2>
             <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
@@ -270,11 +264,12 @@
 <script>
 import Separator from "@/components/elements/Separator";
 import Segment from "@/components/elements/Segment";
+import AssetDropdown from "@/components/elements/AssetDropdown";
 import AddCoinModal from "@/components/AddCoinModal";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "ChakraFlow",
-  components: { Separator, AddCoinModal, Segment },
+  components: { Separator, AddCoinModal, Segment, AssetDropdown },
   data: () => ({
     chakraName: null,
     initialContribution: 0,
@@ -535,38 +530,6 @@ h1.title {
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
-}
-
-.initialContributionToken {
-  border: 1px solid #dddddd;
-  box-sizing: border-box;
-  border-radius: 8px;
-  padding: 10px;
-  height: 2.5rem;
-  border: 1px solid #aaa;
-  color: #aaa;
-  text-align: center;
-  width: 95%;
-  background: none;
-  box-shadow: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 600;
-
-  span {
-    transition: all ease-in-out 0.5s;
-    font-size: 1rem;
-  }
-
-  &:hover {
-    border: 1px solid #00e0ff;
-
-    span {
-      background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-  }
 }
 
 .totalContributionText {
