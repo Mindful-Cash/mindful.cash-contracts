@@ -11,7 +11,6 @@ import "../interfaces/IBPool.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IUniswapV2Factory.sol";
 import "../interfaces/IUniswapV2Exchange.sol";
-import "../interfaces/IWETH.sol";
 import "../interfaces/IPSmartPool.sol";
 import "../interfaces/IPV2SmartPool.sol";
 
@@ -27,7 +26,6 @@ contract MindfulProxy is Ownable {
     // ISmartPoolRegistry public constant REGISTRY = ISmartPoolRegistry(
     //   0x412a5d5eC35fF185D6BfF32a367a985e1FB7c296
     // );
-    IWETH public constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
     struct SellStrategy {
         string name;
@@ -459,12 +457,7 @@ contract MindfulProxy is Ownable {
             }
         }
 
-        if (_quoteToken == address(WETH)) {
-            WETH.withdraw(totalAmount);
-            msg.sender.transfer(address(this).balance);
-        } else {
-            IERC20(_quoteToken).transfer(msg.sender, totalAmount);
-        }
+        IERC20(_quoteToken).transfer(msg.sender, totalAmount);
     }
 
     function saveEth() external onlyOwner {
