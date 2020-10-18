@@ -1,8 +1,10 @@
 <template>
   <div class="tokenInput">
-    <input placeholder="0" type="number" v-model="allowance" />
+    <input placeholder="0" type="number" v-model="allowance" v-on:input="updateValue($event.target.value)" />
     <div class="side">
-      <button v-if="state === 'default'" @click="handleClick()">Approve</button>
+      <button v-if="state === 'default'" @click="handleClick()">
+        Approve
+      </button>
       <md-progress-spinner
         v-else-if="state === 'loading'"
         class="md-accent"
@@ -28,6 +30,9 @@ export default {
   methods: {
     handleClick() {
       this.$emit("approve-token", this.allowance);
+    },
+    updateValue(value) {
+      this.$emit("input", value);
     }
   }
 };

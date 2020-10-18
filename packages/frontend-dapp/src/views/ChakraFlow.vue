@@ -145,18 +145,22 @@
               class="my-dropdown-toggle"
               :options="dcaTimeframes"
               :selected="dcaTimeframes[dcaTimeframes.length - 1]"
-              v-on:updateOption="methodToRunOnSelect"
+              v-on:updateOption="handleFrequencySelect"
               :closeOnOutsideClick="boolean"
             />
             <div class="md-layout" style="padding-top: 20px">
               <div class="md-layout-item md-size-30">
                 <AssetDropdown
-                  :asset="initialContributionCoin"
-                  v-on:show-modal="showSelectInitialContributionDialog = true"
+                  :asset="initialDCAContributionCoin"
+                  v-on:show-modal="showSelectInitialDCAContributionDialog = true"
                 />
               </div>
               <div class="md-layout-item md-size-50">
-                <TokenInput :state="tokenAllowanceState" v-on:approve-token="handleTokenAllowance($event)" />
+                <TokenInput
+                  :state="tokenAllowanceState"
+                  v-model="tokenAllowance"
+                  v-on:approve-token="handleTokenAllowance($event)"
+                />
               </div>
               <div class="md-layout-item md-size-20">
                 <TokenInfo :price="20" :balance="2" />
@@ -172,7 +176,7 @@
                 <p>Amount:</p>
               </div>
               <div class="md-layout-item md-size-70">
-                <p>-</p>
+                <p>{{ tokenAllowance || "–" }} {{ dcaBreakdownStats.coin || "" }}</p>
               </div>
             </div>
             <div class="md-layout" style="padding-top: 20px">
@@ -180,7 +184,7 @@
                 <p>Frequency:</p>
               </div>
               <div class="md-layout-item md-size-70">
-                <p>-</p>
+                <p>{{ dcaBreakdownStats.frequency || "–" }}</p>
               </div>
             </div>
             <div class="md-layout" style="padding-top: 20px">
@@ -309,6 +313,14 @@
         <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handelInitialSendCoinChosen" />
       </md-dialog-content>
     </md-dialog>
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="showSelectInitialDCAContributionDialog">
+      <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
+
+      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
+        <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handleInitialDCACoinChosen" />
+      </md-dialog-content>
+    </md-dialog>
   </div>
 </template>
 
@@ -329,14 +341,23 @@ export default {
     chakraName: null,
     initialContribution: 0,
     initialContributionCoin: { symbol: "SELECT", logoURI: null },
+    initialDCAContributionCoin: { symbol: "SELECT", logoURI: null },
     contributionMode: "single",
     showCoinDialog: false,
     showSelectInitialContributionDialog: false,
+    showSelectInitialDCAContributionDialog: false,
     selectedCoins: [],
     tokenAllowance: 0,
     tokenAllowanceState: "default",
+    // DCA
     dcaTimeframes: [{ name: "Daily" }, { name: "Weekly" }, { name: "Fortnightly" }, { name: "Monthly" }],
-    selectedDCATimeframe: undefined,
+    dcaBreakdownStats: {
+      amount: null,
+      coin: null,
+      frequency: null,
+      fee: null
+    },
+    //
     colors: [
       "#A8A2F5",
       "#E66C82",
@@ -351,6 +372,9 @@ export default {
     ]
   }),
   methods: {
+    handleFrequencySelect({ name: frequency }) {
+      this.dcaBreakdownStats = { ...this.dcaBreakdownStats, frequency };
+    },
     handleTokenAllowance(allowance) {
       // alert(allowance);
       // demo
@@ -363,6 +387,11 @@ export default {
       console.log("CHOSEN", chosenCoin);
       this.initialContributionCoin = chosenCoin;
       this.showSelectInitialContributionDialog = false;
+    },
+    handleInitialDCACoinChosen(coin) {
+      this.initialDCAContributionCoin = coin;
+      this.dcaBreakdownStats = { ...this.dcaBreakdownStats, coin: coin.symbol };
+      this.showSelectInitialDCAContributionDialog = false;
     },
     handelCoinChosen(coinObject) {
       console.log("clickedz", coinObject);
@@ -483,6 +512,16 @@ export default {
 ::v-deep .md-steppers .md-active .md-stepper-text {
   color: #292929 !important;
   font-weight: 500 !important;
+}
+
+// Switch override
+::v-deep .md-switch.md-theme-default .md-switch-container {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  box-shadow: inset 0px 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+::v-deep .md-switch.md-theme-default .md-switch-container .md-switch-thumb {
+  background: #fff;
 }
 
 // Theme
