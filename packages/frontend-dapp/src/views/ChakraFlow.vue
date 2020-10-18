@@ -126,8 +126,16 @@
 
       <md-step id="second" md-label="Mindful Strategy">
         <div class="md-layout gutter">
+          <!-- DCA strategy -->
           <div class="md-layout-item md-size-55">
-            <h2 class="title">DCA Strategy</h2>
+            <div class="md-layout md-gutter md-alignment-center-left">
+              <div class="md-layout-item">
+                <h2 class="title">DCA Strategy</h2>
+              </div>
+              <div class="md-layout-item" style="display: flex; justify-content: flex-end;">
+                <md-switch class="" v-model="array" value="1" />
+              </div>
+            </div>
             <p>
               Setup a DCA (dollar cost average) strategy to automatically buy into your Chakra according to a set
               schedule and budget.
@@ -138,97 +146,105 @@
               v-on:show-modal="showSelectInitialContributionDialog = true"
             />
             <Separator />
-            <h2 class="title">Select Distribution</h2>
-            <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
-
-            <div v-for="(coin, index) in selectedCoins" :key="index" style="padding-top: 20px; padding-bottom: 20px">
-              <div class="md-layout">
-                <div class="md-layout-item md-size-20 md-layout" style="text-align: left">
-                  <div class="md-layout-item" style="text-align: left">
-                    <img :width="30" :height="30" :src="coin.logoURI" style="margin-left: 10px" />
-                  </div>
-                  <div class="md-layout-item" style="padding-top: 5px">
-                    <span class="secondaryText"> {{ coin.symbol }}</span>
-                  </div>
-                </div>
-                <div class="md-layout-item" style="padding-top: 5px">
-                  <vue-slider
-                    v-model="coin.ratio"
-                    v-bind="selectorOptions"
-                    :dotOptions="{ max: coin.ratio + unselectedPercent }"
-                    :max="100"
-                    :tooltip="'always'"
-                    :process-style="{ backgroundColor: colors[index] }"
-                    :tooltip-style="{ backgroundColor: colors[index], borderColor: colors[index] }"
-                  ></vue-slider>
-                </div>
-                <div class="md-layout-item md-size-10">
-                  <md-button class="md-icon-button md-raised md-dense" @click="removeCoinFromSelected(index)">
-                    <md-icon>remove</md-icon>
-                  </md-button>
-                </div>
+          </div>
+          <div class="md-layout-item md-size-5" />
+          <div class="md-layout-item md-size-40">
+            <h2 class="title">DCA Strategy Breakdown</h2>
+            <div class="md-layout" style="padding-top: 20px">
+              <div class="md-layout-item md-size-30">
+                <p>Amount:</p>
+              </div>
+              <div class="md-layout-item md-size-70">
+                <p>-</p>
+              </div>
+            </div>
+            <div class="md-layout" style="padding-top: 20px">
+              <div class="md-layout-item md-size-30">
+                <p>Frequency:</p>
+              </div>
+              <div class="md-layout-item md-size-70">
+                <p>-</p>
+              </div>
+            </div>
+            <div class="md-layout" style="padding-top: 20px">
+              <div class="md-layout-item md-size-30">
+                <p>Management Fee:</p>
+              </div>
+              <div class="md-layout-item md-size-70">
+                <p>Gas + 0.3% of DCA</p>
               </div>
             </div>
 
-            <button class="add-asset-btn" @click="showCoinDialog = true"><span>+ Add Asset</span></button>
             <Separator />
-            <h2 class="title">Initial Contribution</h2>
-
-            <Segment :titles="['Any Asset', 'Exact Assets']" v-on:update-selected="contributionMode = $event" />
-
-            <p>
-              Deposit any asset to fund your Chakra. The assets you deposit will be used to buy the assets in your
-              Chakra in accordance with your specified distribution.
-            </p>
-            <p><b>Slippage may occur during this process.</b></p>
-            <p><b>An extra 5% ETH is sent with the TX to avoid unexpected errors - unused ETH will be returned.</b></p>
-
-            <div class="md-layout">
-              <div class="md-layout-item md-size-25" style="margin-right: 10px">
-                <div class="initialContributionToken" @click="showSelectInitialContributionDialog = true">
-                  <img
-                    :width="20"
-                    :height="20"
-                    v-if="initialContributionCoin.logoURI"
-                    :src="initialContributionCoin.logoURI"
-                    style="padding-bottom: 5px"
-                  />
-                  <span style="padding-bottom: 5px"> {{ initialContributionCoin.symbol }} </span>
-
-                  <md-icon style="padding-bottom: 5px">keyboard_arrow_down</md-icon>
+          </div>
+          <!-- Profit strategy -->
+          <div class="md-layout gutter">
+            <div class="md-layout-item md-size-55">
+              <div class="md-layout md-gutter md-alignment-center-left">
+                <div class="md-layout-item">
+                  <h2 class="title">Profit Strategy</h2>
+                </div>
+                <div class="md-layout-item" style="display: flex; justify-content: flex-end;">
+                  <md-switch class="" v-model="array" value="1" />
                 </div>
               </div>
-              <div class="md-layout-item md-size">
-                <input placeholder="0" type="number" v-model="initialContribution" />
+              <p>
+                Sell portions of your Chakra on the way up according to a profit-taking strategy.
+                <b>Some fees apply.</b>
+              </p>
+
+              <div class="md-layout">
+                <div class="md-layout-item md-size-30">
+                  <p>Take profit as:</p>
+                </div>
+                <div class="md-layout-item md-size-70">
+                  <Segment :titles="['% of Chakra', '% of Profit']" v-on:update-selected="contributionMode = $event" />
+                </div>
               </div>
-              <div class="md-layout-item md-size-20" style="margin-left: 5px">
-                <md-button class="approve-button">Approve</md-button>
+              <div class="md-layout" style="padding-top: 20px">
+                <div class="md-layout-item md-size-30">
+                  <p>Take profit after:</p>
+                </div>
+                <div class="md-layout-item md-size-70">
+                  <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                </div>
+              </div>
+              <div class="md-layout" style="padding-top: 20px">
+                <div class="md-layout-item md-size-30">
+                  <p>Profit to take:</p>
+                </div>
+                <div class="md-layout-item md-size-70">
+                  <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                </div>
+              </div>
+              <div class="md-layout" style="padding-top: 20px">
+                <div class="md-layout-item md-size-30">
+                  <p>Take profit in:</p>
+                </div>
+                <div class="md-layout-item md-size-70">
+                  <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                </div>
               </div>
             </div>
+            <div class="md-layout-item md-size-5" />
+            <div class="md-layout-item md-size-40">
+              <h2 class="title">Profit Strategy Breakdown</h2>
 
-            <div
-              class="md-layout md-alignment-center-right"
-              style="padding-top: 20px; margin-bottom: 30px; text-align: right"
-            >
-              <div class="md-layout-item">
-                <span class="totalContributionText">Total Contribution:</span
-                ><span class="totalContributionNumber">$0.00</span>
+              <div class="md-layout" style="padding-top: 20px">
+                <div class="md-layout-item md-size-100">
+                  <p>When Chakra value increases by -%, take -% of - as profit in -.</p>
+                </div>
               </div>
-            </div>
-
-            <div class="md-layout" style="padding-top: 20px; margin-bottom: 30px">
-              <div class="md-layout-item md-size-60"></div>
-              <div class="md-layout-item">
-                <md-button :disabled="true" class="approve-button">Next</md-button>
-              </div>
-              <div class="md-layout-item">
-                <md-button :disabled="true">Cancel</md-button>
+              <div class="md-layout" style="padding-top: 20px">
+                <div class="md-layout-item md-size-30">
+                  <p>Fees:</p>
+                </div>
+                <div class="md-layout-item md-size-70">
+                  <p>Gas + 0.3% of DCA</p>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="md-layout-item md-size-5" />
-          <div class="md-layout-item md-size-40" style="padding-top: 20px"></div>
         </div>
       </md-step>
 
