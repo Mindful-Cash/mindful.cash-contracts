@@ -141,6 +141,13 @@
               schedule and budget.
             </p>
             <p><b>Note that your DCA can be paused, edited, or updated at any time.</b></p>
+            <Dropdown
+              class="my-dropdown-toggle"
+              :options="dcaTimeframes"
+              :selected="dcaTimeframes[dcaTimeframes.length - 1]"
+              v-on:updateOption="methodToRunOnSelect"
+              :closeOnOutsideClick="boolean"
+            />
             <div class="md-layout">
               <div class="md-layout-item md-size-30">
                 <AssetDropdown
@@ -306,10 +313,12 @@ import AssetDropdown from "@/components/elements/AssetDropdown";
 import TokenInput from "@/components/elements/TokenInput";
 import TokenInfo from "@/components/elements/TokenInfo";
 import AddCoinModal from "@/components/AddCoinModal";
+import Dropdown from "vue-dropdowns";
+
 import { mapActions, mapState } from "vuex";
 export default {
   name: "ChakraFlow",
-  components: { Separator, AddCoinModal, Segment, AssetDropdown, TokenInput, TokenInfo },
+  components: { Separator, AddCoinModal, Segment, AssetDropdown, TokenInput, TokenInfo, Dropdown },
   data: () => ({
     chakraName: null,
     initialContribution: 0,
@@ -320,6 +329,8 @@ export default {
     selectedCoins: [],
     tokenAllowance: 0,
     tokenAllowanceState: "default",
+    dcaTimeframes: [{ name: "Daily" }, { name: "Weekly" }, { name: "Fortnightly" }, { name: "Monthly" }],
+    selectedDCATimeframe: undefined,
     colors: [
       "#A8A2F5",
       "#E66C82",
@@ -602,5 +613,38 @@ h1.title {
   text-align: right;
   color: #292929;
   border: 1px solid #ffffff;
+}
+
+.my-dropdown-toggle {
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+
+  ::v-deep .dropdown-toggle {
+    color: #fff;
+    border-radius: 0.5rem;
+    background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+    font-weight: 600;
+  }
+
+  ::v-deep .dropdown-menu {
+    width: 100%;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0;
+  }
+
+  ::v-deep .dropdown-menu li {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    color: #292929;
+    font-size: 1rem;
+
+    a:hover {
+      background: linear-gradient(74.67deg, rgba(0, 224, 255, 0.075) -6.3%, rgba(170, 85, 255, 0.075) 111.05%);
+      text-decoration: none;
+    }
+  }
 }
 </style>
