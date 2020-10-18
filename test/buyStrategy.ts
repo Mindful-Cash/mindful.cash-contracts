@@ -80,8 +80,6 @@ describe("Buy strategy", () => {
     await mindfulProxy.init(balancerFactoryAddress, smartpool.address);
 
     const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
-    const tokenFactorySigner1 = new MockTokenFactory(signers[0]);
-    const tokenFactorySigner2 = new MockTokenFactory(signers[0]);
 
     umaToken = await tokenFactorySigner0.deploy('UMA', 'UMA', 18);
     compToken = await tokenFactorySigner0.deploy('COMP', 'COMP', 18);
@@ -149,24 +147,19 @@ describe("Buy strategy", () => {
     expect((await mindfulProxy.getBuyStrategies())[0].isActive).to.eq(true);
   })
 
-//   it('should update a specific sell strategy', async () => {
-//     const chakraAddress = (await mindfulProxy.getChakras())[0];
-//     const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
+  it('should update a specific buy strategy', async () => {
+    const chakraAddress = (await mindfulProxy.getChakras())[0];
+    const buyStrategyid = (await mindfulProxy.getBuyStrategies()).length;
 
-//     let prices = [];
-//     let sellOtokens = [];
+    const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
+    const wethToken : MockToken = await tokenFactorySigner0.deploy('WETH', 'WETH', 18);
 
-//     prices.push(constants.WeiPerEther.mul(10000000000));
-//     prices.push(constants.WeiPerEther.mul(12000000000));
-//     prices.push(constants.WeiPerEther.mul(20000000000));
-//     sellOtokens.push(usdcToken.address);
-//     sellOtokens.push(usdcToken.address);
-//     sellOtokens.push(constants.AddressZero);
+    await mindfulProxy.updateBuyStartegy(chakraAddress, wethToken.address, buyStrategyid, new BigNumber(60*60*24*3), constants.WeiPerEther.mul(20000000000));
 
-//     await mindfulProxy.updateSellStrategy(chakraAddress, sellStrategyid, sellOtokens, prices);
-
-//     expect((await mindfulProxy.getSellStrategies())[0].sellTokens.length).to.eq(2);
-//   })
+    expect((await mindfulProxy.getBuyStrategies())[0].buyToken).to.eq(wethToken.address);
+    expect((await mindfulProxy.getBuyStrategies())[0].buyAmount).to.eq(constants.WeiPerEther.mul(20000000000));
+    expect((await mindfulProxy.getBuyStrategies())[0].interBuyDelay.toString()).to.eq(new BigNumber(60*60*24*3).toString());
+  })
 
 //   // describe("DCA in", () => {
 //   //   it("chakra owner can send in single currency to add to pool");
