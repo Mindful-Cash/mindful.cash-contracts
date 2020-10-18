@@ -1,12 +1,15 @@
 <template>
   <div class="about">
     <div>
-      {{ miny }}
-      <md-button @click="zoomChart(24)">1D</md-button>
-      <md-button @click="zoomChart(24 * 7)">1W</md-button>
-      <md-button @click="zoomChart(24 * 30)">1M</md-button>
-      <md-button @click="zoomChart(24 * 30 * 3)">3M</md-button>
-      <div class="main-section" style="padding-top: 20px" v-if="chartInfo">
+      <div class="md-layout">
+        <div class="md-layout-item">
+          <md-button @click="zoomChart(24)">1D</md-button>
+          <md-button @click="zoomChart(24 * 7)">1W</md-button>
+          <md-button @click="zoomChart(24 * 30)">1M</md-button>
+          <md-button @click="zoomChart(24 * 30 * 3)">3M</md-button>
+        </div>
+      </div>
+      <div class="main-section" style="padding-top: 0px" v-if="chartInfo">
         <apexchart
           width="100%"
           id="portfolioChart"
@@ -21,8 +24,6 @@
 </template>
 
 <script>
-import moment from "moment";
-console.log("moment", moment);
 import VueApexCharts from "vue-apexcharts";
 
 export default {
@@ -37,28 +38,25 @@ export default {
   methods: {
     zoomChart(hoursInPast) {
       this.minTimeStamp = new Date().getTime() - hoursInPast * 60 * 60 * 1000;
+    },
+  },
+  data: () => ({
+    slicedData: [],
+    minTimeStamp: new Date().getTime() - 1000 * 60 * 60 * 24 * 30, // start the chart 30 days in the past
+  }),
+
+  computed: {
+    options: function () {
       const sliceIndex = this.chartInfo
         .map((x) => x[0])
         .findIndex((num) => {
           return num > this.minTimeStamp;
         });
-      console.log("sliceIndex", sliceIndex);
-      const slicedChartArray = this.chartInfo.slice(sliceIndex, this.chartInfo.length.length).map((x) => x[1]);
-      console.log("slicedChartArray", slicedChartArray);
-      this.miny = Math.min(...slicedChartArray);
-      this.maxy = Math.max(...slicedChartArray);
-      console.log("min", this.miny, "max", this.maxy);
-      console.log("this.minTimeStamp", this.minTimeStamp);
-    },
-  },
-  data: () => ({
-    minTimeStamp: new Date().getTime() - 1000 * 60 * 60 * 24 * 30,
-    miny: 0,
-    ymax: 100000000,
-  }),
-
-  computed: {
-    options: function () {
+      const slicedChartArray = this.chartInfo.slice(sliceIndex - 1, this.chartInfo.length.length);
+      this.slicedData = slicedChartArray;
+      const slicedPrices = slicedChartArray.map((x) => x[1]);
+      const priceMin = Math.min(...slicedPrices);
+      const priceMax = Math.max(...slicedPrices);
       if (!this.chartInfo) return null;
       return {
         colors: ["#2EBAFF"],
@@ -101,8 +99,8 @@ export default {
         },
         yaxis: {
           tickPlacement: "on",
-          min: this.miny * 0.95,
-          max: this.maxy * 1.05,
+          min: priceMin * 0.95,
+          max: priceMax * 1.05,
           tickAmount: 15,
         },
         tooltip: {
@@ -126,11 +124,11 @@ export default {
       };
     },
     series: function () {
-      if (!this.chartInfo) return null;
+      if (!this.chartInfo || !this.slicedData) return null;
       return [
         {
           name: "Chakra Value",
-          data: this.chartInfo,
+          data: this.slicedData,
           zoom: {
             autoScaleYaxis: true,
           },
