@@ -270,7 +270,7 @@ export default new Vuex.Store({
 
           cumlativeChartInfo.push([
             dataPointTimeStamp, // timestamp
-            Number(cumlativeValuePoint).toFixed(2), // cumlative portfolio value at given timest
+            Number(cumlativeValuePoint).toFixed(0), // cumlative portfolio value at given timest
           ]);
         }
         console.log("cumlativeChartInfo", cumlativeChartInfo);

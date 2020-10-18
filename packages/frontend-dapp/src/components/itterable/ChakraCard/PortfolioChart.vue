@@ -1,14 +1,17 @@
 <template>
   <div class="about">
-    <div>
-      <div class="md-layout">
-        <div class="md-layout-item">
-          <md-button @click="zoomChart(24)">1D</md-button>
-          <md-button @click="zoomChart(24 * 7)">1W</md-button>
-          <md-button @click="zoomChart(24 * 30)">1M</md-button>
-          <md-button @click="zoomChart(24 * 30 * 3)">3M</md-button>
+    
+      <div class="md-layout" style="text-align: right">
+        <div class="md-layout-item" />
+        <div class="md-layout-item" />
+          <div class="date-selector"  style="text-align: center">
+            <span @click="zoomChart(24)" :class="hoursInPast == 24 ? 'date-notselected' : 'date-selected'">1D</span>
+            <span @click="zoomChart(24 * 7)" :class="hoursInPast == 24*7 ? 'date-notselected' : 'date-selected'">1W</span>
+            <span @click="zoomChart(24 * 30)" :class="hoursInPast == 24 * 30 ? 'date-notselected' : 'date-selected'">1M</span>
+            <span @click="zoomChart(24 * 30 * 3)" :class="hoursInPast == 24 * 30 * 3 ? 'date-notselected' : 'date-selected'">3M</span>
+          </div>
         </div>
-      </div>
+    
       <div class="main-section" style="padding-top: 0px" v-if="chartInfo">
         <apexchart
           width="100%"
@@ -37,11 +40,13 @@ export default {
   },
   methods: {
     zoomChart(hoursInPast) {
+      this.hoursInPast = hoursInPast
       this.minTimeStamp = new Date().getTime() - hoursInPast * 60 * 60 * 1000;
     },
   },
   data: () => ({
     slicedData: [],
+    hoursInPast:24,
     minTimeStamp: new Date().getTime() - 1000 * 60 * 60 * 24 * 30, // start the chart 30 days in the past
   }),
 
@@ -138,3 +143,38 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.date-selector {
+  padding-bottom: 7px;
+  padding-top: 7px;
+  width: 150px;
+  background: #ffffff;
+  border: 1px solid rgba(41, 41, 41, 0.1);
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+.date-selected {
+  padding-left: 5px;
+  padding-right: 5px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: #27c8d2;
+  cursor: pointer;
+}
+.date-notselected {
+  padding-left: 5px;
+  padding-right: 5px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+  cursor: pointer;
+}
+</style>
