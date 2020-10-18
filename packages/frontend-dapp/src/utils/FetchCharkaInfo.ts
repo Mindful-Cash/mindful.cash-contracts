@@ -19,11 +19,14 @@ export default class CharkaInfo {
 
     const processedPortfolioBalances = portfolioBalances.balances.map((portfolioBalance) => {
       return {
-        nameOfBPT: portfolioBalance.base.metadata.name,
-        symbolOfBPT: portfolioBalance.base.metadata.name,
-        numberOfBPT: ethers.utils
-          .formatUnits(portfolioBalance.base.amount, portfolioBalance.base.metadata.decimals)
-          .toString(),
+        metaData: {
+          smartPoolAddress: portfolioBalance.base.metadata.token,
+          nameOfBPT: portfolioBalance.base.metadata.name,
+          symbolOfBPT: portfolioBalance.base.metadata.name,
+          numberOfBPT: ethers.utils
+            .formatUnits(portfolioBalance.base.amount, portfolioBalance.base.metadata.decimals)
+            .toString(),
+        },
         underlyingTokens: portfolioBalance.underlying.map((underlyingToken) => {
           return {
             address: underlyingToken.metadata.token,

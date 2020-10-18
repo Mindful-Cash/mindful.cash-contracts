@@ -2,7 +2,7 @@
   <div class="about">
     <div>
       chart
-      <div class="main-section" style="padding-top: 20px" v-if="chartData">
+      <div class="main-section" style="padding-top: 20px" v-if="chartInfo">
         <apexchart width="500" type="line" :options="options" :series="series"></apexchart>
       </div>
     </div>
@@ -16,33 +16,33 @@ export default {
   name: "Home",
   components: { VueApexCharts },
   props: {
-    chartData: {
+    chartInfo: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    options: function() {
-      if (!this.chartData) return null;
+    options: function () {
+      if (!this.chartInfo) return null;
       return {
         chart: {
-          id: "vuechart-example"
+          id: "vuechart-example",
         },
         xaxis: {
-          categories: this.chartData.map(x => x[0])
-        }
+          categories: this.chartInfo.map((x) => x[0]),
+        },
       };
     },
-    series: function() {
-      if (!this.chartData) return null;
+    series: function () {
+      if (!this.chartInfo) return null;
       return [
         {
           name: "series-1",
-          data: this.chartData.map(x => x[1])
-        }
+          data: this.chartInfo.map((x) => x[1]),
+        },
       ];
-    }
-  }
+    },
+  },
 };
 </script>

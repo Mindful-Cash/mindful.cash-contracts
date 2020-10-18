@@ -1,14 +1,13 @@
 <template>
-  <md-card style="padding:30px">
+  <md-card style="padding: 30px">
     <div class="md-layout">
-      <div class="md-layout-item md-size-20">
-        1
-      </div>
-      <div class="md-layout-item">
-        2
-      </div>
+      <div class="md-layout-item md-size-20">1</div>
+      <div class="md-layout-item">2</div>
     </div>
-    <Portfolio-Chart :chartData="chakraInfo.chartData"/>
+    {{ chakraInfo }}
+    <div v-if="chartInfo">
+      <Portfolio-Chart :chartInfo="chartInfo" />
+    </div>
   </md-card>
 </template>
 
@@ -63,17 +62,22 @@ export default {
   props: {
     chakraInfo: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     pageUrl() {
       // return window.location.href;
-    }
+    },
+    chartInfo() {
+      if (this.chakraInfo.chartInfo) {
+        return this.chakraInfo.chartInfo;
+      } else return null;
+    },
   },
   methods: {
-    ...mapActions(["X"])
-  }
+    ...mapActions(["X"]),
+  },
 };
 </script>
 

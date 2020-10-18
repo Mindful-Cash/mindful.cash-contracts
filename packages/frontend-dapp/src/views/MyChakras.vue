@@ -7,21 +7,23 @@
           <md-card-header>
             <div class="md-title"></div>
           </md-card-header>
-          <p>
-            view your Chakras
-          </p>
+          <p>view your Chakras</p>
         </md-content>
         <transition-group name="fadeUp" tag="ul">
-          <Chakra-Card v-for="chakra in chakras" :chakraInfo="chakra" style="margin:20px" :key="chakra.address" />
+          
+          <Chakra-Card
+            v-for="chakra in chakras"
+            :chakraInfo="chakra"
+            style="margin: 20px"
+            :key="chakra.metaData.smartPoolAddress"
+          />
         </transition-group>
       </div>
     </div>
     <div class="md-layout" v-if="chakras.length == 0 && !createFlow">
       <div class="md-layout-item">
         <md-content style="padding: 20px">
-          <p>
-            You don’t have any Chakras yet...
-          </p>
+          <p>You don’t have any Chakras yet...</p>
         </md-content>
         <md-button @click="createFlow = true">Create Chakra </md-button>
       </div>
@@ -84,7 +86,7 @@ export default {
   data: () => ({ createFlow: false }),
   methods: {},
   computed: {
-    ...mapState(["chakras"])
-  }
+    ...mapState(["chakras"]),
+  },
 };
 </script>

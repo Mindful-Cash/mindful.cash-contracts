@@ -10,8 +10,8 @@ import {
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
 import Notify from "bnc-notify";
-// Ethers
 import ethers from "ethers";
+import moment from "moment";
 
 import Vue from "vue";
 import Vuex from "vuex";
@@ -209,25 +209,89 @@ export default new Vuex.Store({
 
       // commit("setProtocolBalances", portfolioBalances);
 
-      const lookback = 30;
+      const lookback = 30; // 30 day lookback. in future will be configurable.
 
       console.log("userChakras", userChakras);
-      userChakras.forEach(async (chakras) => {
+      const numDataPoints = 100;
+      const currentTimeStamp = Math.floor(Date.now());
+      const startingTimeStamp = moment(moment().subtract(30, "days")).valueOf();
+      const timeBetweenDataPoint = (currentTimeStamp - startingTimeStamp) / numDataPoints;
+
+      function closest(needle, haystack) {
+        return haystack.reduce((a, b) => {
+          const aDiff = Math.abs(a - needle);
+          const bDiff = Math.abs(b - needle);
+
+          if (aDiff == bDiff) {
+            return a > b ? a : b;
+          } else {
+            return bDiff < aDiff ? b : a;
+          }
+        });
+      }
+
+      userChakras.forEach(async (chakra, chakraIndex) => {
         console.log("FOR");
         let chakraChartPromises = [];
-        chakras.underlyingTokens.forEach((token) => {
+        chakra.underlyingTokens.forEach((token) => {
           console.log("TOKENZZZ", token);
           chakraChartPromises.push(fetchHistoricTokenPrices(token.address, lookback));
         });
-        const allPriceInformation = await Promise.all(chakraChartPromises);
+        const allChartInfo = await Promise.all(chakraChartPromises);
         console.log("userChakras", userChakras);
-        console.log("allPriceInformation", allPriceInformation);
+        console.log("allChartInfo", allChartInfo);
+
+        let cumlativeChartInfo = [];
+        for (let i = 0; i < numDataPoints + 1; i++) {
+          const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
+
+          let cumlativeValuePoint = 0;
+
+          allChartInfo.forEach((chartInfo, index) => {
+            const chartInfoTimeStamps = chartInfo.map((x) => x[0]);
+            const closestChartInfoTimeStamp = closest(dataPointTimeStamp, chartInfoTimeStamps);
+            console.log("closestChartInfoTimeStamp", closestChartInfoTimeStamp);
+            // const chartDataPointPrice = chartInfo[]
+
+            const indexOfClosestTimeStamp = chartInfoTimeStamps.indexOf(closestChartInfoTimeStamp);
+            console.log("indexOfClosestTimeStamp", indexOfClosestTimeStamp);
+            console.log(
+              "chartInfo.map((x) => [1])[indexOfClosestTimeStamp]",
+              chartInfo.map((x) => x[1])[indexOfClosestTimeStamp]
+            );
+
+            const portfolioValueFromTokenAtTimestamp =
+              chartInfo.map((x) => x[1])[indexOfClosestTimeStamp] *
+              Number(chakra.underlyingTokens[index].amountInCharka);
+            cumlativeValuePoint += portfolioValueFromTokenAtTimestamp;
+          });
+
+          console.log("i", i, "dataPointTimeStamp", dataPointTimeStamp, "cumlativeValuePoint", cumlativeValuePoint);
+
+          cumlativeChartInfo.push([
+            Number(dataPointTimeStamp / 1000).toFixed(),
+            Number(cumlativeValuePoint).toFixed(2),
+          ]);
+        }
+        console.log("cumlativeChartInfo", cumlativeChartInfo);
+        userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
+        commit("setChakras", userChakras);
+        console.log("setChartInfo", state.chakras);
       });
 
-      // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
+      // Build the cumlative chart data. For now we sumply use your current token balance over histopric price information
+      // in future this needs to be changed to use historic token balances with historic price info.
 
-      commit("setChakras", userChakras);
-      console.log("setChartInfo", state.chakras);
+      console.log(
+        "currentTimestamp",
+        currentTimeStamp,
+        "startingTimeStamp",
+        startingTimeStamp,
+        "timeBetweenDataPoint",
+        timeBetweenDataPoint
+      );
+
+      // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
     },
 
     async getAllTokens({ commit, state }) {
