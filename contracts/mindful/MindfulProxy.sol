@@ -76,7 +76,8 @@ contract MindfulProxy is Ownable {
     event SellStrategyDisabled(address indexed chakra, uint256 indexed sellStrategyId);
     event BuyStrategyEnabled(address indexed chakra, uint256 indexed buyStrategyId);
     event SellStrategyEnabled(address indexed chakra, uint256 indexed sellStrategyId);
-    event SellStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId);
+    event SellStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId); 
+    event BuyStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId);
 
     // Pauzer
     modifier revertIfPaused {
@@ -345,6 +346,30 @@ contract MindfulProxy is Ownable {
         }
 
         emit SellStrategyUpdated(_chakra, _sellStrategyId);
+    }
+
+    function updateBuyStartegy(
+        address _chakra,
+        address _buyToken,
+        uint256 _buyStrategyId,
+        uint256 _InterBuyDelay,
+        uint256 _buyAmount
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra]);
+        require(_buyStrategyId <= buyStrategies.length);
+        require(buyStrategyChakra[_buyStrategyId] == _chakra);
+        require(_buyToken != address(0));
+        require(_buyAmount > 0);
+        require(_InterBuyDelay > 0);
+
+        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+
+        buyStrategy.buyToken = _buyToken;
+        buyStrategy.buyAmount = _buyAmount;
+        buyStrategy.interBuyDelay = _InterBuyDelay;
+
+        emit BuyStrategyUpdated(_chakra, _buyStrategyId);
     }
 
     function toChakra(
