@@ -203,7 +203,7 @@
                 <b>Some fees apply.</b>
               </p>
 
-              <div class="md-layout">
+              <div class="md-layout md-alignment-center-left">
                 <div class="md-layout-item md-size-30">
                   <p>Take profit as:</p>
                 </div>
@@ -211,28 +211,40 @@
                   <Segment :titles="['% of Chakra', '% of Profit']" v-on:update-selected="contributionMode = $event" />
                 </div>
               </div>
-              <div class="md-layout" style="padding-top: 20px">
+              <div class="md-layout md-alignment-center-left" style="padding-top: 20px">
                 <div class="md-layout-item md-size-30">
                   <p>Take profit after:</p>
                 </div>
-                <div class="md-layout-item md-size-70">
+                <div class="md-layout-item md-size-35">
                   <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
                 </div>
+                <div class="md-layout-item md-size-35">
+                  <p style="margin-left:1rem">increase in Chakra value.</p>
+                </div>
               </div>
-              <div class="md-layout" style="padding-top: 20px">
+              <div class="md-layout md-alignment-center-left" style="padding-top: 20px">
                 <div class="md-layout-item md-size-30">
                   <p>Profit to take:</p>
                 </div>
-                <div class="md-layout-item md-size-70">
+                <div class="md-layout-item md-size-35">
                   <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
                 </div>
+                <div class="md-layout-item md-size-35">
+                  <p style="margin-left:1rem">of total Chakra value.</p>
+                </div>
               </div>
-              <div class="md-layout" style="padding-top: 20px">
+              <div class="md-layout md-alignment-center-left" style="padding-top: 20px">
                 <div class="md-layout-item md-size-30">
                   <p>Take profit in:</p>
                 </div>
-                <div class="md-layout-item md-size-70">
-                  <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                <div class="md-layout-item md-size-45">
+                  <AssetDropdown
+                    :asset="initialContributionCoin"
+                    v-on:show-modal="showSelectInitialContributionDialog = true"
+                  />
+                </div>
+                <div class="md-layout-item md-size-25">
+                  <TokenInfo :price="20" :balance="2" />
                 </div>
               </div>
             </div>
@@ -466,8 +478,8 @@ export default {
 }
 
 input {
-  border: 1px solid #aaa;
-  box-shadow: none;
+  border: none;
+  box-shadow: inset 0 0 0 1px #ddd;
   border-radius: 0.5rem;
   color: #aaa;
   background: none;

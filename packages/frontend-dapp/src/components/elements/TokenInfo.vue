@@ -37,6 +37,6 @@ export default {
 p {
   font-size: 0.875rem;
   color: #aaa;
-  margin: 0 0 0 0.5rem;
+  margin: 0 0 0 1rem;
 }
 </style>
