@@ -1,0 +1,254 @@
+<template>
+  <div class="landing md-layout">
+    <div class="md-layout md-layout-item md-size-100" id="nav">
+      <div id="logo" class="md-layout-item md-size-80">
+        <img src="@/assets/svg/logo.svg" alt="logo" />
+      </div>
+      <button class="md-layout-item md-size-20"><span class="highlight">Go to app</span></button>
+    </div>
+    <div id="header" class="md-layout-item md-size-100">
+      <div class="md-layout md-gutter">
+        <div class="md-layout-item md-size-50">
+          <h1 class="heading">Portfolio Alignment for Degens</h1>
+          <p>
+            Create auto-rebalancing portfolios and implement mindful DCA strategies while automatically taking profits
+            on the way up.
+          </p>
+          <p class="highlight">Let your mindful self plan for your degen self's future.</p>
+          <div style="display: flex; align-items: left">
+            <button class="highlight-btn"><span>Align Your Chakras</span></button>
+          </div>
+          <div class="separator-container" style="margin-top: 10rem">
+            <div class="separator" />
+          </div>
+        </div>
+        <div class="md-layout-item md-size-50">
+          <div id="lotus" />
+        </div>
+      </div>
+    </div>
+
+    <div id="rebalance" class="section md-layout-item md-size-100">
+      <div class="md-layout md-gutter">
+        <div class="md-layout-item md-size-70">
+          <h2 class="heading">Create Auto-Rebalancing Portfolios</h2>
+        </div>
+        <div class="md-layout-item md-size-30" />
+      </div>
+      <p>
+        Create bespoke portfolios - <span>”Chakras”</span> - when you’re feeling mindful. Your degen self will thank you
+        later.
+      </p>
+      <div class="md-layout-item md-size-100" id="defi-energy" />
+      <div class="md-layout-item md-size-100 separator-container center">
+        <div class="separator" />
+      </div>
+    </div>
+
+    <div id="dca" class="section">
+      <div class="md-layout md-alignment-top-center">
+        <h2 class="heading">Implement Mindful DCA Strategies</h2>
+        <p class="md-layout-item md-size-100">
+          Allocate funds to a DCA pool, automate your strategy, and <span>never miss a bull run again.</span>
+        </p>
+        <div class="md-layout-item" id="chakra" />
+        <div class="md-layout-item md-size-100 separator-container center">
+          <div class="separator" />
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="chart">
+      <div class="md-layout md-alignment-top-center">
+        <h2 class="heading">Automatically Take Profits on the Way Up</h2>
+        <p class="md-layout-item md-size-100">
+          Set automated parameters for taking profits to hedge against the whims of your
+          <span>degenerate future self.</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="md-layout-item md-size-100 separator-container center">
+      <div class="separator" />
+    </div>
+
+    <div class="section">
+      <div class="md-layout md-alignment-top-center">
+        <h2 class="heading">Find Your Guru</h2>
+        <p class="md-layout-item md-size-100">
+          Browse and copy the <span>most profitable strategies</span>, developed by the most mindful traders.
+        </p>
+        <button class="highlight-btn"><span>Find A Guru</span></button>
+      </div>
+    </div>
+
+    <div class="md-layout-item md-size-100 separator-container center">
+      <div class="separator" />
+    </div>
+
+    <div class="section">
+      <div class="md-layout md-alignment-top-center">
+        <h2 class="heading">Silence Your Inner Degenerate</h2>
+        <p class="md-layout-item md-size-100">
+          Start aligning your Chakras today. Don’t throw away your next opportunity to build
+          <span>generation wealth.</span>
+        </p>
+        <button class="highlight-btn"><span>Align Your Chakras</span></button>
+      </div>
+    </div>
+
+    <div class="md-layout-item" id="om" />
+  </div>
+</template>
+
+<style lang="scss">
+@import "@/styles/reset.scss";
+@import "@/styles/variables.scss";
+
+p {
+  font-size: 1.25rem;
+}
+
+#dca p {
+  text-align: center;
+}
+
+.heading {
+  font-size: 3.75rem;
+  font-weight: 600;
+  line-height: 4.5rem;
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 3rem;
+}
+
+.highlight {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  background-clip: text;
+  color: transparent;
+  margin: 1rem 0;
+}
+
+.highlight-btn {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  margin: 2rem 0;
+
+  span {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+#lotus {
+  background: url("~@/assets/svg/lotus.svg") no-repeat;
+  background-position-y: -50%;
+  background-size: cover;
+  height: 80%;
+}
+
+#chart {
+  background: url("~@/assets/svg/stonks-up.svg") no-repeat;
+  background-position-y: 0;
+  background-size: contain;
+  height: 20rem;
+}
+
+#defi-energy {
+  background: url("~@/assets/defi-energy.png") no-repeat;
+  background-size: contain;
+  width: 100%;
+  padding-top: 64%;
+  background-position-x: 50%;
+  margin-top: 3rem;
+}
+
+#om {
+  background: url("~@/assets/svg/om.svg") no-repeat;
+  background-size: contain;
+  padding: 8rem;
+  background-position-x: 50%;
+  margin: 6rem 0;
+}
+
+#chakra {
+  background: url("~@/assets/chakra.png") no-repeat;
+  background-size: contain;
+  padding: 12rem;
+  background-position-x: 50%;
+  margin-top: 4rem;
+}
+
+.separator-container {
+  display: flex;
+
+  height: 18px;
+  width: 100%;
+  margin: 3.25rem 0;
+}
+
+.center {
+  justify-content: center;
+}
+
+.separator {
+  background: url("~@/assets/svg/three-dots.svg") no-repeat;
+  background-size: contain;
+  width: 5rem;
+}
+
+#nav {
+  margin-top: 2rem;
+  max-width: 1024px;
+
+  button {
+    background: none;
+    outline: none;
+    border-radius: 1.875rem;
+    padding: 0.5rem 3rem;
+    border: 1px solid #00e0ff;
+    box-sizing: border-box;
+  }
+}
+
+#logo {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
+}
+
+#header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 6rem;
+
+  p,
+  h1 {
+    text-align: left;
+  }
+}
+
+#rebalance {
+  h2,
+  p {
+    text-align: left;
+  }
+}
+
+.section .heading {
+  padding: 4rem 0 0 0;
+}
+
+.landing {
+  background: #fff;
+  width: 100%;
+  height: 100%;
+}
+</style>
