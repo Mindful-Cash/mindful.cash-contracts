@@ -239,8 +239,8 @@ export default new Vuex.Store({
             (parseInt(token.amountInCharka, 10) * Number(token.price)).toFixed(2)
           );
           userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].amountInCharkaRounded = Number(
-            token.amountInCharka
-          ).toFixed(2);
+            Number(token.amountInCharka).toFixed(2)
+          );
 
           console.log("TOKENZZZ", token);
           chakraChartPromises.push(fetchHistoricTokenPrices(token.address, lookback));
@@ -250,14 +250,14 @@ export default new Vuex.Store({
         console.log("allChartInfo", allChartInfo);
 
         // build chart information
-        let cumlativeChartInfo = [];
-        for (let i = 0; i < numDataPoints + 1; i++) {
-          const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
+        allChartInfo.forEach((chartInfo, index) => {
+          const chartInfoTimeStamps = chartInfo.map(x => x[0]);
+          let cumlativeChartInfo = [];
+          for (let i = 0; i < numDataPoints + 1; i++) {
+            const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
 
-          let cumlativeValuePoint = 0;
+            let cumlativeValuePoint = 0;
 
-          allChartInfo.forEach((chartInfo, index) => {
-            const chartInfoTimeStamps = chartInfo.map(x => x[0]);
             const closestChartInfoTimeStamp = closest(dataPointTimeStamp, chartInfoTimeStamps);
 
             // const chartDataPointPrice = chartInfo[]
@@ -267,33 +267,59 @@ export default new Vuex.Store({
             const portfolioValueFromTokenAtTimestamp =
               chartInfo.map(x => x[1])[indexOfClosestTimeStamp] * Number(chakra.underlyingTokens[index].amountInCharka);
             cumlativeValuePoint += portfolioValueFromTokenAtTimestamp;
-          });
 
-          cumlativeChartInfo.push([
-            dataPointTimeStamp, // timestamp
-            Number(cumlativeValuePoint).toFixed(0) // cumlative portfolio value at given timest
-          ]);
-        }
-
-        userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
-        userChakras[chakraIndex].dcaStratergies = [
-          {
-            type: "dcaIn",
-            token: {
-              address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
-              amount: "694230902983134993",
-              amountInCharka: "6.511285732428220037",
-              amountRounded: "0.6942",
-              chainId: 1,
-              decimals: 18,
-              logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
-              name: "yearn.finance",
-              price: 15204.79,
-              symbol: "YFI",
-              value: "10555.17"
-            }
+            cumlativeChartInfo.push([
+              dataPointTimeStamp, // timestamp
+              Number(cumlativeValuePoint).toFixed(0) // cumlative portfolio value at given timest
+            ]);
           }
-        ];
+
+          userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
+          userChakras[chakraIndex].dcaStratergies = [
+            {
+              type: "dcaIn",
+              token: {
+                address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+                amount: "694230902983134993",
+                amountInCharka: "6.511285732428220037",
+                amountRounded: "0.6942",
+                chainId: 1,
+                decimals: 18,
+                logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
+                name: "yearn.finance",
+                price: 15204.79,
+                symbol: "YFI",
+                value: "10555.17"
+              }
+            }
+          ];
+
+          // Add 7 day timestamp lookback to
+          const sevenDayTimestamp = moment(moment().subtract(7, "days")).valueOf();
+          const closestChartInfoTimeTo7DaysAgo = closest(sevenDayTimestamp, chartInfoTimeStamps);
+          console.log(
+            "sevenDayTimestamp",
+            sevenDayTimestamp,
+            "closestChartInfoTimeTo7DaysAgo",
+            closestChartInfoTimeTo7DaysAgo
+          );
+          console.log("closestChartInfoTimeTo7DaysAgo", closestChartInfoTimeTo7DaysAgo);
+          const indexSevenDaysAgo = chartInfoTimeStamps.indexOf(closestChartInfoTimeTo7DaysAgo);
+          console.log("ZOINK");
+          console.log(
+            "numbers",
+            Number(userChakras[chakraIndex].underlyingTokens[index].price),
+            chartInfo.map(x => x[1])[indexSevenDaysAgo]
+          );
+          userChakras[chakraIndex].underlyingTokens[index].sevenDayChange = Number(
+            Number(
+              ((Number(userChakras[chakraIndex].underlyingTokens[index].price) -
+                chartInfo.map(x => x[1])[indexSevenDaysAgo]) /
+                chartInfo.map(x => x[1])[indexSevenDaysAgo]) *
+                100
+            ).toFixed(2)
+          );
+        });
 
         // calculate the fraction each token within the pool is within the chakra
         userChakras.forEach(async (c, ci) => {
