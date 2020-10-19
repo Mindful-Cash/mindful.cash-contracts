@@ -11,7 +11,7 @@
             ><span class="table-text">{{ item.contribution }}%</span></md-table-cell
           >
           <md-table-cell md-label="Current Price" md-sort-by="price"
-            ><span class="table-text">{{ formatDataString(item.price) }}</span></md-table-cell
+            ><span class="table-text">${{ formatDataString(item.price) }}</span></md-table-cell
           >
           <md-table-cell md-label="Holdings" md-sort-by="amountInCharkaRounded"
             ><span class="table-text">{{ formatDataString(item.amountInCharkaRounded) }}</span></md-table-cell
