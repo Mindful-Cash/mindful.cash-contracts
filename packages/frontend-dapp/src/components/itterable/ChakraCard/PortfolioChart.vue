@@ -39,57 +39,57 @@
 import VueApexCharts from "vue-apexcharts";
 
 export default {
-  name: "Home",
+  name: "PortfolioChart",
   components: { VueApexCharts },
   props: {
     chartInfo: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
   methods: {
     zoomChart(hoursInPast) {
       this.hoursInPast = hoursInPast;
       this.minTimeStamp = new Date().getTime() - hoursInPast * 60 * 60 * 1000;
-    },
+    }
   },
   data: () => ({
     slicedData: [],
     hoursInPast: 24 * 30,
-    minTimeStamp: new Date().getTime() - 1000 * 60 * 60 * 24 * 30, // start the chart 30 days in the past
+    minTimeStamp: new Date().getTime() - 1000 * 60 * 60 * 24 * 30 // start the chart 30 days in the past
   }),
 
   computed: {
-    currentChakraValue: function () {
+    currentChakraValue: function() {
       return this.chartInfo[this.chartInfo.length - 1][1].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    chakraValueChange: function () {
+    chakraValueChange: function() {
       if (this.slicedData.length == 0) return 0;
       return (
         ((this.slicedData[this.slicedData.length - 1][1] - this.slicedData[0][1]) / this.slicedData[0][1]) *
         100
       ).toFixed(2);
     },
-    options: function () {
+    options: function() {
       const sliceIndex = this.chartInfo
-        .map((x) => x[0])
-        .findIndex((num) => {
+        .map(x => x[0])
+        .findIndex(num => {
           return num > this.minTimeStamp;
         });
       const slicedChartArray = this.chartInfo.slice(sliceIndex - 1, this.chartInfo.length.length);
       this.slicedData = slicedChartArray;
-      const slicedPrices = slicedChartArray.map((x) => x[1]);
+      const slicedPrices = slicedChartArray.map(x => x[1]);
       const priceMin = Math.min(...slicedPrices);
       const priceMax = Math.max(...slicedPrices);
       if (!this.chartInfo) return null;
       return {
         colors: ["#2EBAFF"],
         zoom: {
-          autoScaleYaxis: true,
+          autoScaleYaxis: true
         },
         theme: {
           palette: "palette1",
-          mode: "light",
+          mode: "light"
         },
         stroke: {
           show: true,
@@ -97,40 +97,40 @@ export default {
           lineCap: "butt",
           colors: undefined,
           width: 2,
-          dashArray: 0,
+          dashArray: 0
         },
         chart: {
           toolbar: {
-            show: false,
+            show: false
           },
           zoom: {
-            enabled: true,
-          },
+            enabled: true
+          }
         },
 
         dataLabels: {
-          enabled: false,
+          enabled: false
         },
         markers: {
           size: 0,
-          style: "hollow",
+          style: "hollow"
         },
         xaxis: {
           tickPlacement: "on",
           type: "datetime",
           min: this.minTimeStamp,
-          tickAmount: 6,
+          tickAmount: 6
         },
         yaxis: {
           tickPlacement: "on",
           min: priceMin * 0.95,
           max: priceMax * 1.05,
-          tickAmount: 15,
+          tickAmount: 15
         },
         tooltip: {
           x: {
-            format: "hh:mm dd MMM yyyy",
-          },
+            format: "hh:mm dd MMM yyyy"
+          }
         },
 
         fill: {
@@ -142,24 +142,24 @@ export default {
             type: "horizontal",
             opacityFrom: 1,
             opacityTo: 1,
-            stops: [0, 100, 100, 100],
-          },
-        },
+            stops: [0, 100, 100, 100]
+          }
+        }
       };
     },
-    series: function () {
+    series: function() {
       if (!this.chartInfo || !this.slicedData) return null;
       return [
         {
           name: "Chakra Value",
           data: this.slicedData,
           zoom: {
-            autoScaleYaxis: true,
-          },
-        },
+            autoScaleYaxis: true
+          }
+        }
       ];
-    },
-  },
+    }
+  }
 };
 </script>
 

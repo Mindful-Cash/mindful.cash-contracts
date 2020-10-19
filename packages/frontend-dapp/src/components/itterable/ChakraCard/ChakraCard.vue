@@ -37,6 +37,7 @@
     </div>
 
     <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" v-if="tabIndex == 0" />
+    <Asset-Breakdown :Assets="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 1" />
   </md-card>
 </template>
 
@@ -44,11 +45,12 @@
 import { mapActions, mapState } from "vuex";
 
 import PortfolioChart from "./PortfolioChart";
+import AssetBreakdown from "./AssetBreakdown";
 import ChakraCoins from "@/components/elements/ChakraCoins";
 
 export default {
   name: "ChakraCard",
-  components: { PortfolioChart, ChakraCoins },
+  components: { PortfolioChart, ChakraCoins, AssetBreakdown },
   data: () => ({ fomoIn: false, offer: 0, tabIndex: 0 }),
   props: {
     chakraInfo: {
