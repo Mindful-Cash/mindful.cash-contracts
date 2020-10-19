@@ -21,7 +21,22 @@
       </div>
     </div>
     <!-- {{ dcaToken }} -->
-    <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" />
+
+    <div class="md-layout" style="text-align: left">
+      <div class="md-layout-item">
+        <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0"
+          >Overview</md-button
+        >
+        <md-button :class="tabIndex == 1 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 1"
+          >Asset Breakdown</md-button
+        >
+        <md-button :class="tabIndex == 2 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 2"
+          >History</md-button
+        >
+      </div>
+    </div>
+
+    <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" v-if="tabIndex == 0" />
   </md-card>
 </template>
 
@@ -34,12 +49,12 @@ import ChakraCoins from "@/components/elements/ChakraCoins";
 export default {
   name: "ChakraCard",
   components: { PortfolioChart, ChakraCoins },
-  data: () => ({ fomoIn: false, offer: 0 }),
+  data: () => ({ fomoIn: false, offer: 0, tabIndex: 0 }),
   props: {
     chakraInfo: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   computed: {
     pageUrl() {
@@ -59,11 +74,11 @@ export default {
       if (this.chakraInfo.dcaStratergies) {
         return this.chakraInfo.dcaStratergies[0].token;
       } else return null;
-    },
+    }
   },
   methods: {
-    ...mapActions(["X"]),
-  },
+    ...mapActions(["X"])
+  }
 };
 </script>
 
@@ -126,13 +141,14 @@ export default {
   border-radius: 8px;
   font-family: Inter;
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 500 !important;
+  font-size: 14px !important;
   line-height: 17px;
   display: flex;
   align-items: center;
   text-align: center;
   color: #ffffff !important;
+  text-transform: none;
 }
 
 .pause-button {
@@ -140,12 +156,45 @@ export default {
   border-radius: 8px;
   font-family: Inter;
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 500 !important;
+  font-size: 14px !important;
   line-height: 17px;
   display: flex;
   align-items: center;
   text-align: center;
   color: #ffffff !important;
+  text-transform: none;
+}
+
+.not-selected-tab {
+  width: 150px;
+  text-transform: none;
+}
+md-tab {
+  background-color: red;
+}
+
+.selected-tab {
+  border-bottom: none;
+  width: 150px;
+  color: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%) !important;
+  color: #27c8d2 !important;
+  text-transform: none;
+  font-weight: 800 !important;
+  font-family: Inter;
+  font-style: normal;
+  font-size: 16px !important;
+  line-height: 17px;
+  transition: all ease-in-out 0.5s;
+}
+.selected-tab:after {
+  content: "";
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  display: block;
+  height: 3px;
+  width: 150px;
+  position: absolute;
+  bottom: 0;
+  transition: all ease-in-out 0.5s;
 }
 </style>

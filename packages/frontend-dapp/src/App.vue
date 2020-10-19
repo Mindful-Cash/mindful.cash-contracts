@@ -1,6 +1,5 @@
 <template>
   <md-app id="app" md-mode="reveal">
-    {{ monitorState }}
     <custom-navbar slot="md-app-toolbar">
       <span>
         <img src="@/assets/svg/logo.svg" alt="logo" />
@@ -63,26 +62,19 @@ export default {
       ethers: null,
       provider: null,
       signer: null,
-      menuVisible: false,
+      menuVisible: false
     };
   },
   methods: {
     ...mapActions(["setUp"]),
     connectWallet() {
       this.setUp();
-    },
+    }
   },
 
   computed: {
-    ...mapState(["currentNetwork", "userAddress"]),
-    monitorState() {
-      if (this.userNeedsAccount) {
-        router.push({ path: "/CreateProfile" });
-        return "routing...";
-      }
-      return null;
-    },
-  },
+    ...mapState(["currentNetwork", "userAddress"])
+  }
 };
 </script>
 
@@ -97,7 +89,7 @@ export default {
   (
     primary: #000023,
     // The primary color of your brand
-    accent: #fc6161 // The secondary color of your brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+      accent: #fc6161 // The secondary color of your brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
   )
 );
 @import "~vue-material/dist/theme/all"; // Apply the theme

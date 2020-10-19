@@ -11,9 +11,9 @@ export default class CharkaInfo {
   async fetchProtocolBalance(address: string) {
     console.log("fetchProtocolBalance", this.defiSdk);
     const portfolioBalances: any = await this.defiSdk.adapterRegistry.getAdapterBalance(
-      "0x512fce9B07Ce64590849115EE6B32fd40eC0f5F3", // account address
+      "0xf1Ecc163903FB69Cce46D408E171C89EB7Ca1899", // account address
       "0x581ae5af7afa6f8171bbf40d1981779f168a9523", // balancer adapter address
-      ["0x6d59cf780d70927f022e3b827f31d6a6235a8d20"] // pool address (chakra) owned by (DAI/WETH)
+      ["0x80cba5ba9259c08851d94d6bf45e248541fb3e86"] // pool address (chakra) owned by (DAI/WETH)
     );
     console.log("getAdapterBalance", portfolioBalances);
 
