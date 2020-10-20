@@ -24,17 +24,24 @@
 
     <div class="md-layout" style="text-align: left">
       <div class="md-layout-item">
-        <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0"
-          >Overview</md-button
+        <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0">
+          <img v-if="tabIndex == 0" src="@/assets/svg/icons/chakra-active.svg" alt="logo" />
+          <img v-if="tabIndex != 0" src="@/assets/svg/icons/chakra-inactive.svg" alt="logo" />
+          Overview</md-button
         >
-        <md-button :class="tabIndex == 1 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 1"
-          >Asset Breakdown</md-button
+        <md-button :class="tabIndex == 1 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 1">
+          <img v-if="tabIndex == 1" src="@/assets/svg/icons/breakdown-active.svg" alt="logo" />
+          <img v-if="tabIndex != 1" src="@/assets/svg/icons/breakdown-inactive.svg" alt="logo" />
+          Asset Breakdown</md-button
         >
-        <md-button :class="tabIndex == 2 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 2"
-          >History</md-button
+        <md-button :class="tabIndex == 2 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 2">
+          <img v-if="tabIndex == 2" src="@/assets/svg/icons/history-active.svg" alt="logo" />
+          <img v-if="tabIndex != 2" src="@/assets/svg/icons/history-inactive.svg" alt="logo" />
+          History</md-button
         >
       </div>
     </div>
+    <hr />
 
     <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" v-if="tabIndex == 0" />
     <Asset-Breakdown :Assets="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 1" />
@@ -169,18 +176,17 @@ export default {
 }
 
 .not-selected-tab {
-  width: 150px;
+  width: 175px;
   text-transform: none;
-}
-md-tab {
-  background-color: red;
+  margin-bottom: 0px !important;
+  border-radius: 0 !important;
 }
 
 .selected-tab {
   border-bottom: none;
-  width: 150px;
+  width: 175px;
   color: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%) !important;
-  color: #27c8d2 !important;
+  // color: #27c8d2 !important;
   text-transform: none;
   font-weight: 800 !important;
   font-family: Inter;
@@ -188,15 +194,24 @@ md-tab {
   font-size: 16px !important;
   line-height: 17px;
   transition: all ease-in-out 0.5s;
+  margin-bottom: 0px !important;
+  border-radius: 0 !important;
 }
 .selected-tab:after {
   content: "";
   background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
   display: block;
   height: 3px;
-  width: 150px;
+  width: 175px;
   position: absolute;
   bottom: 0;
   transition: all ease-in-out 0.5s;
+  margin-bottom: 0px !important;
+  border-radius: 0 !important;
+}
+
+hr {
+  border: 1px solid rgba(41, 41, 41, 0.1);
+  margin-top: 0px;
 }
 </style>
