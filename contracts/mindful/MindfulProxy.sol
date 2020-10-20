@@ -403,7 +403,7 @@ contract MindfulProxy is Ownable {
         // same for baseToken
         address baseToken = isRelayer ? strategyBaseToken : _baseToken;
 
-        // this function below should return totalBaseAmount + fee in case sender relayer
+        // this function below should return totalBaseAmount + fee in case sender relayer // split this out
         (uint256 requiredTotalBaseAmount, uint256 relayerFee) = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
 
         // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
@@ -417,7 +417,7 @@ contract MindfulProxy is Ownable {
         // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
         // (buying too little pool tokens).
         if (isRelayer) {
-            require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount);
+            require(requiredTotalBaseAmount.mul(95).div(100) < baseAmount);
 
             IERC20(baseToken).transfer(msg.sender, relayerFee);
         }
