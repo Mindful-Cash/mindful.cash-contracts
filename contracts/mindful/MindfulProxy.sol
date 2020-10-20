@@ -255,65 +255,65 @@ contract MindfulProxy is Ownable {
         emit BuyStrategyAdded(_chakra, _name, buyStrategyId);
     }
 
-    function disableSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_sellStrategyId <= sellStrategies.length);
-        require(sellStrategyChakra[_sellStrategyId] == _chakra);
+    // function disableSellStrategy(
+    //     address _chakra,
+    //     uint256 _sellStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_sellStrategyId <= sellStrategies.length);
+    //     require(sellStrategyChakra[_sellStrategyId] == _chakra);
 
-        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
-        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
-        sellStrategy.isActive = false;
+    //     uint256 sellStrategyIndex = _sellStrategyId.sub(1);
+    //     SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
+    //     sellStrategy.isActive = false;
 
-        emit SellStrategyDisabled(_chakra, _sellStrategyId);
-    }
+    //     emit SellStrategyDisabled(_chakra, _sellStrategyId);
+    // }
 
-    function disableBuyStrategy(
-        address _chakra,
-        uint256 _buyStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_buyStrategyId <= buyStrategies.length);
-        require(buyStrategyChakra[_buyStrategyId] == _chakra);
+    // function disableBuyStrategy(
+    //     address _chakra,
+    //     uint256 _buyStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_buyStrategyId <= buyStrategies.length);
+    //     require(buyStrategyChakra[_buyStrategyId] == _chakra);
 
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
-        buyStrategy.isActive = false;
+    //     uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+    //     BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+    //     buyStrategy.isActive = false;
 
-        emit BuyStrategyDisabled(_chakra, _buyStrategyId);
-    }
+    //     emit BuyStrategyDisabled(_chakra, _buyStrategyId);
+    // }
 
-    function enableSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_sellStrategyId <= sellStrategies.length);
-        require(sellStrategyChakra[_sellStrategyId] == _chakra);
+    // function enableSellStrategy(
+    //     address _chakra,
+    //     uint256 _sellStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_sellStrategyId <= sellStrategies.length);
+    //     require(sellStrategyChakra[_sellStrategyId] == _chakra);
 
-        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
-        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
-        sellStrategy.isActive = true;
+    //     uint256 sellStrategyIndex = _sellStrategyId.sub(1);
+    //     SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
+    //     sellStrategy.isActive = true;
 
-        emit SellStrategyEnabled(_chakra, _sellStrategyId);
-    }
+    //     emit SellStrategyEnabled(_chakra, _sellStrategyId);
+    // }
 
-    function enableBuyStrategy(
-        address _chakra,
-        uint256 _buyStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_buyStrategyId <= buyStrategies.length);
-        require(buyStrategyChakra[_buyStrategyId] == _chakra);
+    // function enableBuyStrategy(
+    //     address _chakra,
+    //     uint256 _buyStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_buyStrategyId <= buyStrategies.length);
+    //     require(buyStrategyChakra[_buyStrategyId] == _chakra);
 
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
-        buyStrategy.isActive = true;
+    //     uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+    //     BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+    //     buyStrategy.isActive = true;
 
-        emit BuyStrategyEnabled(_chakra, _buyStrategyId);
-    }
+    //     emit BuyStrategyEnabled(_chakra, _buyStrategyId);
+    // }
 
     function updateSellStrategy(
         address _chakra,
@@ -439,28 +439,41 @@ contract MindfulProxy is Ownable {
         uint256 _minQuoteToken;
     }
 
+    struct FromChakraLocalVar {
+        address payable manager;
+        address strategySellToken;
+        address sellToken;
+        uint256 strategySellAmount;
+        uint256 sellAmount;
+        uint256 totalAmount;
+        uint256 relayerFee;
+        bool isRelayer;
+    }
+
     function fromChakra(
         FromChakraArg calldata _arg
     ) external revertIfPaused {
         require(isChakra[_arg._chakra]);
         require(_arg._sellToken != address(0));
 
+        FromChakraLocalVar memory vars;
+
         (
-            bool isRelayer,
-            address payable manager,
-            address strategySellToken,
-            uint256 strategySellAmount
+            vars.isRelayer,
+            vars.manager,
+            vars.strategySellToken,
+            vars.strategySellAmount
         ) = isRelayerSelling(_arg._chakra, _arg._sellToken, _arg._sellStrategyId, _arg._sellTokenIndex);
 
         // if sender is relayer, amount to trade is the amount specified in strategy
         // otherwise can be overwritten from function arg
-        uint256 sellAmount = isRelayer ? strategySellAmount : _arg._minQuoteToken;           // is this correct? _minQuoteToken == sellAMount ?
+        vars.sellAmount = vars.isRelayer ? vars.strategySellAmount : _arg._minQuoteToken;
         // same for sellToken
-        address sellToken = isRelayer ? strategySellToken : _arg._sellToken;
+        vars.sellToken = vars.isRelayer ? vars.strategySellToken : _arg._sellToken;
 
-        (uint256 totalAmount, uint256 relayerFee) = calcToChakra(_arg._chakra, sellToken, _arg._poolAmount, isRelayer);
+        (vars.totalAmount, vars.relayerFee) = calcToChakra(_arg._chakra, vars.sellToken, _arg._poolAmount, vars.isRelayer);
 
-        require(sellAmount <= totalAmount);
+        require(vars.sellAmount <= vars.totalAmount);
 
         IPSmartPool chakra = IPSmartPool(_arg._chakra);
 
@@ -469,28 +482,28 @@ contract MindfulProxy is Ownable {
         chakra.exitPool(_arg._poolAmount);
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], sellToken);
+            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], vars.sellToken);
             uint256 tokenAmountOut = UniLib.getAmountOut(amounts[i], reserveA, reserveB);
             IUniswapV2Exchange pair = IUniswapV2Exchange(
-                UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], sellToken)
+                UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], vars.sellToken)
             );
 
             // Uniswap V2 does not pull the token
             IERC20(tokens[i]).transfer(address(pair), amounts[i]);
 
-            if (token0Or1(sellToken, tokens[i]) == 0) {
+            if (token0Or1(vars.sellToken, tokens[i]) == 0) {
                 pair.swap(0, tokenAmountOut, address(this), new bytes(0));
             } else {
                 pair.swap(tokenAmountOut, 0, address(this), new bytes(0));
             }
         }
 
-        if(isRelayer) {
-            totalAmount = totalAmount.sub(relayerFee);
-            IERC20(sellToken).transfer(msg.sender, relayerFee);
+        if(vars.isRelayer) {
+            vars.totalAmount = vars.totalAmount.sub(vars.relayerFee);
+            IERC20(vars.sellToken).transfer(msg.sender, vars.relayerFee);
         }
 
-        IERC20(sellToken).transfer(manager, totalAmount);
+        IERC20(vars.sellToken).transfer(vars.manager, vars.totalAmount);
     }
 
     function saveEth() external onlyOwner {
