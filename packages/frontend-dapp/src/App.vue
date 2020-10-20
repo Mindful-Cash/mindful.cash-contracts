@@ -6,9 +6,11 @@
       </span>
       <div class="md-toolbar-section-end">
         <div class="md-layout md-gutter md-alignment-center-right">
-          <div class="md-layout-item" v-if="!userAddress">
-            <md-button class="md-raised md-accent" @click="connectWallet">🦊Connect</md-button>
-          </div>
+          <!-- <div class="md-layout-item" v-if="!userAddress">
+            <md-button class="md-raised md-accent connect-button-secondary" @click="connectWallet"
+              >🦊 Connect Wallet</md-button
+            >
+          </div> -->
           <div class="md-layout-item" v-if="userAddress">
             <div class="md-subheading">
               <clickable-address :light="true" :eth-address="userAddress" />
@@ -19,27 +21,18 @@
     </custom-navbar>
 
     <md-app-content>
+      <router-view />
       <div v-if="userAddress">
         <!-- <mining-transaction /> -->
-        <router-view />
-        <div class="phone-viewport">
-          <md-bottom-bar style="background: none">
-            <span style="text-align: center; width: 100%">
-              The future of mindful money with ❤️ by
-              <a href="https://github.com/Nicca42/News_Buff_V0.1" target="_blank">News Buff</a>
-              📰
-            </span>
-          </md-bottom-bar>
-        </div>
       </div>
-      <div style="padding-top: 20px; padding-left: 20px; padding-right: 20px" v-if="!userAddress">
-        <h1>Please connect your wallet</h1>
+      <div style="padding-top: 200px; padding-left: 20px; padding-right: 20px; color: #292929;" v-if="!userAddress">
+        <h1>Connect a Web3 wallet to get started</h1>
         <div
           class="md-layout-item"
           v-if="!userAddress"
           style="padding-top: 20px; padding-left: 20px; padding-right: 20px"
         >
-          <md-button class="md-raised md-accent" @click="connectWallet">🦊Connect</md-button>
+          <md-button class="md-raised md-accent connect-button" @click="connectWallet">🦊 Connect Wallet</md-button>
         </div>
       </div>
     </md-app-content>
@@ -79,6 +72,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css?family=Inter:400,500,600,700,400italic");
 @import url("https://fonts.googleapis.com/css?family=Space+Mono");
 @import url("https://fonts.googleapis.com/css?family=Coiny|Rubik");
 @import url("https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap");
@@ -96,7 +90,7 @@ export default {
 @import "~vue-material/dist/theme/all"; // Apply the theme
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+  font-family: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   color: red;
   font-size: 16px;
@@ -159,5 +153,25 @@ nav li.router-link-exact-active {
 
 .md-theme-default a {
   color: $darkgray;
+}
+
+.menu-link {
+  margin-top: 50px !important;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.connect-button {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%) !important;
+  border-radius: 8px !important;
+  width: 199px;
+  height: 40px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+  color: #ffffff !important;
+  text-transform: none !important;
 }
 </style>
