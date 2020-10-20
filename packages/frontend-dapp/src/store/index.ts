@@ -112,7 +112,7 @@ export default new Vuex.Store({
       await dispatch("getAllTokens");
 
       // Fetch the user chakras
-      await dispatch("getUserChakras");
+      await dispatch("getUserChakras", state.userAddress);
     },
 
     async setUpOnboard({ commit, state }) {
@@ -186,11 +186,11 @@ export default new Vuex.Store({
 
     // LOADING ACTIONS
 
-    async getUserChakras({ commit, state }) {
-      console.log("Getting chakras...", state.userAddress);
+    async getUserChakras({ commit, state }, userAddress) {
+      console.log("Getting chakras...", userAddress);
 
       // Get BPT from defiSDK
-      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(state.userAddress);
+      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(userAddress);
 
       // Add in additional token information such as price, logo ect from the all tokens object
       let userChakras = portfolioBalances.map(portfolioObject => {
@@ -353,6 +353,10 @@ export default new Vuex.Store({
       );
 
       // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
+    },
+    async getSampleUserChakra({ dispatch }) {
+      console.log("loading sample user")
+      await dispatch("getUserChakras", "0xdf2b2c1df64d58839320a07907d4181f336a737e");
     },
 
     async getAllTokens({ commit, state }) {

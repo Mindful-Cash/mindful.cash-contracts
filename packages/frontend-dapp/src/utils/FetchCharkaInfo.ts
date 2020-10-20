@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DeFiSDK } from "defi-sdk";
 import ethers from "ethers";
 export default class CharkaInfo {
@@ -11,9 +12,9 @@ export default class CharkaInfo {
   async fetchProtocolBalance(address: string) {
     console.log("fetchProtocolBalance", this.defiSdk);
     const portfolioBalances: any = await this.defiSdk.adapterRegistry.getAdapterBalance(
-      "0x512fce9b07ce64590849115ee6b32fd40ec0f5f3", // account address
+      address.toLowerCase(), // account address
       "0x581ae5af7afa6f8171bbf40d1981779f168a9523", // balancer adapter address
-      ["0x465534ef4cd0114a771d801c5e6bd2ce47913121"] // pool address (chakra) owned by (DAI/WETH)
+      ["0x6d59cf780d70927f022e3b827f31d6a6235a8d20"] // pool address (chakra) owned by (DAI/WETH)
     );
     console.log("getAdapterBalance", portfolioBalances);
 
