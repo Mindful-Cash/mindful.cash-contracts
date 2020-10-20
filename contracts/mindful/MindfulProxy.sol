@@ -171,15 +171,17 @@ contract MindfulProxy is Ownable {
         address _curreny,
         uint256 _poolAmount,
         bool isRelayer
-    ) public view returns (uint256) {
+    ) public view returns (uint256, uint256) {
         (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
 
         uint256 totalBaseAmount = 0;
+        uint256 relayerFee;
 
         for (uint256 i = 0; i < tokens.length; i++) {
             // enable recursive chakras
             if (isChakra[tokens[i]]) {
-                totalBaseAmount += calcToChakra(tokens[i], _curreny, amounts[i], isRelayer);
+                (uint256 internalTotalBaseAmount,) = calcToChakra(tokens[i], _curreny, amounts[i], isRelayer);
+                totalBaseAmount += internalTotalBaseAmount;
             } else {
                 (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
                     address(UNISWAP_FACTORY),
@@ -190,7 +192,11 @@ contract MindfulProxy is Ownable {
             }
         }
 
-        return totalBaseAmount;
+        if(isRelayer) {
+            relayerFee = totalBaseAmount.mul(300).div(10000);
+        }
+
+        return (totalBaseAmount, relayerFee);
     }
 
     function setImplementation(address _implementation) external onlyOwner {
@@ -398,7 +404,7 @@ contract MindfulProxy is Ownable {
         address baseToken = isRelayer ? strategyBaseToken : _baseToken;
 
         // this function below should return totalBaseAmount + fee in case sender relayer
-        uint256 requiredTotalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
+        (uint256 requiredTotalBaseAmount, uint256 relayerFee) = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
 
         // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
         // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
@@ -406,13 +412,15 @@ contract MindfulProxy is Ownable {
         // the requested number of pool tokens.
         require(baseAmount >= requiredTotalBaseAmount);
 
+        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
+
         // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
         // (buying too little pool tokens).
         if (isRelayer) {
             require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount);
-        }
 
-        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
+            IERC20(baseToken).transfer(msg.sender, relayerFee);
+        }
 
         _toChakra(_chakra, baseToken, _poolAmount);
 
@@ -422,39 +430,43 @@ contract MindfulProxy is Ownable {
         IERC20(chakra).transfer(manager, chakra.balanceOf(address(this)));
     }
 
+    struct FromChakraArg {
+        address _chakra;
+        address _sellToken;
+        uint256 _sellStrategyId;
+        uint256 _sellTokenIndex;
+        uint256 _poolAmount;
+        uint256 _minQuoteToken;
+    }
+
     function fromChakra(
-        address _chakra,
-        address _sellToken,
-        uint256 _sellStrategyId,
-        uint256 _sellTokenIndex,
-        uint256 _poolAmount,
-        uint256 _minQuoteToken
+        FromChakraArg calldata _arg
     ) external revertIfPaused {
-        require(isChakra[_chakra]);
-        require(_sellToken != address(0));
+        require(isChakra[_arg._chakra]);
+        require(_arg._sellToken != address(0));
 
         (
             bool isRelayer,
             address payable manager,
             address strategySellToken,
             uint256 strategySellAmount
-        ) = isRelayerSelling(_chakra, _sellToken, _sellStrategyId, _sellTokenIndex, _minQuoteToken);
+        ) = isRelayerSelling(_arg._chakra, _arg._sellToken, _arg._sellStrategyId, _arg._sellTokenIndex);
 
         // if sender is relayer, amount to trade is the amount specified in strategy
         // otherwise can be overwritten from function arg
-        uint256 sellAmount = isRelayer ? strategySellAmount : _minQuoteToken;           // is this correct? _minQuoteToken == sellAMount ?
+        uint256 sellAmount = isRelayer ? strategySellAmount : _arg._minQuoteToken;           // is this correct? _minQuoteToken == sellAMount ?
         // same for sellToken
-        address sellToken = isRelayer ? strategySellToken : _sellToken;
+        address sellToken = isRelayer ? strategySellToken : _arg._sellToken;
 
-        uint256 totalAmount = calcToChakra(_chakra, sellToken, _poolAmount, isRelayer);
+        (uint256 totalAmount, uint256 relayerFee) = calcToChakra(_arg._chakra, sellToken, _arg._poolAmount, isRelayer);
 
         require(sellAmount <= totalAmount);
 
-        IPSmartPool chakra = IPSmartPool(_chakra);
+        IPSmartPool chakra = IPSmartPool(_arg._chakra);
 
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
-        chakra.transferFrom(msg.sender, address(this), _poolAmount);
-        chakra.exitPool(_poolAmount);
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_arg._chakra).calcTokensForAmount(_arg._poolAmount);
+        chakra.transferFrom(msg.sender, address(this), _arg._poolAmount);
+        chakra.exitPool(_arg._poolAmount);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], sellToken);
@@ -473,7 +485,12 @@ contract MindfulProxy is Ownable {
             }
         }
 
-        IERC20(sellToken).transfer(msg.sender, totalAmount);
+        if(isRelayer) {
+            totalAmount = totalAmount.sub(relayerFee);
+            IERC20(sellToken).transfer(msg.sender, relayerFee);
+        }
+
+        IERC20(sellToken).transfer(manager, totalAmount);
     }
 
     function saveEth() external onlyOwner {
@@ -603,8 +620,7 @@ contract MindfulProxy is Ownable {
         address _chakra,
         address _sellToken,
         uint256 _sellStrategyId,
-        uint256 _tokenIndex,
-        uint256 _sellPrice
+        uint256 _tokenIndex
     ) internal returns (
             bool,
             address payable,
