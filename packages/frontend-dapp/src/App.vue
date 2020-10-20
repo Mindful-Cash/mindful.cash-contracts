@@ -89,7 +89,8 @@ export default {
   (
     primary: #000023,
     // The primary color of your brand
-      accent: #fc6161 // The secondary color of your brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+      accent: #fff,
+    // The secondary color of your brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
   )
 );
 @import "~vue-material/dist/theme/all"; // Apply the theme

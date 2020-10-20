@@ -30,18 +30,17 @@ export default {
 
 <style lang="scss" scoped>
 .segment {
-  width: 500px;
+  width: 100%;
   height: 40px;
-  border: 1px solid #dddddd;
-  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px #ddd;
+  border-radius: 0.5rem;
+  overflow: hidden;
   display: inline-block;
   vertical-align: middle;
 }
 
 .selectedSection {
   background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
-  border-radius: 8px;
-  width: 265px;
   height: 40px;
   font-family: Inter;
   font-style: normal;
@@ -57,12 +56,11 @@ export default {
   padding-top: 10px;
   cursor: pointer;
   transition: 0.3s;
+  border-radius: 0.5rem;
 }
 
 .notSelectedSection {
-  width: 250px;
   height: 40px;
-  border-radius: 8px;
   font-family: Inter;
   font-style: normal;
   font-weight: 500;
@@ -75,5 +73,6 @@ export default {
   cursor: pointer;
   transition: 0.3s;
   color: #aaaaaa;
+  border-radius: 0.5rem;
 }
 </style>

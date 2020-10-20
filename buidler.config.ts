@@ -47,7 +47,7 @@ const config: ExtendedBuidlerConfig = {
   solc: {
     version: "0.6.4",
     optimizer: {
-      runs: 200,
+      runs: 10,
       enabled: true,
     },
   },
