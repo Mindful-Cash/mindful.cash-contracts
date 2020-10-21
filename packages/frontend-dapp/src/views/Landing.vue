@@ -1,45 +1,66 @@
 <template>
-  <div class="landing md-layout">
-    <div class="md-layout md-layout-item md-size-100" id="nav">
-      <div id="logo" class="md-layout-item md-size-80">
+  <div class="landing">
+    <div class="md-layout" style="padding:20px;text-align:left">
+      <div class="md-layout-item md-size-10"></div>
+
+      <div class="md-layout-item">
         <img src="@/assets/svg/logo.svg" alt="logo" />
       </div>
-      <button class="md-layout-item md-size-20"><span class="highlight">Go to app</span></button>
+      <div class="md-layout-item" id="nav" style="text-align: right">
+        <button id="logo"><span class="highlight" style="cursor: pointer" @click="goToApp">Go to app</span></button>
+      </div>
+      <div class="md-layout-item md-size-10"></div>
     </div>
-    <div id="header" class="md-layout-item md-size-100">
-      <div class="md-layout md-gutter">
-        <div class="md-layout-item md-size-50">
-          <h1 class="heading">Portfolio Alignment for Degens</h1>
-          <p>
-            Create auto-rebalancing portfolios and implement mindful DCA strategies while automatically taking profits
-            on the way up.
-          </p>
-          <p class="highlight">Let your mindful self plan for your degen self's future.</p>
-          <div style="display: flex; align-items: left">
-            <button class="highlight-btn"><span>Align Your Chakras</span></button>
-          </div>
-          <div class="separator-container" style="margin-top: 10rem">
-            <div class="separator" />
-          </div>
+    <div id="header" class="md-layout">
+      <div class="md-layout-item md-size-10"></div>
+      <div class="md-layout-item  md-size-50">
+        <h1 class="heading">
+          Portfolio Alignment <br />
+          for Degens
+        </h1>
+        <p>
+          Create auto-rebalancing portfolios and implement mindful DCA strategies while automatically taking profits on
+          the way up.
+        </p>
+        <p class="highlight">Let your mindful self plan for your degen self's future.</p>
+        <div style="display: flex; align-items: left">
+          <button class="highlight-btn"><span>Align Your Chakras</span></button>
         </div>
-        <div class="md-layout-item md-size-50">
-          <div id="lotus" />
+        <div class="separator-container" style="margin-top: 10rem">
+          <div class="separator" />
         </div>
+      </div>
+      <div class="md-layout-item md-size-40">
+        <div id="lotus" />
       </div>
     </div>
 
-    <div id="rebalance" class="section md-layout-item md-size-100">
+    <div id="rebalance" class="section">
       <div class="md-layout md-gutter">
+        <div class="md-layout-item md-size-10"></div>
         <div class="md-layout-item md-size-70">
-          <h2 class="heading">Create Auto-Rebalancing Portfolios</h2>
+          <h2 class="heading">
+            Create<br />
+            Auto-Rebalancing<br />
+            Portfolios
+          </h2>
         </div>
         <div class="md-layout-item md-size-30" />
       </div>
-      <p>
-        Create bespoke portfolios - <span>”Chakras”</span> - when you’re feeling mindful. Your degen self will thank you
-        later.
-      </p>
-      <div class="md-layout-item md-size-100" id="defi-energy" />
+      <div class="md-layout md-gutter">
+        <div class="md-layout-item md-size-10"></div>
+        <div class="md-layout-item md-size-70">
+          <p>
+            Create bespoke portfolios - <span>”Chakras”</span> - when you’re feeling mindful. Your degen self will thank
+            you later.
+          </p>
+        </div>
+      </div>
+      <div class="md-layout">
+        <div class="md-layout-item md-size-10"></div>
+        <div class="md-layout-item md-size-80" id="defi-energy" />
+        <div class="md-layout-item md-size-10"></div>
+      </div>
       <div class="md-layout-item md-size-100 separator-container center">
         <div class="separator" />
       </div>
@@ -101,7 +122,20 @@
   </div>
 </template>
 
-<style lang="scss">
+<script>
+import router from "@/router";
+
+export default {
+  name: "landing",
+  methods: {
+    goToApp() {
+      router.push({ path: "/app" });
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
 @import "@/styles/reset.scss";
 @import "@/styles/variables.scss";
 
@@ -149,7 +183,7 @@ p {
   background: url("~@/assets/svg/lotus.svg") no-repeat;
   background-position-y: -50%;
   background-size: cover;
-  height: 80%;
+  height: 120%;
 }
 
 #chart {
@@ -203,8 +237,8 @@ p {
 }
 
 #nav {
-  margin-top: 2rem;
-  max-width: 1024px;
+  // margin-top: 2rem;
+  // max-width: 1024px;
 
   button {
     background: none;
@@ -216,18 +250,11 @@ p {
   }
 }
 
-#logo {
-  display: flex;
-  align-items: flex-start;
-  flex: 1;
-  width: 100%;
-}
-
 #header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-top: 6rem;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: flex-start;
+  // margin-top: 6rem;
 
   p,
   h1 {
@@ -247,7 +274,7 @@ p {
 }
 
 .landing {
-  background: #fff;
+  text-align: center !important;
   width: 100%;
   height: 100%;
 }
