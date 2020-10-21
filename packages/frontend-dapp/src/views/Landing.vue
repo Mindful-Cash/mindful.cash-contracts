@@ -7,7 +7,9 @@
         <img src="@/assets/svg/logo.svg" alt="logo" />
       </div>
       <div class="md-layout-item" id="nav" style="text-align: right">
-        <button id="logo"><span class="highlight" style="cursor: pointer" @click="goToApp">Go to app</span></button>
+        <button id="logo">
+          <span class="highlight" style="cursor: pointer;font-size: 16px;" @click="goToApp">Go to app</span>
+        </button>
       </div>
       <div class="md-layout-item md-size-10"></div>
     </div>
@@ -24,7 +26,9 @@
         </p>
         <p class="highlight">Let your mindful self plan for your degen self's future.</p>
         <div style="display: flex; align-items: left">
-          <button class="highlight-btn"><span>Align Your Chakras</span></button>
+          <button class="highlight-btn" style="cursor: pointer;font-size: 16px;" @click="goToApp">
+            <span>Align Your Chakras</span>
+          </button>
         </div>
         <div class="separator-container" style="margin-top: 10rem">
           <div class="separator" />
@@ -105,20 +109,22 @@
       <div class="separator" />
     </div>
 
-    <div id="guru" class="md-layout-item md-size-100">
+    <div id="guru" class="md-layout-item ">
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-10"></div>
         <div class="md-layout-item md-size-40 md-xsmall-size-100">
           <h2 class="heading">Find Your Guru</h2>
-          <p>
+          <p class="secondary-text">
             Browse and copy the <span class="highlight">most profitable strategies</span>, developed by the most mindful
             traders.
           </p>
           <div style="display: flex; align-items: left">
-            <button class="highlight-btn"><span class="highlight">Find A Guru</span></button>
+            <button class="highlight-btn" style="cursor: pointer;font-size: 16px;" @click="goToApp">
+              <span class="highlight">Find A Guru</span>
+            </button>
           </div>
         </div>
-        <div class="md-layout-item md-size-40">
+        <div class="md-layout-item md-size-50">
           <div class="md-xsmall-hide" id="guru-large" />
         </div>
       </div>
@@ -131,11 +137,13 @@
     <div class="section">
       <div class="md-layout md-alignment-top-center">
         <h2 class="heading">Silence Your Inner Degenerate</h2>
-        <p class="md-layout-item md-size-100">
+        <p class="md-layout-item md-size-100 secondary-text">
           Start aligning your Chakras today. Don’t throw away your next opportunity to build
           <span class="highlight">generation wealth.</span>
         </p>
-        <button class="highlight-btn"><span>Align Your Chakras</span></button>
+        <button class="highlight-btn" style="cursor: pointer;font-size: 16px;" @click="goToApp">
+          <span>Align Your Chakras</span>
+        </button>
       </div>
     </div>
 
@@ -165,7 +173,6 @@ p {
 }
 
 .landing {
-  background: #fff;
   width: 100%;
   height: 100%;
 }
@@ -173,10 +180,10 @@ p {
 // Images
 #guru-large {
   background: url("~@/assets/svg/guru-large.svg") no-repeat;
+  background-position-y: 25% !important;
   background-position-x: 100%;
-  background-position-y: -50%;
-  background-size: cover;
-  height: 120%;
+  background-size: contain;
+  height: 150%;
 }
 
 #lotus {
@@ -228,9 +235,9 @@ p {
 }
 
 #guru {
-  display: flex;
-  flex-direction: column;
-  height: 38rem;
+  // display: flex;
+  // flex-direction: column;
+  height: 40rem;
 
   p,
   h2 {
@@ -335,9 +342,6 @@ p {
   font-weight: normal;
   font-size: 20px;
   line-height: 24px;
-
-  /* Primary/Grey */
-
   color: #292929;
 }
 </style>
