@@ -12,10 +12,10 @@
         <div class="md-layout">
           <div class="md-layout-item md-size"></div>
           <div class="md-layout-item">
-            <md-button class="md-raised md-dense edit-button">Edit Strategy</md-button>
+            <md-button class="md-raised md-dense edit-button" @click="editStrategy = true">Edit Strategy</md-button>
           </div>
           <div class="md-layout-item">
-            <md-button class="md-raised md-dense pause-button">Pause DCA</md-button>
+            <md-button class="md-raised md-dense pause-button" @click="pauseStrategy = true">Pause DCA</md-button>
           </div>
         </div>
       </div>
@@ -45,6 +45,14 @@
 
     <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" v-if="tabIndex == 0" />
     <Asset-Breakdown :Assets="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 1" />
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="editStrategy">
+      <Edit-Strategy :chakraInfo="chakraInfo" />
+    </md-dialog>
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="pauseStrategy">
+      <Pause-Strategy :chakraInfo="chakraInfo" />
+    </md-dialog>
   </md-card>
 </template>
 
@@ -53,12 +61,14 @@ import { mapActions, mapState } from "vuex";
 
 import PortfolioChart from "./PortfolioChart";
 import AssetBreakdown from "./AssetBreakdown";
+import EditStrategy from "./EditStrategy";
+import PauseStrategy from "./PauseStrategy";
 import ChakraCoins from "@/components/elements/ChakraCoins";
 
 export default {
   name: "ChakraCard",
-  components: { PortfolioChart, ChakraCoins, AssetBreakdown },
-  data: () => ({ fomoIn: false, offer: 0, tabIndex: 0 }),
+  components: { PortfolioChart, ChakraCoins, AssetBreakdown, EditStrategy, PauseStrategy },
+  data: () => ({ fomoIn: false, offer: 0, tabIndex: 0, editStrategy: false, pauseStrategy: false }),
   props: {
     chakraInfo: {
       type: Object,
@@ -128,10 +138,6 @@ export default {
 .a:active {
   color: #fc6161;
   text-decoration: underline;
-}
-
-.md-dialog {
-  max-width: 768px;
 }
 
 .chakra-name-text {
@@ -213,5 +219,10 @@ export default {
 hr {
   border: 1px solid rgba(41, 41, 41, 0.1);
   margin-top: 0px;
+}
+.roundedDialog {
+  background: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px !important;
 }
 </style>

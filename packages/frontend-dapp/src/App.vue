@@ -1,8 +1,13 @@
 <template>
-  <md-app id="app" md-mode="reveal">
-    <custom-navbar slot="md-app-toolbar">
+  <md-app :id="this.$router.currentRoute.name != 'Home' ? 'app' : 'landing'" md-mode="reveal">
+    <div
+      class="custom-navbar"
+      style="text-align: left;padding:20px"
+      slot="md-app-toolbar"
+      v-if="this.$router.currentRoute.name != 'Home'"
+    >
       <span>
-        <img src="@/assets/svg/logo.svg" alt="logo" />
+        <img style="cursor: pointer; text-align: left" src="@/assets/svg/logo.svg" alt="logo" @click="goToLanding" />
       </span>
       <div class="md-toolbar-section-end">
         <div class="md-layout md-gutter md-alignment-center-right">
@@ -18,14 +23,40 @@
           </div>
         </div>
       </div>
-    </custom-navbar>
+    </div>
 
     <md-app-content>
       <router-view />
+      <div class="footer">
+        <div class="md-layout" style="text-align: center">
+          <div class="md-layout-item">
+            <img src="@/assets/svg/logo.svg" alt="logo" />
+          </div>
+          <div class="md-layout-item">
+            <span style="font-size: 16px;">
+              Created at EthOnline 2020
+            </span>
+          </div>
+          <div class="md-layout-item">
+            <a href="https://twitter.com/mindfulcash" target="_blank"
+              ><img class="footer-icon" src="@/assets/svg/icons/twitter.svg" alt="logo"
+            /></a>
+            <a href="https://github.com/Mindful-Cash/mindful.cash/" target="_blank">
+              <img class="footer-icon" src="@/assets/svg/icons/github.svg" alt="logo"
+            /></a>
+            <a href="https://medium.com/@mindful-cash" target="_blank">
+              <img class="footer-icon" src="@/assets/svg/icons/medium.svg" alt="logo"
+            /></a>
+          </div>
+        </div>
+      </div>
       <div v-if="userAddress">
         <!-- <mining-transaction /> -->
       </div>
-      <div style="padding-top: 200px; padding-left: 20px; padding-right: 20px; color: #292929;" v-if="!userAddress">
+      <div
+        style="padding-top: 200px; padding-left: 20px; padding-right: 20px; color: #292929;"
+        v-if="!userAddress && this.$router.currentRoute.name != 'Home'"
+      >
         <h1>Connect a Web3 wallet to get started</h1>
         <div
           class="md-layout-item"
@@ -45,16 +76,12 @@ import ClickableAddress from "@/components/widgets/ClickableAddress";
 
 import { mapActions, mapState } from "vuex";
 import router from "@/router";
-import ethers from "ethers";
 
 export default {
   name: "app",
   components: { ClickableAddress, MiningTransaction },
   data() {
     return {
-      ethers: null,
-      provider: null,
-      signer: null,
       menuVisible: false
     };
   },
@@ -62,6 +89,9 @@ export default {
     ...mapActions(["setUp"]),
     connectWallet() {
       this.setUp();
+    },
+    goToLanding() {
+      router.push({ path: "/landing" });
     }
   },
 
@@ -112,6 +142,15 @@ custom-navbar {
   text-align: center;
   min-height: 100vh;
   max-width: 1024px;
+  margin: 0px auto;
+  background: none;
+  overflow: visible !important;
+}
+
+#landing {
+  text-align: center;
+  min-height: 100vh;
+  max-width: 2024px;
   margin: 0px auto;
   background: none;
   overflow: visible !important;
@@ -173,5 +212,16 @@ nav li.router-link-exact-active {
   line-height: 17px;
   color: #ffffff !important;
   text-transform: none !important;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2.5rem;
+}
+
+.footer-icon {
+  padding-left: 8px;
+  padding-right: 8px;
 }
 </style>

@@ -43,6 +43,8 @@
       <hr />
       <div class="main-section" style="padding-top: 20px">
         <My-Chakras :createFlowOverride="createFlowOverride" v-if="tabIndex == 0 && userAddress" />
+        <Find-a-Guru v-if="tabIndex == 1 && userAddress" />
+        <Stats v-if="tabIndex == 2 && userAddress" />
       </div>
     </div>
   </div>
@@ -50,14 +52,16 @@
 
 <script>
 import MyChakras from "@/views/MyChakras";
-import ChakraFlow from "@/views/ChakraFlow";
+import FindAGuru from "@/views/FindAGuru";
+import Stats from "@/views/Stats";
+
 // import guru from "@/assets/svg/guru.svg";
 // import chakra from "./assets/svg/chakra.svg";
 import { mapActions, mapState } from "vuex";
 
 export default {
   name: "Home",
-  components: { MyChakras },
+  components: { MyChakras, FindAGuru, Stats },
   data() {
     return { tabIndex: 0, createFlowOverride: false };
   },
