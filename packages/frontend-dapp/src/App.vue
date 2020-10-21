@@ -22,6 +22,29 @@
 
     <md-app-content>
       <router-view />
+      <div class="footer">
+        <div class="md-layout" style="text-align: center">
+          <div class="md-layout-item">
+            <img src="@/assets/svg/logo.svg" alt="logo" />
+          </div>
+          <div class="md-layout-item">
+            <span style="font-size: 16px;">
+              Created at EthOnline 2020
+            </span>
+          </div>
+          <div class="md-layout-item">
+            <a href="https://twitter.com/mindfulcash" target="_blank"
+              ><img class="footer-icon" src="@/assets/svg/icons/twitter.svg" alt="logo"
+            /></a>
+            <a href="https://github.com/Mindful-Cash/mindful.cash/" target="_blank">
+              <img class="footer-icon" src="@/assets/svg/icons/github.svg" alt="logo"
+            /></a>
+            <a href="https://medium.com/@mindful-cash" target="_blank">
+              <img class="footer-icon" src="@/assets/svg/icons/medium.svg" alt="logo"
+            /></a>
+          </div>
+        </div>
+      </div>
       <div v-if="userAddress">
         <!-- <mining-transaction /> -->
       </div>
@@ -173,5 +196,16 @@ nav li.router-link-exact-active {
   line-height: 17px;
   color: #ffffff !important;
   text-transform: none !important;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2.5rem;
+}
+
+.footer-icon {
+  padding-left: 8px;
+  padding-right: 8px;
 }
 </style>
