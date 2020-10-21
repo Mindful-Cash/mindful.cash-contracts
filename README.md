@@ -1,6 +1,6 @@
-# Pie Smart Pools
+# Mindful Cash
 
-**Pie Smart Pools** are asset management agnostic(currently Balancer only) **D**ecentralised **T**raded **F**unds. They share a common interface to make them easy to integrate in other products.
+**Chakras** are asset management agnostic(currently Balancer only) **D**ecentralised **T**raded **F**unds. They share a common interface to make them easy to integrate in other products.
 
 All Smart Pools are fully upgradeable to make it easy to add features and optimise gas usage at later stages.
 
@@ -91,10 +91,3 @@ Some pools have a cap which limits the totalSupply of the pool shares token. To 
 ```solidity
 function getCap() external view returns(uint256);
 ```
-
-## Deployed Pools
-
-| Name         | Symbol | Address                                                                                                                       | Type            |
-|--------------|--------|-------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| PieDAO BTC++ | BTC++  | [0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd](https://etherscan.io/address/0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd) | Balancer Capped |
-| PieDAO USD++ | USD++  | [0x9a48bd0ec040ea4f1d3147c025cd4076a2e71e3e](https://etherscan.io/address/0x9a48bd0ec040ea4f1d3147c025cd4076a2e71e3e) | Balancer Capped |

@@ -139,27 +139,27 @@ describe("Sell strategy", () => {
     expect(await mindfulProxy.sellStrategyChakra(1)).to.eq(chakraAddress);
   });
   
-  it('should disable created startegy', async () => {
-    const chakraAddress = (await mindfulProxy.getChakras())[0];
-    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
+  // it('should disable created startegy', async () => {
+  //   const chakraAddress = (await mindfulProxy.getChakras())[0];
+  //   const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
 
-    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
+  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
 
-    await mindfulProxy.disableSellStrategy(chakraAddress, sellStrategyid);
+  //   await mindfulProxy.disableSellStrategy(chakraAddress, sellStrategyid);
 
-    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
-  })
+  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
+  // })
   
-  it('should enable a disabled sell startegy', async () => {
-    const chakraAddress = (await mindfulProxy.getChakras())[0];
-    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
+  // it('should enable a disabled sell startegy', async () => {
+  //   const chakraAddress = (await mindfulProxy.getChakras())[0];
+  //   const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
 
-    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
+  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
 
-    await mindfulProxy.enableSellStrategy(chakraAddress, sellStrategyid);
+  //   await mindfulProxy.enableSellStrategy(chakraAddress, sellStrategyid);
 
-    expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
-  })
+  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
+  // })
 
   it('should update a specific sell strategy', async () => {
     const chakraAddress = (await mindfulProxy.getChakras())[0];

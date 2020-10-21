@@ -163,68 +163,6 @@ describe("Create Chakra functionality", () => {
     });
   });
 
-  describe('Sell strategy', async () => {
-    // before(async () => {
-    //   await mindfulProxy.newProxiedSmartPool(
-    //     NAME,
-    //     SYMBOL,
-    //     constants.WeiPerEther,
-    //     tokens.map((token) => token.address),
-    //     amounts,
-    //     weights,
-    //     INITIAL_SUPPLY
-    //   );
-    // });
-
-    it('test', async () => {
-      await mindfulProxy.newProxiedSmartPool(
-        NAME,
-        SYMBOL,
-        constants.WeiPerEther,
-        tokens.map((token) => token.address),
-        amounts,
-        weights,
-        INITIAL_SUPPLY
-      );
-
-      console.log((await mindfulProxy.getChakras()).length)
-    })
-    
-    it('should add sell strategy', async () => {
-      const chakraAddress = (await mindfulProxy.getChakras())[0];
-
-      console.log('add', chakraAddress)
-
-      let startegyName = "Strategy 1";
-      let prices = [];
-      let sellOtokens = [];
-
-      prices.push(constants.WeiPerEther.mul(10000000000));
-      prices.push(constants.WeiPerEther.mul(12000000000));
-      prices.push(constants.WeiPerEther.mul(20000000000));
-      sellOtokens.push(usdcToken.address);
-      sellOtokens.push(usdcToken.address);
-      sellOtokens.push(usdcToken.address);
-
-      await mindfulProxy.addSellStrategy(chakraAddress, startegyName, sellOtokens, prices);
-
-      expect((await mindfulProxy.getSellStrategies()).length).to.eq(1);
-      expect((await mindfulProxy.getSellStrategies())[0].name).to.eq(startegyName);
-      expect(await mindfulProxy.sellStrategyChakra(1)).to.eq(chakraAddress);
-    })
-
-    it('should disable created startegy', async () => {
-      const chakraAddress = (await mindfulProxy.getChakras())[0];
-      const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
-
-      expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
-
-      await mindfulProxy.disableSellStrategy(chakraAddress, sellStrategyid);
-
-      expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
-    })
-  })
-
   describe("Toggle pause", () => {
     it("should revert pausing from non-owner", async () => {
       const localMindfulProxy = MindfulProxyFactory.connect(mindfulProxy.address, signers[3]);
