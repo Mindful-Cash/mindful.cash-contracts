@@ -1,31 +1,35 @@
 <template>
   <div class="page-container">
-    <div class="md-layout" v-if="chakras.length != 0 && !createFlowEnabled">
-      <div class="md-layout-item">
-        <transition-group name="fadeUp" tag="ul">
-          <Chakra-Card
-            v-for="chakra in chakras"
-            :chakraInfo="chakra"
-            class="chakra-card"
-            style="margin: 20px"
-            :key="chakra.metaData.smartPoolAddress"
-          />
-        </transition-group>
+    <div v-if="chakras == null">
+      LOADING
+    </div>
+    <div v-if="chakras != null">
+      <div class="md-layout" v-if="chakras.length != 0 && !createFlowEnabled">
+        <div class="md-layout-item">
+          <transition-group name="fadeUp" tag="ul">
+            <Chakra-Card
+              v-for="chakra in chakras"
+              :chakraInfo="chakra"
+              class="chakra-card"
+              style="margin: 20px"
+              :key="chakra.metaData.smartPoolAddress"
+            />
+          </transition-group>
+        </div>
+      </div>
+      <div class="md-layout" v-if="chakras.length == 0 && !createFlowEnabled">
+        <div class="md-layout-item">
+          <md-content>
+            <div style="padding-top: 200px; padding-left: 20px; padding-right: 20px; color: #292929;">
+              <h1>You don’t have any Chakras yet...</h1>
+            </div>
+
+            <md-button class="create-button" @click="createFlow = true">Create Chakra</md-button>
+            <p class="sample-chakra" @click="loadSampleChakra">Or load a sample Chakra</p>
+          </md-content>
+        </div>
       </div>
     </div>
-    <div class="md-layout" v-if="chakras.length == 0 && !createFlowEnabled">
-      <div class="md-layout-item">
-        <md-content>
-          <div style="padding-top: 200px; padding-left: 20px; padding-right: 20px; color: #292929;">
-            <h1>You don’t have any Chakras yet...</h1>
-          </div>
-
-          <md-button class="create-button" @click="createFlow = true">Create Chakra</md-button>
-          <p class="sample-chakra" @click="loadSampleChakra">Or load a sample Chakra</p>
-        </md-content>
-      </div>
-    </div>
-
     <Chakra-Flow v-if="createFlowEnabled == true" />
   </div>
 </template>

@@ -33,7 +33,7 @@ export default new Vuex.Store({
     charkaInfo: null,
     protocolBalances: null,
     walletTokens: [],
-    chakras: [],
+    chakras: null,
     allTokens: []
   },
   mutations: {
@@ -229,7 +229,9 @@ export default new Vuex.Store({
           }
         });
       }
-
+      if (userChakras.length == 0) {
+        commit("setChakras", []);
+      }
       userChakras.forEach(async (chakra, chakraIndex) => {
         console.log("FOR");
         let chakraChartPromises = [];
@@ -355,7 +357,7 @@ export default new Vuex.Store({
       // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
     },
     async getSampleUserChakra({ dispatch }) {
-      console.log("loading sample user")
+      console.log("loading sample user");
       await dispatch("getUserChakras", "0xdf2b2c1df64d58839320a07907d4181f336a737e");
     },
 

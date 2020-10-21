@@ -9,15 +9,15 @@ const fetchWalletTokens = async (userAddress: string) => {
       Accept: "application/json",
       "Content-Type": "application/json",
       "x-amberdata-blockchain-id": "ethereum-mainnet",
-      "x-api-key": `UAKc873f4aac1791df4e7f488e58ffaefde`, //`${process.env.VUE_APP_AMBER_API || "UAKc873f4aac1791df4e7f488e58ffaefde"}`
-    },
+      "x-api-key": `UAKc873f4aac1791df4e7f488e58ffaefde` //`${process.env.VUE_APP_AMBER_API || "UAKc873f4aac1791df4e7f488e58ffaefde"}`
+    }
   });
 
   const walletTokens = await response.json();
   console.log("walletTokens", walletTokens);
 
   const processedWalletTokens = {};
-  walletTokens.payload.records.forEach((record) => {
+  walletTokens.payload.records.forEach(record => {
     if (record.isERC20) processedWalletTokens[record.address] = record.amount;
   });
 
@@ -31,8 +31,8 @@ const fetchAllTokens = async () => {
   const response = await fetch(query, {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   const tokenList = await response.json();
@@ -52,8 +52,8 @@ const fetchTokenPrices = async (tokens: []) => {
   const response = await fetch(query, {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   const tokensPrices = await response.json();
@@ -68,8 +68,8 @@ const fetchHistoricTokenPrices = async (tokenAddress: string, lookbackDays: numb
   const response = await fetch(query, {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   const priceResponse = await response.json();
