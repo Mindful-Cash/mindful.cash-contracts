@@ -3,6 +3,8 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import VueMaterial from "vue-material";
+import VueSimpleSVG from "vue-simple-svg";
+
 import "vue-material/dist/vue-material.min.css";
 
 import VueSlider from "vue-slider-component";
@@ -22,10 +24,12 @@ Vue.component("apexchart", VueApexCharts);
 Vue.component("VueSlider", VueSlider);
 Vue.component("jazzicon", Jazzicon);
 
+Vue.use(VueSimpleSVG);
 Vue.use(ToggleButton);
 Vue.use(VueApexCharts);
 Vue.use(VueMaterial);
 Vue.use(VModal);
+
 Vue.config.productionTip = false;
 
 new Vue({

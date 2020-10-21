@@ -4,7 +4,7 @@ import {
   fetchWalletTokens,
   fetchAllTokens,
   fetchTokenPrices,
-  fetchHistoricTokenPrices,
+  fetchHistoricTokenPrices
 } from "../utils/FetchWalletTokens";
 
 import Onboard from "bnc-onboard";
@@ -33,8 +33,8 @@ export default new Vuex.Store({
     charkaInfo: null,
     protocolBalances: null,
     walletTokens: [],
-    chakras: [],
-    allTokens: [],
+    chakras: null,
+    allTokens: []
   },
   mutations: {
     setSigner(state, signer) {
@@ -96,7 +96,7 @@ export default new Vuex.Store({
       state.protocolBalances = protocolBalances;
       console.log("protocolBalances set to: ");
       console.log(state.protocolBalances);
-    },
+    }
   },
   actions: {
     async setUp({ dispatch, state }) {
@@ -112,7 +112,7 @@ export default new Vuex.Store({
       await dispatch("getAllTokens");
 
       // Fetch the user chakras
-      await dispatch("getUserChakras");
+      await dispatch("getUserChakras", state.userAddress);
     },
 
     async setUpOnboard({ commit, state }) {
@@ -143,10 +143,10 @@ export default new Vuex.Store({
               commit("setProvider", null);
               commit("setCurrentNetwork", null);
             }
-          },
+          }
         },
         walletSelect: config(state.currentNetwork).onboardConfig.onboardWalletSelect,
-        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck,
+        walletCheck: config(state.currentNetwork).onboardConfig.walletCheck
       });
 
       await onboardInstance.walletSelect();
@@ -186,24 +186,24 @@ export default new Vuex.Store({
 
     // LOADING ACTIONS
 
-    async getUserChakras({ commit, state }) {
-      console.log("Getting chakras...", state.userAddress);
+    async getUserChakras({ commit, state }, userAddress) {
+      console.log("Getting chakras...", userAddress);
 
       // Get BPT from defiSDK
-      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(state.userAddress);
+      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(userAddress);
 
       // Add in additional token information such as price, logo ect from the all tokens object
-      let userChakras = portfolioBalances.map((portfolioObject) => {
+      let userChakras = portfolioBalances.map(portfolioObject => {
         return {
           ...portfolioObject,
-          underlyingTokens: portfolioObject.underlyingTokens.map((token) => {
+          underlyingTokens: portfolioObject.underlyingTokens.map(token => {
             return {
-              ...state.allTokens.filter((obj) => {
+              ...state.allTokens.filter(obj => {
                 return obj.address === token.address;
               })[0],
-              ...token,
+              ...token
             };
-          }),
+          })
         };
       });
 
@@ -229,11 +229,21 @@ export default new Vuex.Store({
           }
         });
       }
-
+      if (userChakras.length == 0) {
+        commit("setChakras", []);
+      }
       userChakras.forEach(async (chakra, chakraIndex) => {
         console.log("FOR");
         let chakraChartPromises = [];
-        chakra.underlyingTokens.forEach((token) => {
+        chakra.underlyingTokens.forEach((token, chakraTokenIndex) => {
+          // set the price information
+          userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].valueInChakra = Number(
+            (parseInt(token.amountInCharka, 10) * Number(token.price)).toFixed(2)
+          );
+          userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].amountInCharkaRounded = Number(
+            Number(token.amountInCharka).toFixed(2)
+          );
+
           console.log("TOKENZZZ", token);
           chakraChartPromises.push(fetchHistoricTokenPrices(token.address, lookback));
         });
@@ -241,14 +251,15 @@ export default new Vuex.Store({
         console.log("userChakras", userChakras);
         console.log("allChartInfo", allChartInfo);
 
-        let cumlativeChartInfo = [];
-        for (let i = 0; i < numDataPoints + 1; i++) {
-          const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
+        // build chart information
+        allChartInfo.forEach((chartInfo, index) => {
+          const chartInfoTimeStamps = chartInfo.map(x => x[0]);
+          let cumlativeChartInfo = [];
+          for (let i = 0; i < numDataPoints + 1; i++) {
+            const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
 
-          let cumlativeValuePoint = 0;
+            let cumlativeValuePoint = 0;
 
-          allChartInfo.forEach((chartInfo, index) => {
-            const chartInfoTimeStamps = chartInfo.map((x) => x[0]);
             const closestChartInfoTimeStamp = closest(dataPointTimeStamp, chartInfoTimeStamps);
 
             // const chartDataPointPrice = chartInfo[]
@@ -256,36 +267,78 @@ export default new Vuex.Store({
             const indexOfClosestTimeStamp = chartInfoTimeStamps.indexOf(closestChartInfoTimeStamp);
 
             const portfolioValueFromTokenAtTimestamp =
-              chartInfo.map((x) => x[1])[indexOfClosestTimeStamp] *
-              Number(chakra.underlyingTokens[index].amountInCharka);
+              chartInfo.map(x => x[1])[indexOfClosestTimeStamp] * Number(chakra.underlyingTokens[index].amountInCharka);
             cumlativeValuePoint += portfolioValueFromTokenAtTimestamp;
+
+            cumlativeChartInfo.push([
+              dataPointTimeStamp, // timestamp
+              Number(cumlativeValuePoint).toFixed(0) // cumlative portfolio value at given timest
+            ]);
+          }
+
+          userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
+          userChakras[chakraIndex].dcaStratergies = [
+            {
+              type: "dcaIn",
+              token: {
+                address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+                amount: "694230902983134993",
+                amountInCharka: "6.511285732428220037",
+                amountRounded: "0.6942",
+                chainId: 1,
+                decimals: 18,
+                logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
+                name: "yearn.finance",
+                price: 15204.79,
+                symbol: "YFI",
+                value: "10555.17"
+              }
+            }
+          ];
+
+          // Add 7 day timestamp lookback to
+          const sevenDayTimestamp = moment(moment().subtract(7, "days")).valueOf();
+          const closestChartInfoTimeTo7DaysAgo = closest(sevenDayTimestamp, chartInfoTimeStamps);
+          console.log(
+            "sevenDayTimestamp",
+            sevenDayTimestamp,
+            "closestChartInfoTimeTo7DaysAgo",
+            closestChartInfoTimeTo7DaysAgo
+          );
+          console.log("closestChartInfoTimeTo7DaysAgo", closestChartInfoTimeTo7DaysAgo);
+          const indexSevenDaysAgo = chartInfoTimeStamps.indexOf(closestChartInfoTimeTo7DaysAgo);
+          console.log("ZOINK");
+          console.log(
+            "numbers",
+            Number(userChakras[chakraIndex].underlyingTokens[index].price),
+            chartInfo.map(x => x[1])[indexSevenDaysAgo]
+          );
+          userChakras[chakraIndex].underlyingTokens[index].sevenDayChange = Number(
+            Number(
+              ((Number(userChakras[chakraIndex].underlyingTokens[index].price) -
+                chartInfo.map(x => x[1])[indexSevenDaysAgo]) /
+                chartInfo.map(x => x[1])[indexSevenDaysAgo]) *
+                100
+            ).toFixed(2)
+          );
+        });
+
+        // calculate the fraction each token within the pool is within the chakra
+        userChakras.forEach(async (c, ci) => {
+          console.log("FOR");
+          let totalChakraValue = 0;
+          // calculate total chkara value
+          chakra.underlyingTokens.forEach((t, ti) => {
+            totalChakraValue += t.valueInChakra;
+            console.log("totalChakraValue");
           });
-
-          cumlativeChartInfo.push([
-            dataPointTimeStamp, // timestamp
-            Number(cumlativeValuePoint).toFixed(0), // cumlative portfolio value at given timest
-          ]);
-        }
-
-        userChakras[chakraIndex].chartInfo = cumlativeChartInfo;
-        userChakras[chakraIndex].dcaStratergies = [
-          {
-            type: "dcaIn",
-            token: {
-              address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
-              amount: "694230902983134993",
-              amountInCharka: "6.511285732428220037",
-              amountRounded: "0.6942",
-              chainId: 1,
-              decimals: 18,
-              logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
-              name: "yearn.finance",
-              price: 15204.79,
-              symbol: "YFI",
-              value: "10555.17",
-            },
-          },
-        ];
+          // set contributions
+          chakra.underlyingTokens.forEach((t, ti) => {
+            userChakras[ci].underlyingTokens[ti].contribution = Number(
+              (t.valueInChakra / totalChakraValue) * 100
+            ).toFixed(1);
+          });
+        });
         commit("setChakras", userChakras);
       });
 
@@ -303,6 +356,10 @@ export default new Vuex.Store({
 
       // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
     },
+    async getSampleUserChakra({ dispatch }) {
+      console.log("loading sample user");
+      await dispatch("getUserChakras", "0xdf2b2c1df64d58839320a07907d4181f336a737e");
+    },
 
     async getAllTokens({ commit, state }) {
       console.log("Getting setWalletTokens...", state.walletTokens);
@@ -313,28 +370,28 @@ export default new Vuex.Store({
       console.log("Getting getAllTokens...", state.allTokens);
 
       const allTokens = await fetchAllTokens();
-      console.log("ZETA", await fetchTokenPrices(allTokens.slice(0, 150).map((token) => token.address.toLowerCase())));
+      console.log("ZETA", await fetchTokenPrices(allTokens.slice(0, 150).map(token => token.address.toLowerCase())));
 
       const tokenPricesPromiseResponse = await Promise.all([
-        fetchTokenPrices(allTokens.slice(0, 150).map((token) => token.address.toLowerCase())),
-        fetchTokenPrices(allTokens.slice(151, 301).map((token) => token.address.toLowerCase())),
-        fetchTokenPrices(allTokens.slice(302, allTokens.length - 1).map((token) => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(0, 150).map(token => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(151, 301).map(token => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(302, allTokens.length - 1).map(token => token.address.toLowerCase()))
       ]);
 
       let tokenPrices = {};
-      tokenPricesPromiseResponse.forEach((response) => {
+      tokenPricesPromiseResponse.forEach(response => {
         tokenPrices = { ...tokenPrices, ...response };
       });
 
       console.log("allTokens", allTokens);
 
-      const allTokensRightNetwork = allTokens.filter((token) => {
+      const allTokensRightNetwork = allTokens.filter(token => {
         return token.chainId === state.currentNetworkId;
       });
 
       console.log("allTokensRightNetwork", allTokensRightNetwork);
 
-      const joinedTokenArrays = allTokensRightNetwork.map((tokenObject) => {
+      const joinedTokenArrays = allTokensRightNetwork.map(tokenObject => {
         console.log("tokenObject.address.toLowerCase()", tokenObject.address.toLowerCase());
 
         tokenObject.amount = walletTokens[tokenObject.address.toLowerCase()]
@@ -343,15 +400,17 @@ export default new Vuex.Store({
 
         tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
           ? Number(
-              ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
-            ).toFixed(4)
+              Number(
+                ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+              ).toFixed(4)
+            )
           : Number(0).toFixed(4);
 
         tokenObject.price = tokenPrices[tokenObject.address.toLowerCase()]
           ? tokenPrices[tokenObject.address.toLowerCase()].usd
           : "0";
 
-        tokenObject.value = (Number(tokenObject.amountRounded) * Number(tokenObject.price)).toFixed(2);
+        tokenObject.value = Number((Number(tokenObject.amountRounded) * Number(tokenObject.price)).toFixed(2));
 
         if (tokenObject.amount !== "0") {
           console.log("tokenObject", tokenObject);
@@ -360,7 +419,7 @@ export default new Vuex.Store({
       });
       const sortedWalletBalances = joinedTokenArrays.sort((a, b) => (Number(a.value) < Number(b.value) ? 1 : -1));
       commit("setAllTokens", sortedWalletBalances);
-    },
+    }
   },
-  modules: {},
+  modules: {}
 });

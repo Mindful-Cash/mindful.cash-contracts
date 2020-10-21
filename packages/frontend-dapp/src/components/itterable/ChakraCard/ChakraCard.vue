@@ -21,7 +21,30 @@
       </div>
     </div>
     <!-- {{ dcaToken }} -->
-    <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" />
+
+    <div class="md-layout" style="text-align: left">
+      <div class="md-layout-item">
+        <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0">
+          <img v-if="tabIndex == 0" src="@/assets/svg/icons/chakra-active.svg" alt="logo" />
+          <img v-if="tabIndex != 0" src="@/assets/svg/icons/chakra-inactive.svg" alt="logo" />
+          Overview</md-button
+        >
+        <md-button :class="tabIndex == 1 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 1">
+          <img v-if="tabIndex == 1" src="@/assets/svg/icons/breakdown-active.svg" alt="logo" />
+          <img v-if="tabIndex != 1" src="@/assets/svg/icons/breakdown-inactive.svg" alt="logo" />
+          Asset Breakdown</md-button
+        >
+        <md-button :class="tabIndex == 2 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 2">
+          <img v-if="tabIndex == 2" src="@/assets/svg/icons/history-active.svg" alt="logo" />
+          <img v-if="tabIndex != 2" src="@/assets/svg/icons/history-inactive.svg" alt="logo" />
+          History</md-button
+        >
+      </div>
+    </div>
+    <hr />
+
+    <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" v-if="tabIndex == 0" />
+    <Asset-Breakdown :Assets="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 1" />
   </md-card>
 </template>
 
@@ -29,17 +52,18 @@
 import { mapActions, mapState } from "vuex";
 
 import PortfolioChart from "./PortfolioChart";
+import AssetBreakdown from "./AssetBreakdown";
 import ChakraCoins from "@/components/elements/ChakraCoins";
 
 export default {
   name: "ChakraCard",
-  components: { PortfolioChart, ChakraCoins },
-  data: () => ({ fomoIn: false, offer: 0 }),
+  components: { PortfolioChart, ChakraCoins, AssetBreakdown },
+  data: () => ({ fomoIn: false, offer: 0, tabIndex: 0 }),
   props: {
     chakraInfo: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   computed: {
     pageUrl() {
@@ -59,11 +83,11 @@ export default {
       if (this.chakraInfo.dcaStratergies) {
         return this.chakraInfo.dcaStratergies[0].token;
       } else return null;
-    },
+    }
   },
   methods: {
-    ...mapActions(["X"]),
-  },
+    ...mapActions(["X"])
+  }
 };
 </script>
 
@@ -126,13 +150,14 @@ export default {
   border-radius: 8px;
   font-family: Inter;
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 500 !important;
+  font-size: 14px !important;
   line-height: 17px;
   display: flex;
   align-items: center;
   text-align: center;
   color: #ffffff !important;
+  text-transform: none;
 }
 
 .pause-button {
@@ -140,12 +165,53 @@ export default {
   border-radius: 8px;
   font-family: Inter;
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 500 !important;
+  font-size: 14px !important;
   line-height: 17px;
   display: flex;
   align-items: center;
   text-align: center;
   color: #ffffff !important;
+  text-transform: none;
+}
+
+.not-selected-tab {
+  width: 175px;
+  text-transform: none;
+  margin-bottom: 0px !important;
+  border-radius: 0 !important;
+}
+
+.selected-tab {
+  border-bottom: none;
+  width: 175px;
+  color: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%) !important;
+  // color: #27c8d2 !important;
+  text-transform: none;
+  font-weight: 800 !important;
+  font-family: Inter;
+  font-style: normal;
+  font-size: 16px !important;
+  line-height: 17px;
+  transition: all ease-in-out 0.5s;
+  margin-bottom: 0px !important;
+  border-radius: 0 !important;
+}
+.selected-tab:after {
+  content: "";
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  display: block;
+  height: 3px;
+  width: 175px;
+  position: absolute;
+  bottom: 0;
+  transition: all ease-in-out 0.5s;
+  margin-bottom: 0px !important;
+  border-radius: 0 !important;
+}
+
+hr {
+  border: 1px solid rgba(41, 41, 41, 0.1);
+  margin-top: 0px;
 }
 </style>
