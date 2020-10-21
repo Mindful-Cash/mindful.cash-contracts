@@ -169,9 +169,8 @@ contract MindfulProxy is Ownable {
     function calcToChakra(
         address _chakra,
         address _curreny,
-        uint256 _poolAmount,
-        bool isRelayer
-    ) public view returns (uint256, uint256) {
+        uint256 _poolAmount
+    ) public view returns (uint256) {
         (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
 
         uint256 totalBaseAmount = 0;
@@ -180,7 +179,7 @@ contract MindfulProxy is Ownable {
         for (uint256 i = 0; i < tokens.length; i++) {
             // enable recursive chakras
             if (isChakra[tokens[i]]) {
-                (uint256 internalTotalBaseAmount,) = calcToChakra(tokens[i], _curreny, amounts[i], isRelayer);
+                uint256 internalTotalBaseAmount = calcToChakra(tokens[i], _curreny, amounts[i]);
                 totalBaseAmount += internalTotalBaseAmount;
             } else {
                 (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
@@ -192,11 +191,7 @@ contract MindfulProxy is Ownable {
             }
         }
 
-        if(isRelayer) {
-            relayerFee = totalBaseAmount.mul(300).div(10000);
-        }
-
-        return (totalBaseAmount, relayerFee);
+        return totalBaseAmount;
     }
 
     function setImplementation(address _implementation) external onlyOwner {
@@ -403,21 +398,28 @@ contract MindfulProxy is Ownable {
         // same for baseToken
         address baseToken = isRelayer ? strategyBaseToken : _baseToken;
 
-        // this function below should return totalBaseAmount + fee in case sender relayer
-        (uint256 requiredTotalBaseAmount, uint256 relayerFee) = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
+        // this function below should return totalBaseAmount + fee in case sender relayer // split this out
+        uint256 requiredTotalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount);
+
+        // Relayer fee
+        uint256 relayerFee;
+
+        if(isRelayer) {
+            relayerFee = requiredTotalBaseAmount.mul(300).div(10000);
+        }
 
         // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
         // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
         // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
         // the requested number of pool tokens.
-        require(baseAmount >= requiredTotalBaseAmount);
+        require(baseAmount >= requiredTotalBaseAmount.add(relayerFee));
 
         require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
 
         // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
         // (buying too little pool tokens).
         if (isRelayer) {
-            require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount);
+            require(requiredTotalBaseAmount.mul(95).div(100) < baseAmount);
 
             IERC20(baseToken).transfer(msg.sender, relayerFee);
         }
@@ -471,7 +473,14 @@ contract MindfulProxy is Ownable {
         // same for sellToken
         vars.sellToken = vars.isRelayer ? vars.strategySellToken : _arg._sellToken;
 
-        (vars.totalAmount, vars.relayerFee) = calcToChakra(_arg._chakra, vars.sellToken, _arg._poolAmount, vars.isRelayer);
+        vars.totalAmount = calcToChakra(_arg._chakra, vars.sellToken, _arg._poolAmount);
+
+        // Relayer fee
+        uint256 relayerFee;
+
+        if(vars.isRelayer) {
+            relayerFee = vars.totalAmount.mul(300).div(10000);
+        }
 
         require(vars.sellAmount <= vars.totalAmount);
 
