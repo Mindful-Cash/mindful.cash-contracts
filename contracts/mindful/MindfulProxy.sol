@@ -169,17 +169,18 @@ contract MindfulProxy is Ownable {
     function calcToChakra(
         address _chakra,
         address _curreny,
-        uint256 _poolAmount,
-        bool isRelayer
+        uint256 _poolAmount
     ) public view returns (uint256) {
         (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
 
         uint256 totalBaseAmount = 0;
+        uint256 relayerFee;
 
         for (uint256 i = 0; i < tokens.length; i++) {
             // enable recursive chakras
             if (isChakra[tokens[i]]) {
-                totalBaseAmount += calcToChakra(tokens[i], _curreny, amounts[i], isRelayer);
+                uint256 internalTotalBaseAmount = calcToChakra(tokens[i], _curreny, amounts[i]);
+                totalBaseAmount += internalTotalBaseAmount;
             } else {
                 (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
                     address(UNISWAP_FACTORY),
@@ -249,65 +250,65 @@ contract MindfulProxy is Ownable {
         emit BuyStrategyAdded(_chakra, _name, buyStrategyId);
     }
 
-    function disableSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_sellStrategyId <= sellStrategies.length);
-        require(sellStrategyChakra[_sellStrategyId] == _chakra);
+    // function disableSellStrategy(
+    //     address _chakra,
+    //     uint256 _sellStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_sellStrategyId <= sellStrategies.length);
+    //     require(sellStrategyChakra[_sellStrategyId] == _chakra);
 
-        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
-        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
-        sellStrategy.isActive = false;
+    //     uint256 sellStrategyIndex = _sellStrategyId.sub(1);
+    //     SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
+    //     sellStrategy.isActive = false;
 
-        emit SellStrategyDisabled(_chakra, _sellStrategyId);
-    }
+    //     emit SellStrategyDisabled(_chakra, _sellStrategyId);
+    // }
 
-    function disableBuyStrategy(
-        address _chakra,
-        uint256 _buyStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_buyStrategyId <= buyStrategies.length);
-        require(buyStrategyChakra[_buyStrategyId] == _chakra);
+    // function disableBuyStrategy(
+    //     address _chakra,
+    //     uint256 _buyStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_buyStrategyId <= buyStrategies.length);
+    //     require(buyStrategyChakra[_buyStrategyId] == _chakra);
 
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
-        buyStrategy.isActive = false;
+    //     uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+    //     BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+    //     buyStrategy.isActive = false;
 
-        emit BuyStrategyDisabled(_chakra, _buyStrategyId);
-    }
+    //     emit BuyStrategyDisabled(_chakra, _buyStrategyId);
+    // }
 
-    function enableSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_sellStrategyId <= sellStrategies.length);
-        require(sellStrategyChakra[_sellStrategyId] == _chakra);
+    // function enableSellStrategy(
+    //     address _chakra,
+    //     uint256 _sellStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_sellStrategyId <= sellStrategies.length);
+    //     require(sellStrategyChakra[_sellStrategyId] == _chakra);
 
-        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
-        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
-        sellStrategy.isActive = true;
+    //     uint256 sellStrategyIndex = _sellStrategyId.sub(1);
+    //     SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
+    //     sellStrategy.isActive = true;
 
-        emit SellStrategyEnabled(_chakra, _sellStrategyId);
-    }
+    //     emit SellStrategyEnabled(_chakra, _sellStrategyId);
+    // }
 
-    function enableBuyStrategy(
-        address _chakra,
-        uint256 _buyStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_buyStrategyId <= buyStrategies.length);
-        require(buyStrategyChakra[_buyStrategyId] == _chakra);
+    // function enableBuyStrategy(
+    //     address _chakra,
+    //     uint256 _buyStrategyId
+    // ) external onlyChakraManager(_chakra, msg.sender) {
+    //     require(isChakra[_chakra]);
+    //     require(_buyStrategyId <= buyStrategies.length);
+    //     require(buyStrategyChakra[_buyStrategyId] == _chakra);
 
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
-        buyStrategy.isActive = true;
+    //     uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+    //     BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+    //     buyStrategy.isActive = true;
 
-        emit BuyStrategyEnabled(_chakra, _buyStrategyId);
-    }
+    //     emit BuyStrategyEnabled(_chakra, _buyStrategyId);
+    // }
 
     function updateSellStrategy(
         address _chakra,
@@ -397,22 +398,31 @@ contract MindfulProxy is Ownable {
         // same for baseToken
         address baseToken = isRelayer ? strategyBaseToken : _baseToken;
 
-        // this function below should return totalBaseAmount + fee in case sender relayer
-        uint256 requiredTotalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount, isRelayer);
+        // this function below should return totalBaseAmount + fee in case sender relayer // split this out
+        uint256 requiredTotalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount);
+
+        // Relayer fee
+        uint256 relayerFee;
+
+        if(isRelayer) {
+            relayerFee = requiredTotalBaseAmount.mul(300).div(10000);
+        }
 
         // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
         // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
         // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
         // the requested number of pool tokens.
-        require(baseAmount >= requiredTotalBaseAmount);
+        require(baseAmount >= requiredTotalBaseAmount.add(relayerFee));
+
+        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
 
         // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
         // (buying too little pool tokens).
         if (isRelayer) {
-            require(requiredTotalBaseAmount.mul(100).div(95) > baseAmount);
-        }
+            require(requiredTotalBaseAmount.mul(95).div(100) < baseAmount);
 
-        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
+            IERC20(baseToken).transfer(msg.sender, relayerFee);
+        }
 
         _toChakra(_chakra, baseToken, _poolAmount);
 
@@ -422,58 +432,87 @@ contract MindfulProxy is Ownable {
         IERC20(chakra).transfer(manager, chakra.balanceOf(address(this)));
     }
 
+    struct FromChakraArg {
+        address _chakra;
+        address _sellToken;
+        uint256 _sellStrategyId;
+        uint256 _sellTokenIndex;
+        uint256 _poolAmount;
+        uint256 _minQuoteToken;
+    }
+
+    struct FromChakraLocalVar {
+        address payable manager;
+        address strategySellToken;
+        address sellToken;
+        uint256 strategySellAmount;
+        uint256 sellAmount;
+        uint256 totalAmount;
+        uint256 relayerFee;
+        bool isRelayer;
+    }
+
     function fromChakra(
-        address _chakra,
-        address _sellToken,
-        uint256 _sellStrategyId,
-        uint256 _sellTokenIndex,
-        uint256 _poolAmount,
-        uint256 _minQuoteToken
+        FromChakraArg calldata _arg
     ) external revertIfPaused {
-        require(isChakra[_chakra]);
-        require(_sellToken != address(0));
+        require(isChakra[_arg._chakra]);
+        require(_arg._sellToken != address(0));
+
+        FromChakraLocalVar memory vars;
 
         (
-            bool isRelayer,
-            address payable manager,
-            address strategySellToken,
-            uint256 strategySellAmount
-        ) = isRelayerSelling(_chakra, _sellToken, _sellStrategyId, _sellTokenIndex, _minQuoteToken);
+            vars.isRelayer,
+            vars.manager,
+            vars.strategySellToken,
+            vars.strategySellAmount
+        ) = isRelayerSelling(_arg._chakra, _arg._sellToken, _arg._sellStrategyId, _arg._sellTokenIndex);
 
         // if sender is relayer, amount to trade is the amount specified in strategy
         // otherwise can be overwritten from function arg
-        uint256 sellAmount = isRelayer ? strategySellAmount : _minQuoteToken;           // is this correct? _minQuoteToken == sellAMount ?
+        vars.sellAmount = vars.isRelayer ? vars.strategySellAmount : _arg._minQuoteToken;
         // same for sellToken
-        address sellToken = isRelayer ? strategySellToken : _sellToken;
+        vars.sellToken = vars.isRelayer ? vars.strategySellToken : _arg._sellToken;
 
-        uint256 totalAmount = calcToChakra(_chakra, sellToken, _poolAmount, isRelayer);
+        vars.totalAmount = calcToChakra(_arg._chakra, vars.sellToken, _arg._poolAmount);
 
-        require(sellAmount <= totalAmount);
+        // Relayer fee
+        uint256 relayerFee;
 
-        IPSmartPool chakra = IPSmartPool(_chakra);
+        if(vars.isRelayer) {
+            relayerFee = vars.totalAmount.mul(300).div(10000);
+        }
 
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
-        chakra.transferFrom(msg.sender, address(this), _poolAmount);
-        chakra.exitPool(_poolAmount);
+        require(vars.sellAmount <= vars.totalAmount);
+
+        IPSmartPool chakra = IPSmartPool(_arg._chakra);
+
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_arg._chakra).calcTokensForAmount(_arg._poolAmount);
+        chakra.transferFrom(msg.sender, address(this), _arg._poolAmount);
+        chakra.exitPool(_arg._poolAmount);
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], sellToken);
+            (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(address(UNISWAP_FACTORY), tokens[i], vars.sellToken);
             uint256 tokenAmountOut = UniLib.getAmountOut(amounts[i], reserveA, reserveB);
             IUniswapV2Exchange pair = IUniswapV2Exchange(
-                UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], sellToken)
+                UniLib.pairFor(address(UNISWAP_FACTORY), tokens[i], vars.sellToken)
             );
 
             // Uniswap V2 does not pull the token
             IERC20(tokens[i]).transfer(address(pair), amounts[i]);
 
-            if (token0Or1(sellToken, tokens[i]) == 0) {
+            if (token0Or1(vars.sellToken, tokens[i]) == 0) {
                 pair.swap(0, tokenAmountOut, address(this), new bytes(0));
             } else {
                 pair.swap(tokenAmountOut, 0, address(this), new bytes(0));
             }
         }
 
-        IERC20(sellToken).transfer(msg.sender, totalAmount);
+        if(vars.isRelayer) {
+            vars.totalAmount = vars.totalAmount.sub(vars.relayerFee);
+            IERC20(vars.sellToken).transfer(msg.sender, vars.relayerFee);
+        }
+
+        IERC20(vars.sellToken).transfer(vars.manager, vars.totalAmount);
     }
 
     function saveEth() external onlyOwner {
@@ -603,8 +642,7 @@ contract MindfulProxy is Ownable {
         address _chakra,
         address _sellToken,
         uint256 _sellStrategyId,
-        uint256 _tokenIndex,
-        uint256 _sellPrice
+        uint256 _tokenIndex
     ) internal returns (
             bool,
             address payable,
