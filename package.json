@@ -33,7 +33,8 @@
     "ship": "yarn workspace @scaffold-eth/react-app ship",
     "generate": "cd packages/buidler && npx buidler generate",
     "account": "cd packages/buidler && npx buidler account",
-    "flatten": "cd packages/buidler && npx buidler flatten"
+    "flatten": "cd packages/buidler && npx buidler flatten",
+    "deploy-kovan-implementation": "npx buidler deploy-smart-pool-implementation-complete --MindfulImpl --network kovan"  
   },
   "devDependencies": {
     "@nomiclabs/buidler-ethers": "^1.3.4",
