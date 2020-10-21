@@ -147,7 +147,7 @@
       </div>
     </div>
 
-    <div class="md-layout-item" id="om" />
+    <div class="md-layout-item" style="margin-bottom:200px" id="om" />
   </div>
 </template>
 

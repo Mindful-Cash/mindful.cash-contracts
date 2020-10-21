@@ -1,10 +1,10 @@
 <template>
-  <md-app :id="this.$router.currentRoute.name != 'Landing' ? 'app' : 'landing'" md-mode="reveal">
+  <md-app :id="this.$router.currentRoute.name != 'Home' ? 'app' : 'landing'" md-mode="reveal">
     <div
       class="custom-navbar"
       style="text-align: left;padding:20px"
       slot="md-app-toolbar"
-      v-if="this.$router.currentRoute.name != 'Landing'"
+      v-if="this.$router.currentRoute.name != 'Home'"
     >
       <span>
         <img style="cursor: pointer; text-align: left" src="@/assets/svg/logo.svg" alt="logo" @click="goToLanding" />
@@ -55,7 +55,7 @@
       </div>
       <div
         style="padding-top: 200px; padding-left: 20px; padding-right: 20px; color: #292929;"
-        v-if="!userAddress && this.$router.currentRoute.name != 'Landing'"
+        v-if="!userAddress && this.$router.currentRoute.name != 'Home'"
       >
         <h1>Connect a Web3 wallet to get started</h1>
         <div
