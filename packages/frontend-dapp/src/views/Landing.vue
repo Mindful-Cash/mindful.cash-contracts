@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div id="header" class="md-layout-item md-size-100" style="background: yellow">
+    <div id="header" class="md-layout-item md-size-100">
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-50 md-xsmall-size-100">
           <h1 class="heading">Portfolio Alignment for Degens</h1>
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div id="rebalance" class="section md-layout-item md-size-100" style="background: green">
+    <div id="rebalance" class="section md-layout-item md-size-100">
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-70 md-xsmall-size-100">
           <h2 class="heading">Create Auto-Rebalancing Portfolios</h2>
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div id="dca" class="section" style="background: blue">
+    <div id="dca" class="section">
       <div class="md-layout md-alignment-top-center">
         <h2 class="heading">Implement Mindful DCA Strategies</h2>
         <p class="md-layout-item md-size-100">
@@ -78,7 +78,7 @@
       <div class="separator" />
     </div>
 
-    <div id="guru" class="md-layout-item md-size-100" style="background: yellow">
+    <div id="guru" class="md-layout-item md-size-100">
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-50 md-xsmall-size-100">
           <h2 class="heading">Find Your Guru</h2>
@@ -100,7 +100,7 @@
       <div class="separator" />
     </div>
 
-    <div class="section" style="background: blue">
+    <div class="section">
       <div class="md-layout md-alignment-top-center">
         <h2 class="heading">Silence Your Inner Degenerate</h2>
         <p class="md-layout-item md-size-100">
