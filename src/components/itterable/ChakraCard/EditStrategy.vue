@@ -10,11 +10,18 @@
         >
         <Segment
           style="width:600; margin-top:20px"
-          :titles="['DCA Strategy', 'Profit Strategy', 'Asset Allocation']"
+          :titles="['DCA Strategy', 'Profit Strategy']"
           v-on:update-selected="tabIndex = $event"
         />
 
         <div v-if="tabIndex == 'DCA Strategy'">
+          <img style="padding-top:30px" src="@/assets/svg/edit-stratergy.svg" />
+        </div>
+
+        <div v-if="tabIndex == 'Profit Strategy'">
+          <img style="padding-top:30px" src="@/assets/svg/profit-strategy.svg" />
+        </div>
+        <!-- <div v-if="tabIndex == 'DCA Strategy'">
           <span class="secondary-heading">DCA Contribution</span>
           <span class="modal-text-small">
             Choose an asset, amount and frequency to DCA (dollar cost average) into your Chakra.</span
@@ -24,7 +31,7 @@
             Specify a limit for how much you are willing to DCA over time.
           </span>
           <span class="secondary-heading">DCA Breakdown</span>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- <div class="md-layout-item"> -->
