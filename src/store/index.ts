@@ -1,3 +1,5 @@
+import { MindfulProxyFactory } from "../../typechain/MindfulProxyFactory";
+
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
 import {
@@ -106,7 +108,7 @@ export default new Vuex.Store({
       // await setUpOnboard();
       await dispatch("setUpOnboard");
 
-      // // Setting up the Smart contracts
+      // Setting up the Smart contracts
       // await dispatch("setUpContracts");
 
       // Fetch all compatible tokens
@@ -161,6 +163,12 @@ export default new Vuex.Store({
 
     async setUpContracts({ commit, state }) {
       console.log("Setting up Smart Contract instances...");
+      const contractInstance = await MindfulProxyFactory.connect(
+        "0x6841db1aa2d922204EE77918924578335B1a0739",
+        state.signer
+      );
+
+      console.log("contractInstance", contractInstance);
       //   // Setting up contract info
       //   let tokensAddress = await ContractHelper.getTokenAddress(state.currentNetwork);
       //   commit(mutations.SET_CONTRACT_ADDRESS, tokensAddress.unique);
@@ -402,7 +410,7 @@ export default new Vuex.Store({
         tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
           ? Number(
               Number(
-                ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+                state.ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
               ).toFixed(4)
             )
           : Number(0).toFixed(4);
