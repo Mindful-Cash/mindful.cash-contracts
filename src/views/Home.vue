@@ -20,26 +20,26 @@
             @click="tabIndex = 1"
             class="chakra-button-active"
             v-if="tabIndex == 1"
-            src="@/assets/svg/tab/asset-breakdown-active.svg"
+            src="@/assets/svg/tab/find-gurus-active.svg"
           />
           <img
             @click="tabIndex = 1"
             class="chakra-button-inactive"
             v-if="tabIndex != 1"
-            src="@/assets/svg/tab/asset-breakdown-inactive.svg"
+            src="@/assets/svg/tab/find-gurus-inactive.svg"
           />
 
           <img
             @click="tabIndex = 2"
             class="chakra-button-active"
             v-if="tabIndex == 2"
-            src="@/assets/svg/tab/history-active.svg"
+            src="@/assets/svg/tab/stats-active.svg"
           />
           <img
             @click="tabIndex = 2"
             class="chakra-button-inactive"
             v-if="tabIndex != 2"
-            src="@/assets/svg/tab/history-inactive.svg"
+            src="@/assets/svg/tab/stats-inactive.svg"
           />
         </div>
         <div
@@ -147,7 +147,7 @@ hr {
 
 .chakra-button-inactive {
   cursor: pointer;
-  padding-bottom: 15px !important;
+  padding-bottom: 0px !important;
   padding-left: 10px;
   padding-right: 10px;
 }

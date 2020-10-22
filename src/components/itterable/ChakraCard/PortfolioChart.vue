@@ -26,7 +26,7 @@
       <apexchart
         width="100%"
         id="portfolioChart"
-        height="500"
+        height="400"
         type="line"
         :options="options"
         :series="series"

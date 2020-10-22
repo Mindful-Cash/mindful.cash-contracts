@@ -1,29 +1,21 @@
 <template>
   <md-app :id="this.$router.currentRoute.name != 'Home' ? 'app' : 'landing'" md-mode="reveal">
-    <div
-      class="custom-navbar"
-      style="text-align: left;padding:20px"
-      slot="md-app-toolbar"
+    <md-app-toolbar
+      md-elevation="0"
+      id="toolbar"
       v-if="this.$router.currentRoute.name != 'Home'"
+      style="background-color: transparent"
     >
-      <span>
-        <img style="cursor: pointer; text-align: left" src="@/assets/svg/logo.svg" alt="logo" @click="goToLanding" />
-      </span>
+      <router-link class="logo" to="/">
+        <img class="logo" src="@/assets/svg/logo.svg" />
+      </router-link>
+
       <div class="md-toolbar-section-end">
-        <div class="md-layout md-gutter md-alignment-center-right">
-          <!-- <div class="md-layout-item" v-if="!userAddress">
-            <md-button class="md-raised md-accent connect-button-secondary" @click="connectWallet"
-              >🦊 Connect Wallet</md-button
-            >
-          </div> -->
-          <div class="md-layout-item" v-if="userAddress">
-            <div class="md-subheading">
-              <clickable-address :light="true" :eth-address="userAddress" />
-            </div>
-          </div>
-        </div>
+        <span>
+          <clickable-address style="margin-top:20px" :eth-address="userAddress" />
+        </span>
       </div>
-    </div>
+    </md-app-toolbar>
 
     <md-app-content>
       <router-view />
@@ -179,7 +171,6 @@ custom-navbar {
 nav li:hover,
 nav li.router-link-active,
 nav li.router-link-exact-active {
-  background-color: indianred;
   cursor: pointer;
 }
 
@@ -218,7 +209,6 @@ nav li.router-link-exact-active {
   bottom: 0;
   width: 100%;
   height: 2.5rem;
-  // margin-bottom: 50px !important;
 }
 
 .footer-icon {

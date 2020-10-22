@@ -165,16 +165,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.card-expansion {
-  height: 480px;
-}
-.md-card {
-  width: 1000px;
-  margin: 4px;
-  display: inline-block;
-  vertical-align: top;
-}
-
 .box-text {
   text-align: justify;
   text-justify: inter-word;

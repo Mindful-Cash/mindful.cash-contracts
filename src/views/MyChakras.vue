@@ -1,17 +1,16 @@
 <template>
-  <div class="page-container" style="padding-bottom:50px">
+  <div class="page-container" style="padding-bottom:100px">
     <div v-if="chakras == null">
       LOADING
     </div>
     <div v-if="chakras != null">
       <div class="md-layout" v-if="chakras.length != 0 && !createFlowEnabled">
         <div class="md-layout-item">
-          <transition-group name="fadeUp" tag="ul">
+          <transition-group name="fadeUp">
             <Chakra-Card
               v-for="chakra in chakras"
               :chakraInfo="chakra"
               class="chakra-card"
-              style="margin: 20px"
               :key="chakra.metaData.smartPoolAddress"
             />
           </transition-group>
@@ -64,15 +63,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.card-expansion {
-  height: 480px;
-}
-.md-card {
-  width: 1000px;
-  margin: 4px;
-  display: inline-block;
-  vertical-align: top;
-}
 .chakra-card {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 12px !important;
@@ -80,7 +70,6 @@ export default {
   background: #fff;
   box-sizing: border-box;
   width: 100%;
-  margin-top: 1rem;
   padding: 0;
 }
 

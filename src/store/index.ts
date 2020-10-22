@@ -291,17 +291,17 @@ export default new Vuex.Store({
             {
               type: "dcaIn",
               token: {
-                address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+                address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
                 amount: "694230902983134993",
                 amountInCharka: "6.511285732428220037",
-                amountRounded: "0.6942",
+                amountRounded: "1",
                 chainId: 1,
-                decimals: 18,
-                logoURI: "https://1inch.exchange/assets/tokens/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e.png",
-                name: "yearn.finance",
-                price: 15204.79,
-                symbol: "YFI",
-                value: "10555.17"
+                decimals: 6,
+                logoURI: "https://1inch.exchange/assets/tokens/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                name: "USD Coin",
+                price: 1,
+                symbol: "USDC",
+                value: "1"
               }
             }
           ];
