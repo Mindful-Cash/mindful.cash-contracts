@@ -1,7 +1,7 @@
 // This file runs intergration tests of the MindfulProxy on a mainnet fork to test intergrations with balancer, uniswap
 // and the Mindful ecosystem 🧘‍♂️. run a kovan testnet as follows:
 // Copy example.env in an .env file then:
-//MINDFUL=0x425B6912f20f14D61B7F3cf7130c37B2b11C7A24 npx buidler test ./mainnet-test/integration-test-kovan.ts --network kova
+//MINDFUL=0x425B6912f20f14D61B7F3cf7130c37B2b11C7A24 npx buidler test ./mainnet-test/integration-test-kovan.ts --network kovan
 
 import { ethers, run, ethereum } from "@nomiclabs/buidler";
 import { deployBalancerPool, deployBalancerFactory, linkArtifact, TimeTraveler } from "../utils";
@@ -46,7 +46,7 @@ const NAME = "DeFi Energy Chakra";
 const SYMBOL = "DEC";
 const INITIAL_SUPPLY = constants.WeiPerEther;
 const TOKENS: any = [ZRX_TOKEN, USDC_TOKEN, WBTC_TOKEN];
-const AMOUNTS: any = [constants.WeiPerEther.mul(10), constants.WeiPerEther.mul(10), constants.WeiPerEther.mul(10)];
+const AMOUNTS: any = ['1000000000000000', '1000000000000000', '1000000000000000'];
 const WEIGHTS: any = [constants.WeiPerEther.mul(3), constants.WeiPerEther.mul(3), constants.WeiPerEther.mul(3)];
 
 const timeTraveler = new TimeTraveler(ethereum);
@@ -54,8 +54,6 @@ const timeTraveler = new TimeTraveler(ethereum);
 describe("KOVAN TEST", function () {
   this.timeout(10000000);
   
-  const mindfulAddress = process.env.MINDFUL;
-
   let signers: Signer[];
   let account: string;
   let whaleSigner: Signer;
@@ -75,19 +73,7 @@ describe("KOVAN TEST", function () {
     account = await signers[0].getAddress();
     console.log("account", account);
 
-    mindfulProxy = MindfulProxyFactory.connect(mindfulAddress, signers[0]);
-    console.log("deployed mindful proxy", mindfulProxy.address);
-
-    // use the below lines only once
-    const libraries = await run("deploy-libraries");
-    console.log("Libs deployed");
-    const linkedArtifact = linkArtifact(Pv2SmartPoolArtifact, libraries);
-    const smartPoolDeployer: any = new ethers.ContractFactory(linkedArtifact.abi, linkedArtifact.bytecode, signers[0]);
-    smartpool = await smartPoolDeployer.deploy();
-    console.log("smartpool deployed", smartpool.address);
-
-    await smartpool.init(PLACE_HOLDER_ADDRESS, "IMP", "IMP", 1337);
-    await mindfulProxy.init(SMART_POOL_FACTORY, smartpool.address);
+    mindfulProxy = MindfulProxyFactory.connect(process.env.MINDFUL_KOVAN, signers[0]);
 
     // await timeTraveler.snapshot();
   });
