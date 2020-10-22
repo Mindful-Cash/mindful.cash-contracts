@@ -287,16 +287,70 @@
       </md-step>
 
       <md-step id="third" md-label="Complete">
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias doloribus eveniet quaerat modi cumque quos
-          sed, temporibus nemo eius amet aliquid, illo minus blanditiis tempore, dolores voluptas dolore placeat nulla.
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias doloribus eveniet quaerat modi cumque quos
-          sed, temporibus nemo eius amet aliquid, illo minus blanditiis tempore, dolores voluptas dolore placeat nulla.
-        </p>
+        <div class="md-layout gutter">
+          <div class="md-layout-item md-size-55">
+            <h2 class="title">Confirm and Deploy</h2>
+            <p>
+              Make sure everthing is good to go - then we’ll align your Chakra.
+              <b>You will need to sign a transaction.</b>
+            </p>
+            <Separator />
+            <h2 class="title">Chakra Overview <a class="step-edit">Edit</a></h2>
+            <p><b>Name: </b>Strong Crypto Energy</p>
+            <p><b>Inital contribution: </b>{{ dcaBreakdownStats.amount || 0 }} {{ initialContributionCoin.symbol }}</p>
+
+            <Separator />
+            <h2 class="title">DCA Strategy <a class="step-edit">Edit</a></h2>
+
+            <p><b>DCA frequency: </b>{{ dcaBreakdownStats.frequency }}</p>
+            <p><b>DCA amount: </b>$100</p>
+
+            <Separator />
+            <h2 class="title">Profit Taking Strategy <a class="step-edit">Edit</a></h2>
+            <p>
+              When Chakra value increases by <b>20%</b>, take <b>5%</b> of <b>the total Chakra value</b> as profit in
+              <b>USDC</b>.
+            </p>
+          </div>
+
+          <div class="md-layout-item md-size-5" />
+
+          <div class="md-layout-item md-size-40" style="padding-top: 20px">
+            <div class="md-layout-item">
+              <apexchart
+                type="donut"
+                width="420"
+                :options="pieValues.options"
+                :series="pieValues.values"
+                class="center"
+              />
+            </div>
+            <div class="md-layout-item" style="text-align: center" v-if="selectedCoins.length > 0">
+              <span class="assetBreakdownText">Asset Breakdown</span>
+              <md-table class="md-caption" style="padding-top: 25px">
+                <md-table-row>
+                  <md-table-head>Key</md-table-head>
+                  <md-table-head>Symbol</md-table-head>
+                  <md-table-head>USD</md-table-head>
+                  <md-table-head>Allocation</md-table-head>
+                </md-table-row>
+
+                <md-table-row v-for="(item, index) in selectedCoins" :key="index">
+                  <md-table-cell>
+                    <span class="dot" :style="'background:' + colors[index]" />
+                  </md-table-cell>
+                  <md-table-cell>{{ item.symbol }}</md-table-cell>
+                  <md-table-cell>${{ "500" }}</md-table-cell>
+                  <md-table-cell>{{ item.ratio }}%</md-table-cell>
+                </md-table-row>
+              </md-table>
+            </div>
+          </div>
+        </div>
       </md-step>
     </md-steppers>
+
+    <!-- modals -->
     <md-dialog class="text-center roundedDialog" :md-active.sync="showCoinDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
 
@@ -355,7 +409,7 @@ export default {
     dcaBreakdownStats: {
       amount: null,
       coin: null,
-      frequency: null,
+      frequency: "Monthly",
       fee: null
     },
     //
@@ -527,6 +581,10 @@ export default {
 // Theme
 .wrapper {
   text-align: left;
+  background: white;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 1.25rem;
+  padding-top: 0.25rem;
 }
 
 ::v-deep .md-steppers .md-stepper-content {
@@ -703,5 +761,14 @@ h1.title {
       text-decoration: none;
     }
   }
+}
+
+a.step-edit {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  background-clip: text;
+  color: transparent !important;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
 }
 </style>
