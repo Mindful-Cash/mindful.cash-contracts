@@ -24,15 +24,33 @@ Start aligning your chakras today.
 
 All Smart Pools are fully upgradeable to make it easy to add features and optimise gas usage at later stages.
 
-## Development
-
 ## How it works
 
-Each Chakra is a controlled balancer pool, run and operated by the MindfulProxy contract. To deploy new Chakras, this proxy wraps the Balancer factory to create a custom permission's smart pool using the users Chakra parameters (underlying tokens, weightings and initial amounts). On initial pool creation the MindfulProxy enables single asset deposit into the pool by trading for the required underlying tokens on Uniswap. For example a 50/50 YFI UNI Chakra, created using USDC, would first trade the USDC for YFI and UNI in the correct ratios and then deposit into the Chakra within one transaction.
+Every Mindful portfolio (or “Chakra”) is a controlled Balancer pool, run and operated via the MindfulProxy contract.
 
-A key component of Mindful.cash are the automated DCA buying and threshold selling strategies. The Chakra owner enables a strategy that defines when a buy/sell action can occur against their controlled pool. This includes specifying the delay between buys or the percentage pool value increase targets for sells. The MindfulProxy contract then enables any third party relayer to execute the strategy on the users behalf. For buy strategy (DCA into a Chakra) the proxy transfers pre-approved reserve currency(eg USDC) from the Chakra owners wallet to the proxy, trades for underlying pool tokens (eg YFI & UNI) and then preforms multi-asset deposit into the Chakra (balancer pool). For sell strategies the opposite is done: multi-asset withdraw from the pool(eg YFI & UNI), pool tokens traded for sell strategy reserve currency (eg USDC) which is then sent back to the sponsors wallet. In both buy and sell strategy cases multi asset deposit and withdrawal are done to prevent any slippage against the pools.
+### Chakra Deployment
 
-A relayer bot is used to monitor all Chakras within mindful.cash's ecosystem. If a strategy can be executed then it calls the associated function on the MindfulProxy. The strategy rules will enforce that this is only done at the exact thresholds the creator defined. To compensate the relayer for their hard work they paid 0.3% of the total amount spent in the strategy.
+To deploy a new Chakra, the MindfulProxy wraps the Balancer factory to create a custom permissioned smart pool using the user's specified Chakra parameters (underlying tokens, weightings, and initial amounts). On initial pool creation, the MindfulProxy enables a single-asset deposit into the pool by trading deposited tokens for the specified underlying tokens on Uniswap. For example, a 50/50 YFI/UNI Chakra, using USDC as a deposit asset, would first trade the USDC for YFI and UNI in the correct ratios, and then deposit these funds into the Chakra within a single transaction.
+
+### Chakra Stategies
+
+Two key components of Mindful are the automated DCA (buy) and profit-taking (sell) strategies. When a Chakra is created, the owner sets a strategy that defines when a buy/sell action can occur against their controlled pool. This includes specifying the delay between buys, or the target pool value increase for sells. The MindfulProxy contract then enables any third-party relayer to execute the strategy on the user's behalf.
+
+### Buy Strategies
+
+For buy strategies (i.e. DCAs into a Chakra), the proxy transfers the pre-approved reserve currency (e.g. USDC) from the user's wallet to the proxy, then trades the asset for the underlying pool tokens (e.g. YFI & UNI), and finally performs a multi-asset deposit into the Chakra (Balancer pool).
+
+### Sell Strategies
+
+For sell strategies the proxy executes a multi-asset withdrawal from the pool (e.g. YFI & UNI) and trades these tokens for the specified profit-taking currency (e.g. USDC), which is then sent back to the user's wallet.
+
+In both buy and sell strategy cases, all interactions with the Balancer pool use multi-asset deposits and withdrawals in order to prevent slippage. At any point in time, if they want to override their strategy, the Chakra owner can "Fomo In" or “Fomo Out" of their Chakra by executing a multi-asset deposit or withdrawal.
+
+### Relayer Bot
+
+A relayer bot is used to monitor all Chakras within the Mindful ecosystem. If a strategy can be executed, the bot calls the associated function on the MindfulProxy. The strategy’s parameters guarantee that this is only done at the exact thresholds defined by the Chakra owner. To compensate relayer bots for their work and gas usage, they are rewarded with 0.3% of the total deposit or withdrawal amount.
+
+## Development
 
 ### Setup the dev **enviroment******
 
