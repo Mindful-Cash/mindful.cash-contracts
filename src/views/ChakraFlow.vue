@@ -133,7 +133,7 @@
                 <h2 class="title">DCA Strategy</h2>
               </div>
               <div class="md-layout-item" style="display: flex; justify-content: flex-end;">
-                <md-switch class="" v-model="array" value="1" />
+                <md-switch class="" v-model="dcaOn" value="1" />
               </div>
             </div>
             <p>
@@ -146,7 +146,6 @@
               :options="dcaTimeframes"
               :selected="dcaTimeframes[dcaTimeframes.length - 1]"
               v-on:updateOption="handleFrequencySelect"
-              :closeOnOutsideClick="boolean"
             />
             <div class="md-layout" style="padding-top: 20px">
               <div class="md-layout-item md-size-30">
@@ -206,7 +205,7 @@
                   <h2 class="title">Profit Strategy</h2>
                 </div>
                 <div class="md-layout-item" style="display: flex; justify-content: flex-end;">
-                  <md-switch class="" v-model="array" value="1" />
+                  <md-switch class="" v-model="takeProfitOn" value="1" />
                 </div>
               </div>
               <p>
@@ -339,6 +338,8 @@ export default {
   components: { Separator, AddCoinModal, Segment, AssetDropdown, TokenInput, TokenInfo, Dropdown },
   data: () => ({
     chakraName: null,
+    dcaOn: true,
+    takeProfitOn: true,
     initialContribution: 0,
     initialContributionCoin: { symbol: "SELECT", logoURI: null },
     initialDCAContributionCoin: { symbol: "SELECT", logoURI: null },
@@ -400,10 +401,9 @@ export default {
           .map(itterationToken => {
             return itterationToken.symbol;
           })
-          .indexOf(coinObject.symbol) == -1
+          .indexOf(coinObject.symbol) === -1
       ) {
         this.selectedCoins.push({ ...coinObject, ratio: 0 });
-      } else {
       }
       this.showCoinDialog = false;
     },
@@ -419,7 +419,7 @@ export default {
     ...mapState(["allTokens"]),
     totalSelected() {
       let total = 0;
-      this.selectedCoins.forEach(function(selected) {
+      this.selectedCoins.forEach(selected => {
         if (selected.ratio) {
           total += selected.ratio;
         }
@@ -427,7 +427,7 @@ export default {
       return total;
     },
     selectorOptions() {
-      let remaining = 100 - this.totalSelected;
+      const remaining = 100 - this.totalSelected;
       return {
         process: ([pos, i]) => [
           [0, pos],
@@ -439,12 +439,12 @@ export default {
       return 100 - this.totalSelected;
     },
     pieValues() {
-      let pieValues = [];
-      let pieLabels = [];
-      let pieColors = [];
+      const pieValues = [];
+      const pieLabels = [];
+      const pieColors = [];
       let count = 0;
-      let colors = this.colors;
-      this.selectedCoins.forEach(function(token) {
+      const colors = this.colors;
+      this.selectedCoins.forEach(token => {
         pieValues.push(token.ratio);
         pieLabels.push(token.symbol);
         pieColors.push(colors[count]);

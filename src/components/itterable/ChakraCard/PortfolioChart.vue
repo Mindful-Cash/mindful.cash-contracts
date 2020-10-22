@@ -60,17 +60,17 @@ export default {
   }),
 
   computed: {
-    currentChakraValue: function() {
+    currentChakraValue() {
       return this.chartInfo[this.chartInfo.length - 1][1].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    chakraValueChange: function() {
-      if (this.slicedData.length == 0) return 0;
+    chakraValueChange() {
+      if (this.slicedData.length === 0) return 0;
       return (
         ((this.slicedData[this.slicedData.length - 1][1] - this.slicedData[0][1]) / this.slicedData[0][1]) *
         100
       ).toFixed(2);
     },
-    options: function() {
+    options() {
       const sliceIndex = this.chartInfo
         .map(x => x[0])
         .findIndex(num => {
@@ -147,7 +147,7 @@ export default {
         }
       };
     },
-    series: function() {
+    series() {
       if (!this.chartInfo || !this.slicedData) return null;
       return [
         {

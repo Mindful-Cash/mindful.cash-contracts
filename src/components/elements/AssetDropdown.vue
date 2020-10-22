@@ -9,7 +9,7 @@
 <script>
 export default {
   name: "AssetDropdown",
-  props: ["asset"]
+  props: { asset: { type: Object } }
 };
 </script>
 

@@ -17,7 +17,7 @@
 <script>
 export default {
   name: "Segment",
-  props: ["titles"],
+  props: { titles: { type: Array } },
   data: () => ({ selected: 0 }),
   methods: {
     handleSelection(index) {

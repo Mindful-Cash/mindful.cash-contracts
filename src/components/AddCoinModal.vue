@@ -18,31 +18,30 @@ export default {
   props: {
     filterOnlyWithBalance: {
       type: Boolean,
-      required: false,
-    },
+      required: false
+    }
   },
   methods: {
     handelCoinChosen(coinObject) {
       this.$emit("rowItemClicked", coinObject);
-    },
+    }
   },
-  mounted() {},
   computed: {
     ...mapState(["allTokens"]),
     allTokensProcessed() {
-      if (this.allTokens.length == 0) {
+      if (this.allTokens.length === 0) {
         return [];
       }
       if (!this.filterOnlyWithBalance) {
         return this.allTokens;
       }
       if (this.filterOnlyWithBalance) {
-        return this.allTokens.filter((token) => {
-          return token.value != 0;
+        return this.allTokens.filter(token => {
+          return token.value !== 0;
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

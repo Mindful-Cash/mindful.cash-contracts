@@ -9,7 +9,7 @@ const fetchWalletTokens = async (userAddress: string) => {
       Accept: "application/json",
       "Content-Type": "application/json",
       "x-amberdata-blockchain-id": "ethereum-mainnet",
-      "x-api-key": `UAKc873f4aac1791df4e7f488e58ffaefde` //`${process.env.VUE_APP_AMBER_API || "UAKc873f4aac1791df4e7f488e58ffaefde"}`
+      "x-api-key": `UAKc873f4aac1791df4e7f488e58ffaefde` // `${process.env.VUE_APP_AMBER_API || "UAKc873f4aac1791df4e7f488e58ffaefde"}`
     }
   });
 

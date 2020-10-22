@@ -5,7 +5,7 @@ import Landing from "../views/Landing.vue";
 
 Vue.use(VueRouter);
 
-const routes: Array<RouteConfig> = [
+const routes: RouteConfig[] = [
   {
     path: "/",
     name: "Home",

@@ -20,6 +20,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    etherscanBase: "https://etherscan.io/",
     ethers: null,
     provider: null,
     signer: null,
@@ -58,8 +59,8 @@ export default new Vuex.Store({
       state.currentNetworkId = networkId;
       console.log("networkId set to: " + state.currentNetworkId);
     },
-    setEthers(state, ethers) {
-      state.ethers = ethers;
+    setEthers(state, ethersObj) {
+      state.ethers = ethersObj;
       console.log("ethers set to: ", state.ethers);
     },
     setProvider(state, provider) {
@@ -131,7 +132,7 @@ export default new Vuex.Store({
             if (!SUPPORTED_NETWORK_IDS.includes(networkId)) {
               alert("This dApp will work only with the Mainnet or Kovan network");
             }
-            state.onboard?.config({ networkId: networkId });
+            state.onboard?.config({ networkId });
             commit("setCurrentNetworkId", networkId);
           },
           wallet: async (wallet: Wallet) => {
@@ -193,7 +194,7 @@ export default new Vuex.Store({
       const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(userAddress);
 
       // Add in additional token information such as price, logo ect from the all tokens object
-      let userChakras = portfolioBalances.map(portfolioObject => {
+      const userChakras = portfolioBalances.map(portfolioObject => {
         return {
           ...portfolioObject,
           underlyingTokens: portfolioObject.underlyingTokens.map(token => {
@@ -222,19 +223,19 @@ export default new Vuex.Store({
           const aDiff = Math.abs(a - needle);
           const bDiff = Math.abs(b - needle);
 
-          if (aDiff == bDiff) {
+          if (aDiff === bDiff) {
             return a > b ? a : b;
           } else {
             return bDiff < aDiff ? b : a;
           }
         });
       }
-      if (userChakras.length == 0) {
+      if (userChakras.length === 0) {
         commit("setChakras", []);
       }
       userChakras.forEach(async (chakra, chakraIndex) => {
         console.log("FOR");
-        let chakraChartPromises = [];
+        const chakraChartPromises = [];
         chakra.underlyingTokens.forEach((token, chakraTokenIndex) => {
           // set the price information
           userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].valueInChakra = Number(
@@ -254,7 +255,7 @@ export default new Vuex.Store({
         // build chart information
         allChartInfo.forEach((chartInfo, index) => {
           const chartInfoTimeStamps = chartInfo.map(x => x[0]);
-          let cumlativeChartInfo = [];
+          const cumlativeChartInfo = [];
           for (let i = 0; i < numDataPoints + 1; i++) {
             const dataPointTimeStamp = startingTimeStamp + Number(i * timeBetweenDataPoint);
 

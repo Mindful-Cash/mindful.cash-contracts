@@ -22,8 +22,7 @@ export default {
   name: "TokenInput",
   props: {
     state: {
-      default: "default",
-      type: "default" | "loading" | "complete"
+      type: String
     }
   },
   data: () => ({ allowance: undefined }),

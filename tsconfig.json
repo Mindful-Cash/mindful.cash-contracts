@@ -20,7 +20,7 @@
     "strictNullChecks": false,
     "sourceMap": true
   },
-  "include": [],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "typechain"],
   // "files": [
   //   "buidler.config.ts",

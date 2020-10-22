@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     ...mapState(["etherscanBase"]),
-    dotDotDot: function() {
+    dotDotDot() {
       if (this.ethAddress) {
         return (
           this.ethAddress.substr(0, 6) +
@@ -29,7 +29,7 @@ export default {
       }
       return "";
     },
-    buildLink: function() {
+    buildLink() {
       return `${this.etherscanBase}/address/${this.ethAddress}`;
     }
   }
