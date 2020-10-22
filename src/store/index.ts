@@ -140,6 +140,7 @@ export default new Vuex.Store({
           wallet: async (wallet: Wallet) => {
             if (wallet.provider) {
               const ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
+              commit("setEthers", ethers);
               commit("setProvider", ethersProvider);
               commit("setCurrentNetwork", await ethersProvider.getNetwork());
             } else {
