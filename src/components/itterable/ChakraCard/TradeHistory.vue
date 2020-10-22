@@ -24,7 +24,6 @@ export default {
 
 <style lang="scss" scoped>
 #history-large {
-  // background: url("~@/assets/svg/guru-large.svg") no-repeat;
   background-position-y: 25% !important;
   // background-position-x: 100%;
   background-size: contain;

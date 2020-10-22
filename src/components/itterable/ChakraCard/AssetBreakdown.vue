@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout" style="text-align: left">
+  <div class="md-layout" style="text-align: left; padding-bottom:20px">
     <div class="md-layout-item">
       <md-table v-model="Assets" md-sort="valueInChakra" md-sort-order="asc">
         <md-table-row slot="md-table-row" slot-scope="{ item }">
@@ -7,7 +7,7 @@
             <img :width="30" :height="30" :src="item.logoURI" />
             <span style="padding-left:10px">{{ item.symbol }} </span>
           </md-table-cell>
-          <md-table-cell md-label="contribution" md-sort-by="contribution"
+          <md-table-cell md-label="Contribution" md-sort-by="contribution"
             ><span class="table-text">{{ item.contribution }}%</span></md-table-cell
           >
           <md-table-cell md-label="Current Price" md-sort-by="price"

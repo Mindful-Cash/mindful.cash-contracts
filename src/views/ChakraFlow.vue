@@ -1,9 +1,9 @@
 <template>
   <div class="wrapper">
     <h1 class="title">New Chakra</h1>
-    <md-steppers :editable="true" ref="stepper" @change="changedStep" @completed="finishedStep" style="width-100%">
+    <md-steppers ref="stepper" :md-active-step.sync="active" style="width-100%">
       <md-step id="first" md-label="Setup">
-        <div class="md-layout gutter">
+        <div class="md-layout gutter" style="width:100%">
           <div class="md-layout-item md-size-55">
             <h2 class="title">Chakra Name</h2>
             <p>Choose a name for your Chakra. This will be viewable by other users.</p>
@@ -109,6 +109,14 @@
                   <md-table-cell>{{ item.ratio }}%</md-table-cell>
                 </md-table-row>
               </md-table>
+            </div>
+          </div>
+
+          <div class="md-layout">
+            <div class="md-layout-item md-size-100">
+              <hr />
+              <md-button class="cancel-button">Cancel</md-button>
+              <md-button class="md-raised md-primary next-button " @click="setDone('first', 'second')">Next</md-button>
             </div>
           </div>
         </div>
@@ -340,8 +348,6 @@
       </md-step>
     </md-steppers>
 
-    <ChakraFooter v-on:next-press="nextStep()" />
-
     <!-- modals -->
     <md-dialog class="text-center roundedDialog" :md-active.sync="showCoinDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
@@ -376,7 +382,6 @@ import AssetDropdown from "@/components/elements/AssetDropdown";
 import TokenInput from "@/components/elements/TokenInput";
 import TokenInfo from "@/components/elements/TokenInfo";
 import AddCoinModal from "@/components/AddCoinModal";
-import ChakraFooter from "@/components/ChakraFooter";
 import Dropdown from "vue-dropdowns";
 
 import { mapActions, mapState } from "vuex";
@@ -389,10 +394,10 @@ export default {
     AssetDropdown,
     TokenInput,
     TokenInfo,
-    Dropdown,
-    ChakraFooter
+    Dropdown
   },
   data: () => ({
+    active: "first",
     chakraName: null,
     dcaOn: true,
     takeProfitOn: true,
@@ -429,13 +434,14 @@ export default {
     ]
   }),
   methods: {
-    nextStep() {
-      console.log("hello next", this.$refs.stepper);
-      const stepper = this.$refs.stepper;
-      console.log(stepper);
-      stepper.setActiveStepByIndex(1);
-      // stepper.setActiveStep(stepper.stepList[Object.keys(stepper.stepList)[this.stepNumber]]);
+    setDone(id, index) {
+      this[id] = true;
+      this.secondStepError = null;
+      if (index) {
+        this.active = index;
+      }
     },
+
     handleFrequencySelect({ name: frequency }) {
       this.dcaBreakdownStats = { ...this.dcaBreakdownStats, frequency };
     },
@@ -780,5 +786,28 @@ a.step-edit {
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.cancel-button {
+  border: 1px solid #aaaaaa;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #aaaaaa;
+  text-transform: none !important;
+}
+
+.next-button {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  border-radius: 8px;
+  color: #ffffff;
+  text-transform: none !important;
 }
 </style>

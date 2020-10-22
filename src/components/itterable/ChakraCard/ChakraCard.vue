@@ -71,10 +71,10 @@
     <Asset-Breakdown :Assets="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 1" />
     <Trade-History :HistoryInfo="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 2" />
     <div class="md-layout">
-      <div class="md-layout-item md-size-50 fomo-in-button">
+      <div class="md-layout-item md-size-50 fomo-in-button" @click="fomoIn = true">
         <span class="fomo-button-text">Fomo In</span>
       </div>
-      <div class="md-layout-item md-size-50 md-size-50 fomo-out-button">
+      <div class="md-layout-item md-size-50 md-size-50 fomo-out-button" @click="fomoOut = true">
         <span class="fomo-button-text">Fomo Out</span>
       </div>
     </div>
@@ -86,6 +86,14 @@
     <md-dialog class="text-center roundedDialog" :md-active.sync="pauseStrategy">
       <Pause-Strategy :chakraInfo="chakraInfo" />
     </md-dialog>
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="fomoIn">
+      <Deposit-Funds :chakraInfo="chakraInfo" />
+    </md-dialog>
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="fomoOut">
+      <Withdraw-Funds :chakraInfo="chakraInfo" />
+    </md-dialog>
   </md-card>
 </template>
 
@@ -96,14 +104,34 @@ import PortfolioChart from "./PortfolioChart";
 import AssetBreakdown from "./AssetBreakdown";
 import TradeHistory from "./TradeHistory";
 
+import DepositFunds from "./DepositFunds";
+import WithdrawFunds from "./WithdrawFunds";
+
 import EditStrategy from "./EditStrategy";
 import PauseStrategy from "./PauseStrategy";
 import ChakraCoins from "@/components/elements/ChakraCoins";
 
 export default {
   name: "ChakraCard",
-  components: { PortfolioChart, ChakraCoins, AssetBreakdown, EditStrategy, PauseStrategy, TradeHistory },
-  data: () => ({ fomoIn: false, offer: 0, tabIndex: 0, editStrategy: false, pauseStrategy: false }),
+  components: {
+    PortfolioChart,
+    ChakraCoins,
+    AssetBreakdown,
+    EditStrategy,
+    PauseStrategy,
+    TradeHistory,
+    DepositFunds,
+    WithdrawFunds
+  },
+  data: () => ({
+    fomoIn: false,
+    offer: 0,
+    tabIndex: 0,
+    editStrategy: false,
+    pauseStrategy: false,
+    fomoIn: false,
+    fomoOut: false
+  }),
   props: {
     chakraInfo: {
       type: Object,
