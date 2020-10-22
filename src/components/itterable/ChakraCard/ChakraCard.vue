@@ -1,6 +1,6 @@
 <template>
-  <md-card style="padding: 30px">
-    <div class="md-layout" v-if="chartInfo">
+  <md-card style="padding-top: 30px">
+    <div class="md-layout" v-if="chartInfo" style="padding-left: 30px;padding-right: 30px">
       <div class="md-layout-item">
         <!-- <span class="chakra-name-text"> {{ chakraInfo.metaData.nameOfBPT }}</span> -->
         <span class="chakra-name-text"> Big DeFi Energy</span>
@@ -22,29 +22,62 @@
     </div>
     <!-- {{ dcaToken }} -->
 
-    <div class="md-layout" style="text-align: left">
+    <div class="md-layout" style="text-align: left;padding-left:30px;padding-top:20px">
       <div class="md-layout-item">
-        <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0">
-          <img v-if="tabIndex == 0" src="@/assets/svg/icons/chakra-active.svg" alt="logo" />
-          <img v-if="tabIndex != 0" src="@/assets/svg/icons/chakra-inactive.svg" alt="logo" />
-          Overview</md-button
-        >
-        <md-button :class="tabIndex == 1 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 1">
-          <img v-if="tabIndex == 1" src="@/assets/svg/icons/breakdown-active.svg" alt="logo" />
-          <img v-if="tabIndex != 1" src="@/assets/svg/icons/breakdown-inactive.svg" alt="logo" />
-          Asset Breakdown</md-button
-        >
-        <md-button :class="tabIndex == 2 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 2">
-          <img v-if="tabIndex == 2" src="@/assets/svg/icons/history-active.svg" alt="logo" />
-          <img v-if="tabIndex != 2" src="@/assets/svg/icons/history-inactive.svg" alt="logo" />
-          History</md-button
-        >
+        <!-- <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0"> -->
+        <img
+          @click="tabIndex = 0"
+          class="chakra-button-active"
+          v-if="tabIndex == 0"
+          src="@/assets/svg/tab/my-chakras-active.svg"
+        />
+        <img
+          @click="tabIndex = 0"
+          class="chakra-button-inactive"
+          v-if="tabIndex != 0"
+          src="@/assets/svg/tab/my-chakras-inactive.svg"
+        />
+
+        <img
+          @click="tabIndex = 1"
+          class="chakra-button-active"
+          v-if="tabIndex == 1"
+          src="@/assets/svg/tab/asset-breakdown-active.svg"
+        />
+        <img
+          @click="tabIndex = 1"
+          class="chakra-button-inactive"
+          v-if="tabIndex != 1"
+          src="@/assets/svg/tab/asset-breakdown-inactive.svg"
+        />
+
+        <img
+          @click="tabIndex = 2"
+          class="chakra-button-active"
+          v-if="tabIndex == 2"
+          src="@/assets/svg/tab/history-active.svg"
+        />
+        <img
+          @click="tabIndex = 2"
+          class="chakra-button-inactive"
+          v-if="tabIndex != 2"
+          src="@/assets/svg/tab/history-inactive.svg"
+        />
       </div>
     </div>
     <hr />
 
     <Portfolio-Chart :chartInfo="chartInfo" style="padding-top: 10px" v-if="tabIndex == 0" />
     <Asset-Breakdown :Assets="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 1" />
+    <Trade-History :HistoryInfo="coinsInfo" style="padding-top: 10px" v-if="tabIndex == 2" />
+    <div class="md-layout">
+      <div class="md-layout-item md-size-50 fomo-in-button">
+        <span class="fomo-button-text">Fomo In</span>
+      </div>
+      <div class="md-layout-item md-size-50 md-size-50 fomo-out-button">
+        <span class="fomo-button-text">Fomo Out</span>
+      </div>
+    </div>
 
     <md-dialog class="text-center roundedDialog" :md-active.sync="editStrategy">
       <Edit-Strategy :chakraInfo="chakraInfo" />
@@ -61,13 +94,15 @@ import { mapActions, mapState } from "vuex";
 
 import PortfolioChart from "./PortfolioChart";
 import AssetBreakdown from "./AssetBreakdown";
+import TradeHistory from "./TradeHistory";
+
 import EditStrategy from "./EditStrategy";
 import PauseStrategy from "./PauseStrategy";
 import ChakraCoins from "@/components/elements/ChakraCoins";
 
 export default {
   name: "ChakraCard",
-  components: { PortfolioChart, ChakraCoins, AssetBreakdown, EditStrategy, PauseStrategy },
+  components: { PortfolioChart, ChakraCoins, AssetBreakdown, EditStrategy, PauseStrategy, TradeHistory },
   data: () => ({ fomoIn: false, offer: 0, tabIndex: 0, editStrategy: false, pauseStrategy: false }),
   props: {
     chakraInfo: {
@@ -224,5 +259,45 @@ hr {
   background: rgba(255, 255, 255, 0.25) !important;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px !important;
+}
+
+.fomo-in-button {
+  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
+  border-radius: 0px 0px 0px 12px;
+  width: 100%;
+  height: 50px;
+  color: #ffffff !important;
+  padding-top: 15px;
+  cursor: pointer;
+}
+
+.fomo-out-button {
+  background: linear-gradient(45deg, #f67c4b 0%, #e42028 100%);
+  border-radius: 0px 0px 12px 0px;
+  height: 50px;
+  color: #ffffff !important;
+  padding-top: 15px;
+  cursor: pointer;
+}
+
+.fomo-button-text {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.chakra-button-inactive {
+  cursor: pointer;
+  padding-bottom: 15px !important;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.chakra-button-active {
+  cursor: pointer;
 }
 </style>

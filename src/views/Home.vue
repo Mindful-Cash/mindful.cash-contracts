@@ -3,31 +3,44 @@
     <div>
       <div class="md-layout" style="text-align: left">
         <div class="md-layout-item">
-          <md-button :class="tabIndex == 0 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 0"
-            ><img
-              v-if="tabIndex == 0"
-              :fill="'green'"
-              class="icon-selected"
-              src="@/assets/svg/icons/chakra-active.svg"
-              alt="logo"
-            />
-            <img
-              v-if="tabIndex != 0"
-              :fill="'green'"
-              class="icon-selected"
-              src="@/assets/svg/icons/chakra-inactive.svg"
-              alt="logo"
-            />
-            My Chakras
-          </md-button>
-          <md-button :class="tabIndex == 1 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 1"
-            ><img src="@/assets/svg/guru.svg" alt="logo" /> Find a Guru</md-button
-          >
-          <md-button :class="tabIndex == 2 ? 'selected-tab' : 'not-selected-tab'" @click="tabIndex = 2"
-            ><img v-if="tabIndex == 2" src="@/assets/svg/icons/history-active.svg" alt="logo" />
-            <img v-if="tabIndex != 2" src="@/assets/svg/icons/history-inactive.svg" alt="logo" />
-            Stats</md-button
-          >
+          <img
+            @click="tabIndex = 0"
+            class="chakra-button-active"
+            v-if="tabIndex == 0"
+            src="@/assets/svg/tab/my-chakras-active.svg"
+          />
+          <img
+            @click="tabIndex = 0"
+            class="chakra-button-inactive"
+            v-if="tabIndex != 0"
+            src="@/assets/svg/tab/my-chakras-inactive.svg"
+          />
+
+          <img
+            @click="tabIndex = 1"
+            class="chakra-button-active"
+            v-if="tabIndex == 1"
+            src="@/assets/svg/tab/asset-breakdown-active.svg"
+          />
+          <img
+            @click="tabIndex = 1"
+            class="chakra-button-inactive"
+            v-if="tabIndex != 1"
+            src="@/assets/svg/tab/asset-breakdown-inactive.svg"
+          />
+
+          <img
+            @click="tabIndex = 2"
+            class="chakra-button-active"
+            v-if="tabIndex == 2"
+            src="@/assets/svg/tab/history-active.svg"
+          />
+          <img
+            @click="tabIndex = 2"
+            class="chakra-button-inactive"
+            v-if="tabIndex != 2"
+            src="@/assets/svg/tab/history-inactive.svg"
+          />
         </div>
         <div
           class="md-layout-item new-chakra"
@@ -130,5 +143,16 @@ export default {
 hr {
   border: 1px solid rgba(41, 41, 41, 0.1);
   margin-top: 0px;
+}
+
+.chakra-button-inactive {
+  cursor: pointer;
+  padding-bottom: 15px !important;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.chakra-button-active {
+  cursor: pointer;
 }
 </style>

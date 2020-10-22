@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container" style="padding-bottom:50px">
     <div v-if="chakras == null">
       LOADING
     </div>

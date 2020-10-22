@@ -15,7 +15,7 @@
     </div>
     <div id="header" class="md-layout">
       <div class="md-layout-item md-size-10"></div>
-      <div class="md-layout-item  md-size-50">
+      <div class="md-layout-item md-size-50">
         <h1 class="heading">
           Portfolio Alignment <br />
           for Degens

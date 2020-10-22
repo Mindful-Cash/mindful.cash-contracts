@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="md-layout" style="text-align: left">
+    <div class="md-layout" style="text-align: left;padding-left:30px;padding-right:30px">
       <div class="md-layout-item">
         <span class="current-value-text">Current Value:</span>
         <br />
@@ -32,6 +32,8 @@
         :series="series"
       ></apexchart>
     </div>
+    <hr />
+    <img src="@/assets/svg/chakra-overview-footer.svg" style="padding: 20px;padding-top:30px" />
   </div>
 </template>
 
