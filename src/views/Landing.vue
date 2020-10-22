@@ -13,9 +13,10 @@
       </div>
       <div class="md-layout-item md-size-10"></div>
     </div>
+
     <div id="header" class="md-layout">
       <div class="md-layout-item md-size-10"></div>
-      <div class="md-layout-item md-size-50">
+      <div class="md-layout-item md-size-50 md-xsmall-size-90">
         <h1 class="heading">
           Portfolio Alignment <br />
           for Degens
@@ -34,7 +35,7 @@
           <div class="separator" />
         </div>
       </div>
-      <div class="md-layout-item md-size-40">
+      <div class="md-layout-item md-size-40 md-xsmall-hide">
         <div id="lotus" />
       </div>
     </div>
@@ -101,12 +102,11 @@
         </div>
       </div>
     </div>
-    <div class="md-layout">
-      <div class="md-layout-item md-size-10"></div>
-    </div>
 
-    <div class="separator-container" style="margin-top: 6rem">
-      <div class="separator" />
+    <div class="md-layout md-alignment-center">
+      <div class="md-layout-item separator-container md-size-80" style="margin-top: 6rem">
+        <div class="separator" />
+      </div>
     </div>
 
     <div id="guru" class="md-layout-item ">
@@ -204,7 +204,7 @@ p {
   background: url("~@/assets/defi-energy.png") no-repeat;
   background-size: contain;
   width: 100%;
-  padding-top: 64%;
+  padding-top: 55%;
   background-position-x: 50%;
   margin-top: 3rem;
 }
