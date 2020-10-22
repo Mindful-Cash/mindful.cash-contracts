@@ -1,13 +1,13 @@
 <template>
   <div class="landing">
-    <div class="md-layout" style="padding:20px;text-align:left">
+    <div class="md-layout" style="padding-top:20px;padding-bottom:20px;text-align:left">
       <div class="md-layout-item md-size-10"></div>
 
       <div class="md-layout-item">
         <img src="@/assets/svg/logo.svg" alt="logo" />
       </div>
       <div class="md-layout-item" id="nav" style="text-align: right">
-        <button id="logo">
+        <button>
           <span class="highlight" style="cursor: pointer;font-size: 16px;" @click="goToApp">Go to app</span>
         </button>
       </div>
@@ -16,7 +16,7 @@
 
     <div id="header" class="md-layout">
       <div class="md-layout-item md-size-10"></div>
-      <div class="md-layout-item md-size-50 md-xsmall-size-90">
+      <div class="md-layout-item md-size-50 md-xsmall-size-80">
         <h1 class="heading">
           Portfolio Alignment <br />
           for Degens
@@ -43,7 +43,7 @@
     <div id="rebalance" class="section">
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-10"></div>
-        <div class="md-layout-item md-size-70">
+        <div class="md-layout-item md-size-70 md-xsmall-size-90">
           <h2 class="heading">
             Create<br />
             Auto-Rebalancing<br />
@@ -54,7 +54,7 @@
       </div>
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-10"></div>
-        <div class="md-layout-item md-size-70">
+        <div class="md-layout-item md-size-70 md-xsmall-size-80">
           <p class="secondary-text">
             Create bespoke portfolios - <span class="highlight">”Chakras”</span> - when you’re feeling mindful. Your
             degen self will thank you later.
@@ -73,8 +73,8 @@
 
     <div id="dca" class="section">
       <div class="md-layout md-alignment-top-center">
-        <h2 class="heading">Implement Mindful DCA Strategies</h2>
-        <p class="md-layout-item md-size-100 secondary-text">
+        <h2 class="md-layout-item md-size-100 md-xsmall-size-80 heading">Implement Mindful DCA Strategies</h2>
+        <p class="md-layout-item md-size-100 md-xsmall-size-80 secondary-text">
           Allocate funds to a DCA pool, automate your strategy, and
           <span class="highlight">never miss a bull run again.</span>
         </p>
@@ -88,7 +88,7 @@
     <div class="section" id="chart">
       <div class="md-layout md-alignment-top-left">
         <div class="md-layout-item md-size-10"></div>
-        <div class="md-layout-item md-size-80 md-xsmall-size-100" style="text-align:left">
+        <div class="md-layout-item md-size-80 md-xsmall-size-80" style="text-align:left">
           <h2 class="heading">
             Automatically Take Profits<br />
             on the Way Up
@@ -112,7 +112,7 @@
     <div id="guru" class="md-layout-item ">
       <div class="md-layout md-gutter">
         <div class="md-layout-item md-size-10"></div>
-        <div class="md-layout-item md-size-40 md-xsmall-size-100">
+        <div class="md-layout-item md-size-40 md-xsmall-size-80">
           <h2 class="heading">Find Your Guru</h2>
           <p class="secondary-text">
             Browse and copy the <span class="highlight">most profitable strategies</span>, developed by the most mindful
@@ -136,10 +136,10 @@
 
     <div class="section">
       <div class="md-layout md-alignment-top-center">
-        <h2 class="heading">Silence Your Inner Degenerate</h2>
-        <p class="md-layout-item md-size-100 secondary-text">
+        <h2 class="heading md-layout-item md-xsmall-size-80">Silence Your Inner Degenerate</h2>
+        <p class="md-layout-item md-size-100 md-xsmall-size-80 secondary-text">
           Start aligning your Chakras today. Don’t throw away your next opportunity to build
-          <span class="highlight">generation wealth.</span>
+          <span class="highlight">generational wealth.</span>
         </p>
         <button class="highlight-btn" style="cursor: pointer;font-size: 16px;" @click="goToApp">
           <span>Align Your Chakras</span>
@@ -235,8 +235,6 @@ p {
 }
 
 #guru {
-  // display: flex;
-  // flex-direction: column;
   height: 40rem;
 
   p,
@@ -250,25 +248,17 @@ p {
 }
 
 #nav {
-  // margin-top: 2rem;
-  // max-width: 1024px;
-
   button {
     background: none;
     outline: none;
     border-radius: 1.875rem;
-    padding: 0.5rem 3rem;
+    padding: 0.5rem 2rem;
     border: 1px solid #00e0ff;
     box-sizing: border-box;
   }
 }
 
 #header {
-  // display: flex;
-  // flex-direction: column;
-  // align-items: flex-start;
-  // margin-top: 6rem;
-
   p,
   h1 {
     text-align: left;
