@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <h1 class="title">New Chakra</h1>
-    <md-steppers style="width-100%">
+    <md-steppers :editable="true" ref="stepper" @change="changedStep" @completed="finishedStep" style="width-100%">
       <md-step id="first" md-label="Setup">
         <div class="md-layout gutter">
           <div class="md-layout-item md-size-55">
@@ -76,16 +76,6 @@
               <div class="md-layout-item">
                 <span class="totalContributionText">Total Contribution:</span
                 ><span class="totalContributionNumber">$0.00</span>
-              </div>
-            </div>
-
-            <div class="md-layout" style="padding-top: 20px; margin-bottom: 30px">
-              <div class="md-layout-item md-size-60"></div>
-              <div class="md-layout-item">
-                <md-button :disabled="true" class="approve-button">Next</md-button>
-              </div>
-              <div class="md-layout-item">
-                <md-button :disabled="true">Cancel</md-button>
               </div>
             </div>
           </div>
@@ -350,6 +340,8 @@
       </md-step>
     </md-steppers>
 
+    <ChakraFooter v-on:next-press="nextStep()" />
+
     <!-- modals -->
     <md-dialog class="text-center roundedDialog" :md-active.sync="showCoinDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
@@ -384,12 +376,22 @@ import AssetDropdown from "@/components/elements/AssetDropdown";
 import TokenInput from "@/components/elements/TokenInput";
 import TokenInfo from "@/components/elements/TokenInfo";
 import AddCoinModal from "@/components/AddCoinModal";
+import ChakraFooter from "@/components/ChakraFooter";
 import Dropdown from "vue-dropdowns";
 
 import { mapActions, mapState } from "vuex";
 export default {
   name: "ChakraFlow",
-  components: { Separator, AddCoinModal, Segment, AssetDropdown, TokenInput, TokenInfo, Dropdown },
+  components: {
+    Separator,
+    AddCoinModal,
+    Segment,
+    AssetDropdown,
+    TokenInput,
+    TokenInfo,
+    Dropdown,
+    ChakraFooter
+  },
   data: () => ({
     chakraName: null,
     dcaOn: true,
@@ -427,6 +429,13 @@ export default {
     ]
   }),
   methods: {
+    nextStep() {
+      console.log("hello next", this.$refs.stepper);
+      const stepper = this.$refs.stepper;
+      console.log(stepper);
+      stepper.setActiveStepByIndex(1);
+      // stepper.setActiveStep(stepper.stepList[Object.keys(stepper.stepList)[this.stepNumber]]);
+    },
     handleFrequencySelect({ name: frequency }) {
       this.dcaBreakdownStats = { ...this.dcaBreakdownStats, frequency };
     },
@@ -585,6 +594,7 @@ export default {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 1.25rem;
   padding-top: 0.25rem;
+  margin-bottom: 4rem;
 }
 
 ::v-deep .md-steppers .md-stepper-content {

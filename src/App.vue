@@ -28,7 +28,7 @@
     <md-app-content>
       <router-view />
       <div class="footer">
-        <div class="md-layout" style="text-align: center">
+        <div class="md-layout" style="text-align: center;">
           <div class="md-layout-item">
             <img src="@/assets/svg/logo.svg" alt="logo" />
           </div>
