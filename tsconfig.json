@@ -18,10 +18,10 @@
     "outDir": "dist",
     "resolveJsonModule": true,
     "strictNullChecks": false,
-    "sourceMap": true,
+    "sourceMap": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
-  "exclude": ["node_modules","typechain"],
+  "include": [],
+  "exclude": ["node_modules", "typechain"],
   // "files": [
   //   "buidler.config.ts",
   //   "node_modules/@nomiclabs/buidler-ethers/src/type-extensions.d.ts",
