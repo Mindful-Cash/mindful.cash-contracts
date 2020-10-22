@@ -1,8 +1,9 @@
 <template>
   <div class="page-container" style="padding-bottom:100px">
     <div v-if="chakras == null">
-      LOADING
+      <img class="loading-gif" src="@/assets/loading-no-shadow.gif" />
     </div>
+
     <div v-if="chakras != null">
       <div class="md-layout" v-if="chakras.length != 0 && !createFlowEnabled">
         <div class="md-layout-item">
@@ -126,5 +127,10 @@ export default {
   text-align: center !important;
   color: #aaaaaa;
   cursor: pointer;
+}
+.loading-gif {
+  padding-top: 100px;
+  height: 500px;
+  filter: drop-shadow(5px 5px 4px #a6a6a6);
 }
 </style>
