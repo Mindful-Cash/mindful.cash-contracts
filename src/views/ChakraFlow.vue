@@ -420,6 +420,7 @@ export default {
     initialContribution: 0,
     initialContributionCoin: { symbol: "SELECT", logoURI: null },
     initialDCAContributionCoin: { symbol: "SELECT", logoURI: null },
+    takeProfitIn: { symbol: "SELECT", logoURI: null },
     contributionMode: "single",
     showCoinDialog: false,
     showSelectInitialContributionDialog: false,
@@ -524,6 +525,11 @@ export default {
     },
     handleInitialDCACoinChosen(coin) {
       this.initialDCAContributionCoin = coin;
+      this.dcaBreakdownStats = { ...this.dcaBreakdownStats, coin: coin.symbol };
+      this.showSelectInitialDCAContributionDialog = false;
+    },
+    handletakeProfitCoinChosen(coin) {
+      this.takeProfitIn = coin;
       this.dcaBreakdownStats = { ...this.dcaBreakdownStats, coin: coin.symbol };
       this.showSelectInitialDCAContributionDialog = false;
     },
