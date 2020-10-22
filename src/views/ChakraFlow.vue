@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <h1 class="title">New Chakra</h1>
-    <md-steppers ref="stepper" :md-active-step.sync="currentStep">
+    <md-steppers ref="stepper" :md-active-step.sync="currentStep" md-linear>
       <md-step id="first" md-label="Setup">
         <div class="md-layout gutter" style="width:100%">
           <div class="md-layout-item md-size-55">
@@ -285,18 +285,18 @@
               <b>You will need to sign a transaction.</b>
             </p>
             <Separator />
-            <h2 class="title">Chakra Overview <a class="step-edit">Edit</a></h2>
+            <h2 class="title">Chakra Overview <a class="step-edit" @click="setStep(0)">Edit</a></h2>
             <p><b>Name: </b>Strong Crypto Energy</p>
             <p><b>Inital contribution: </b>{{ dcaBreakdownStats.amount || 0 }} {{ initialContributionCoin.symbol }}</p>
 
             <Separator />
-            <h2 class="title">DCA Strategy <a class="step-edit">Edit</a></h2>
+            <h2 class="title">DCA Strategy <a class="step-edit" @click="setStep(1)">Edit</a></h2>
 
             <p><b>DCA frequency: </b>{{ dcaBreakdownStats.frequency }}</p>
             <p><b>DCA amount: </b>$100</p>
 
             <Separator />
-            <h2 class="title">Profit Taking Strategy <a class="step-edit">Edit</a></h2>
+            <h2 class="title">Profit Taking Strategy <a class="step-edit" @click="setStep(1)">Edit</a></h2>
             <p>
               When Chakra value increases by <b>20%</b>, take <b>5%</b> of <b>the total Chakra value</b> as profit in
               <b>USDC</b>.
@@ -459,6 +459,11 @@ export default {
       this.currentStep = next;
     },
     // Next, prev, completion.
+    setStep(i) {
+      if (!this.steps[i]) return;
+
+      this.currentStep = this.steps[i];
+    },
     nextStep() {
       this.adjustStepByIndex(1);
     },
