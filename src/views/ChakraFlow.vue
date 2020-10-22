@@ -61,11 +61,15 @@
                   v-on:show-modal="showSelectInitialContributionDialog = true"
                 />
               </div>
-              <div class="md-layout-item md-size">
-                <input placeholder="0" type="number" v-model="initialContribution" />
+              <div class="md-layout-item md-size-50">
+                <TokenInput
+                  :state="initialContribution"
+                  v-model="initialContribution"
+                  v-on:approve-token="handleInitialContribution($event)"
+                />
               </div>
-              <div class="md-layout-item md-size-20" style="margin-left: 5px">
-                <md-button class="approve-button">Approve</md-button>
+              <div class="md-layout-item md-size-20">
+                <TokenInfo :price="20" :balance="2" />
               </div>
             </div>
 
@@ -75,7 +79,7 @@
             >
               <div class="md-layout-item">
                 <span class="totalContributionText">Total Contribution:</span
-                ><span class="totalContributionNumber">$0.00</span>
+                ><span class="totalContributionNumber">${{ initialContribution }}</span>
               </div>
             </div>
           </div>
@@ -418,6 +422,7 @@ export default {
     selectedCoins: [],
     tokenAllowance: 0,
     tokenAllowanceState: "default",
+    initialContribution: "default",
     // DCA
     dcaTimeframes: [{ name: "Daily" }, { name: "Weekly" }, { name: "Fortnightly" }, { name: "Monthly" }],
     dcaBreakdownStats: {
@@ -491,6 +496,9 @@ export default {
       setTimeout(() => {
         this.tokenAllowanceState = "complete";
       }, 5000);
+    },
+    handleInitialContribution(initialContribution) {
+      this.initialContribution = initialContribution;
     },
     handelInitialSendCoinChosen(chosenCoin) {
       console.log("CHOSEN", chosenCoin);
