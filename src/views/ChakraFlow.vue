@@ -212,7 +212,7 @@
                   <p>Take profit as:</p>
                 </div>
                 <div class="md-layout-item md-size-70">
-                  <Segment :titles="['% of Chakra', '% of Profit']" v-on:update-selected="contributionMode = $event" />
+                  <Segment :titles="takeProfitOptions" v-on:update-selected="updateTakeProfitSelection($event)" />
                 </div>
               </div>
               <div class="md-layout md-alignment-center-left" style="padding-top: 20px">
@@ -222,7 +222,7 @@
                 <div class="md-layout-item md-size-35">
                   <div class="percentage">
                     <span>%</span>
-                    <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                    <input placeholder="0" type="number" v-model="takeProfitAfter" style="width: 100%" />
                   </div>
                 </div>
                 <div class="md-layout-item md-size-35">
@@ -236,7 +236,7 @@
                 <div class="md-layout-item md-size-35">
                   <div class="percentage">
                     <span>%</span>
-                    <input placeholder="0" type="number" v-model="initialContribution" style="width: 100%" />
+                    <input placeholder="0" type="number" v-model="takeProfitAmount" style="width: 100%" />
                   </div>
                 </div>
                 <div class="md-layout-item md-size-35">
@@ -248,10 +248,7 @@
                   <p>Take profit in:</p>
                 </div>
                 <div class="md-layout-item md-size-45">
-                  <AssetDropdown
-                    :asset="initialContributionCoin"
-                    v-on:show-modal="showSelectInitialContributionDialog = true"
-                  />
+                  <AssetDropdown :asset="takeProfitIn" v-on:show-modal="showSelectInitialContributionDialog = true" />
                 </div>
                 <div class="md-layout-item md-size-25">
                   <TokenInfo :price="20" :balance="2" />
@@ -264,7 +261,12 @@
 
               <div class="md-layout" style="padding-top: 20px">
                 <div class="md-layout-item md-size-100">
-                  <p>When Chakra value increases by -%, take -% of - as profit in -.</p>
+                  <p>
+                    When Chakra value increases by <b>{{ takeProfitAfter || "–" }}%</b>, take
+                    <b>{{ takeProfitAmount || "–" }}%</b> of <b>the total {{ takeProfitSelection }} value</b> as profit
+                    in <b>{{ takeProfitIn.symbol }}</b
+                    >.
+                  </p>
                 </div>
               </div>
               <div class="md-layout" style="padding-top: 20px">
@@ -302,8 +304,10 @@
             <Separator />
             <h2 class="title">Profit Taking Strategy <a class="step-edit" @click="setStep(1)">Edit</a></h2>
             <p>
-              When Chakra value increases by <b>20%</b>, take <b>5%</b> of <b>the total Chakra value</b> as profit in
-              <b>USDC</b>.
+              When Chakra value increases by <b>{{ takeProfitAfter || "–" }}%</b>, take
+              <b>{{ takeProfitAmount || "–" }}%</b> of <b>the total {{ takeProfitSelection }} value</b> as profit in
+              <b>{{ takeProfitIn.symbol }}</b
+              >.
             </p>
           </div>
 
@@ -407,6 +411,7 @@ export default {
     Dropdown
   },
   data: () => ({
+    takeProfitOptions: ["% of Chakra", "% of Profit"],
     steps: ["first", "second", "third"],
     currentStep: "first",
     chakraName: null,
@@ -431,6 +436,10 @@ export default {
       frequency: "Monthly",
       fee: null
     },
+    takeProfitSelection: null,
+    takeProfitAfter: null,
+    takeProfitAmount: null,
+    takeProfitIn: { symbol: "SELECT" },
     //
     colors: [
       "#A8A2F5",
@@ -446,6 +455,14 @@ export default {
     ]
   }),
   methods: {
+    updateTakeProfitSelection(val) {
+      const index = this.findIndex(this.takeProfitOptions, val);
+      if (index == 0) {
+        this.takeProfitSelection = "Chakra";
+      } else {
+        this.takeProfitSelection = "Profit";
+      }
+    },
     findIndex(values, expectedValue) {
       // cos es5
       let selectedIndex;
