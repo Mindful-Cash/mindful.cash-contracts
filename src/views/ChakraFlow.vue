@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <h1 class="title">New Chakra</h1>
-    <md-steppers ref="stepper" :md-active-step.sync="active" style="width-100%">
+    <md-steppers ref="stepper" :md-active-step.sync="currentStep">
       <md-step id="first" md-label="Setup">
         <div class="md-layout gutter" style="width:100%">
           <div class="md-layout-item md-size-55">
@@ -109,14 +109,6 @@
                   <md-table-cell>{{ item.ratio }}%</md-table-cell>
                 </md-table-row>
               </md-table>
-            </div>
-          </div>
-
-          <div class="md-layout">
-            <div class="md-layout-item md-size-100">
-              <hr />
-              <md-button class="cancel-button">Cancel</md-button>
-              <md-button class="md-raised md-primary next-button " @click="setDone('first', 'second')">Next</md-button>
             </div>
           </div>
         </div>
@@ -348,6 +340,20 @@
       </md-step>
     </md-steppers>
 
+    <div class="md-layout" style="padding-top: 20px">
+      <div class="md-layout-item md-size-100">
+        <hr style="margin:0" />
+        <div class="md-layout">
+          <div class="md-layout-item md-size-100 stepper-nav">
+            <md-button class="cancel-button" v-if="!isFirstStep()" @click="prevStep()">Back</md-button>
+            <md-button class="md-raised md-primary next-button" @click="isLastStep() ? completeSteps() : nextStep()">{{
+              isLastStep() ? `Confirm` : `Next`
+            }}</md-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- modals -->
     <md-dialog class="text-center roundedDialog" :md-active.sync="showCoinDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
@@ -397,7 +403,8 @@ export default {
     Dropdown
   },
   data: () => ({
-    active: "first",
+    steps: ["first", "second", "third"],
+    currentStep: "first",
     chakraName: null,
     dcaOn: true,
     takeProfitOn: true,
@@ -434,14 +441,41 @@ export default {
     ]
   }),
   methods: {
-    setDone(id, index) {
-      this[id] = true;
-      this.secondStepError = null;
-      if (index) {
-        this.active = index;
-      }
+    findIndex(values, expectedValue) {
+      // cos es5
+      let selectedIndex;
+      const valuePresent = values.some((value, index) => {
+        selectedIndex = index;
+        return value === expectedValue;
+      });
+      return valuePresent ? selectedIndex : -1;
     },
+    adjustStepByIndex(i) {
+      const current = this.findIndex(this.steps, this.currentStep);
+      const next = this.steps[current + i];
 
+      if (!next) return;
+
+      this.currentStep = next;
+    },
+    // Next, prev, completion.
+    nextStep() {
+      this.adjustStepByIndex(1);
+    },
+    prevStep() {
+      this.adjustStepByIndex(-1);
+    },
+    completeSteps() {
+      console.log("success");
+    },
+    isFirstStep() {
+      const currentIndex = this.findIndex(this.steps, this.currentStep);
+      return currentIndex === 0;
+    },
+    isLastStep() {
+      const currentIndex = this.findIndex(this.steps, this.currentStep);
+      return currentIndex === this.steps.length - 1;
+    },
     handleFrequencySelect({ name: frequency }) {
       this.dcaBreakdownStats = { ...this.dcaBreakdownStats, frequency };
     },
@@ -789,25 +823,31 @@ a.step-edit {
 }
 
 .cancel-button {
-  border: 1px solid #aaaaaa;
+  border: 1px solid #aaa !important;
   box-sizing: border-box;
   border-radius: 8px;
   font-family: Inter;
   font-style: normal;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 19px;
-  display: flex;
-  align-items: center;
   text-align: center;
-  color: #aaaaaa;
+  color: #aaa !important;
   text-transform: none !important;
 }
 
 .next-button {
   background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
   border-radius: 8px;
+  box-shadow: none !important;
+  font-size: 1rem;
   color: #ffffff;
   text-transform: none !important;
+}
+
+.stepper-nav {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
 }
 </style>
