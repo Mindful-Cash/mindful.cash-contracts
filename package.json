@@ -2,7 +2,7 @@
   "name": "mindful-cash",
   "version": "0.0.1",
   "scripts": {
-    "serve": "vue-cli-service serve --host localhost",
+    "serve": "yarn run build && vue-cli-service serve --host localhost",
     "build-ui": "yarn run build && vue-cli-service build",
     "build": "yarn compile && yarn typechain",
     "compile": "npx buidler --config ./buidler.compile.config.ts compile",
