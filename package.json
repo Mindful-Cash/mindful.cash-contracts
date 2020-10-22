@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "serve": "vue-cli-service serve --host localhost",
-    "build-ui": "vue-cli-service build",
+    "build-ui": "yarn run build && vue-cli-service build",
     "build": "yarn compile && yarn typechain",
     "compile": "npx buidler --config ./buidler.compile.config.ts compile",
     "coverage": "npm run build && npx buidler coverage --temp artifacts --network coverage",

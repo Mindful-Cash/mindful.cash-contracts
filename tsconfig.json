@@ -1,34 +1,56 @@
+// {
+//   "compilerOptions": {
+//     "target": "esnext",
+//     "module": "esnext",
+//     "jsx": "preserve",
+//     "importHelpers": true,
+//     "moduleResolution": "node",
+//     "experimentalDecorators": true,
+//     "skipLibCheck": true,
+//     "allowSyntheticDefaultImports": true,
+//     "baseUrl": ".",
+//     "types": ["webpack-env"],
+//     "paths": {
+//       "@/*": ["src/*"]
+//     },
+//     "strict": false,
+//     "esModuleInterop": true,
+//     "outDir": "dist",
+//     "resolveJsonModule": true,
+//     "strictNullChecks": false,
+//     "sourceMap": true
+//   },
+//   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+//   "exclude": ["node_modules", "typechain"],
+//   // "files": [
+//   //   "buidler.config.ts",
+//   //   "node_modules/@nomiclabs/buidler-ethers/src/type-extensions.d.ts",
+//   //   "node_modules/@nomiclabs/buidler-etherscan/src/type-extensions.d.ts",
+//   //   "node_modules/@nomiclabs/buidler-waffle/src/type-extensions.d.ts",
+//   //   "node_modules/buidler-typechain/src/type-extensions.d.ts",
+//   //   "node_modules/buidler-deploy/src/type-extensions.d.ts"
+//   // ],
+//   "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+// }
+
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "jsx": "preserve",
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "types": ["webpack-env"],
-    "paths": {
-      "@/*": ["src/*"]
-    },
+    "target": "ES2019",
+    "module": "commonjs",
     "strict": false,
     "esModuleInterop": true,
     "outDir": "dist",
     "resolveJsonModule": true,
     "strictNullChecks": false,
-    "sourceMap": true
+    "sourceMap": true,
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["node_modules", "typechain"],
-  // "files": [
-  //   "buidler.config.ts",
-  //   "node_modules/@nomiclabs/buidler-ethers/src/type-extensions.d.ts",
-  //   "node_modules/@nomiclabs/buidler-etherscan/src/type-extensions.d.ts",
-  //   "node_modules/@nomiclabs/buidler-waffle/src/type-extensions.d.ts",
-  //   "node_modules/buidler-typechain/src/type-extensions.d.ts",
-  //   "node_modules/buidler-deploy/src/type-extensions.d.ts"
-  // ],
-  "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+  "include": ["./scripts", "./test", "./mainnet-test"],
+  "files": [
+    "buidler.config.ts",
+    "node_modules/@nomiclabs/buidler-ethers/src/type-extensions.d.ts",
+    "node_modules/@nomiclabs/buidler-etherscan/src/type-extensions.d.ts",
+    "node_modules/@nomiclabs/buidler-waffle/src/type-extensions.d.ts",
+    "node_modules/buidler-typechain/src/type-extensions.d.ts",
+    "node_modules/buidler-deploy/src/type-extensions.d.ts"
+  ]
 }
