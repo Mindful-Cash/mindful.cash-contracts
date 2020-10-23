@@ -103,6 +103,7 @@ export default new Vuex.Store({
   },
   actions: {
     async setUp({ dispatch, state }) {
+      commit("setEthers", ethers);
       console.log("IN SETUP");
       // Setting up Onboard.js
       await dispatch("setUpOnboard");
@@ -139,7 +140,6 @@ export default new Vuex.Store({
           wallet: async (wallet: Wallet) => {
             if (wallet.provider) {
               const ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
-              commit("setEthers", ethers);
               commit("setProvider", ethersProvider);
               commit("setCurrentNetwork", await ethersProvider.getNetwork());
             } else {
@@ -410,7 +410,7 @@ export default new Vuex.Store({
         tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
           ? Number(
               Number(
-                ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+                state.ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
               ).toFixed(4)
             )
           : Number(0).toFixed(4);
