@@ -41,8 +41,8 @@ export default {
       if (filterToken) {
         nameList = this.allTokens.filter(token => {
           return (
-            token.symbol.toLowerCase().indexOf(filterToken.toLowerCase()) != -1 ||
-            token.address.toLowerCase() == filterToken.toLowerCase()
+            token.symbol.toLowerCase().indexOf(filterToken.toLowerCase()) !== -1 ||
+            token.address.toLowerCase() === filterToken.toLowerCase()
           );
         });
       }

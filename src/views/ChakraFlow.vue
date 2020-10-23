@@ -481,7 +481,7 @@ export default {
   methods: {
     updateTakeProfitSelection(val) {
       const index = this.findIndex(this.takeProfitOptions, val);
-      if (index == 0) {
+      if (index === 0) {
         this.takeProfitSelection = "Chakra";
       } else {
         this.takeProfitSelection = "Profit";
