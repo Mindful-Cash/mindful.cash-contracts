@@ -8,11 +8,11 @@ With Mindful, you can adopt strategies to mindfully DCA into cryptoassets, rebal
 
 ## Docs and Links
 
-- [Medium Post](https://medium.com/mindfulcash/introducing-mindful-portfolio-alignment-for-degens-7ff1aafe4f58)
-- [Mindful Relayer](https://github.com/Mindful-Cash/relayer)
+- [Medium post](https://medium.com/mindfulcash/introducing-mindful-portfolio-alignment-for-degens-7ff1aafe4f58)
+- [Mindful relayer](https://github.com/Mindful-Cash/relayer)
 - [Twitter](https://twitter.com/mindfulcash)
-- [Slide dec](https://docs.google.com/presentation/d/1oi8igtqZWn-fPtbnoKm9h-eYL1GKsGIijxb8H1VYQws/edit#slide=id.p)
-- [Mockups](https://www.figma.com/file/6N4PRLldUjUvxqTkhRob3q/Mindful---ETHOnline-2020?node-id=0%3A1)
+- [Slide deck](https://docs.google.com/presentation/d/1oi8igtqZWn-fPtbnoKm9h-eYL1GKsGIijxb8H1VYQws/edit#slide=id.p)
+- [UX/UI mockups](https://www.figma.com/file/6N4PRLldUjUvxqTkhRob3q/Mindful---ETHOnline-2020?node-id=0%3A1)
 - [Contract documentation](./docs/contracts-documentation/mindful/mindfulproxy.md)
 
 ## What is Mindful?
@@ -47,7 +47,7 @@ Every Mindful portfolio (or “Chakra”) is a controlled Balancer pool, run and
 
 ### Chakra Deployment
 
-To deploy a new Chakra, the MindfulProxy wraps the Balancer factory to create a custom permissioned smart pool using the user's specified Chakra parameters (underlying tokens, weightings, and initial amounts). On initial pool creation, the MindfulProxy enables a single-asset deposit into the pool by trading deposited tokens for the specified underlying tokens on Uniswap. For example, a 50/50 YFI/UNI Chakra, using USDC as a deposit asset, would first trade the USDC for YFI and UNI in the correct ratios, and then deposit these funds into the Chakra within a single transaction.
+To deploy a new Chakra, the MindfulProxy wraps the Balancer factory to create a custom permissioned smart pool using the user's specified Chakra parameters (underlying tokens, weightings, and initial amounts). On initial pool creation, the MindfulProxy enables a single-asset deposit into the pool by trading deposited tokens for the specified underlying tokens on Uniswap. For example, a 50/50 YFI/UNI Chakra, using USDC as a deposit asset, would first trade the USDC for YFI and UNI in the correct ratios, and then deposit these funds into the Chakra in a single transaction.
 
 ### Chakra Stategies
 
