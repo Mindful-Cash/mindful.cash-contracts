@@ -517,7 +517,7 @@ export default {
       this.adjustStepByIndex(-1);
     },
     completeSteps() {
-      alert("Mindful.cash mainnet deployment is currently disabled and will remain as such until the project has been audited. Please follow up on Twitter to get updates for the mainnet launch 🚀 Remember to stay mindful 🧘‍♂️.");
+      alert("Mindful.cash mainnet deployment is currently disabled and will remain as such until the project has been audited. Please follow us on Twitter to get updates for the mainnet launch 🚀 Remember to stay mindful 🧘‍♂️.");
     },
     isFirstStep() {
       const currentIndex = this.findIndex(this.steps, this.currentStep);
