@@ -29,8 +29,8 @@ Start aligning your chakras today.
 ## Team
 
 - 🇬🇧 **Chris Fulford** - Front-end, Integrations
-- 🇿🇦 **Chris Maree** - Smart Contracts, Front end
-- 🇹🇳 **Haythem Sellami** - smart Contracts, bot-infra
+- 🇿🇦 **Chris Maree** - Smart Contracts, Front End
+- 🇹🇳 **Haythem Sellami** - Smart Contracts, Relayer Infra
 - 🇳🇿 **Liesl Eichholz** - Design, UX/UI,, Memetics
 - 🇩🇪 **Matthias Bachmann** - Design/ UX/UI, Memetics
 
