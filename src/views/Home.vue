@@ -4,7 +4,10 @@
       <div class="md-layout" style="text-align: left">
         <div class="md-layout-item">
           <img
-            @click="tabIndex = 0"
+            @click="
+              tabIndex = 0;
+              createFlowOverride = false;
+            "
             class="chakra-button-active"
             v-if="tabIndex == 0"
             src="@/assets/svg/tab/my-chakras-active.svg"

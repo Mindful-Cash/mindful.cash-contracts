@@ -353,7 +353,7 @@
                     <span class="dot" :style="'background:' + colors[index]" />
                   </md-table-cell>
                   <md-table-cell>{{ item.symbol }}</md-table-cell>
-                  <md-table-cell>${{ (item.ratio * initialContribution).toFixed(2) }}</md-table-cell>
+                  <md-table-cell>${{ ((item.ratio * initialContribution) / 100).toFixed(0) }}</md-table-cell>
                   <md-table-cell>{{ item.ratio }}%</md-table-cell>
                 </md-table-row>
               </md-table>
@@ -517,7 +517,7 @@ export default {
       this.adjustStepByIndex(-1);
     },
     completeSteps() {
-      console.log("success");
+      alert("Mindful.cash mainnet deployment is currently disabled and will remain as such until the project has been audited. Please follow up on Twitter to get updates for the main net launch 🚀. Remember to stay mindful 🧘‍♂️");
     },
     isFirstStep() {
       const currentIndex = this.findIndex(this.steps, this.currentStep);
