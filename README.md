@@ -4,7 +4,7 @@
 
 With Mindful, you can adopt strategies to mindfully DCA into cryptoassets, rebalance your portfolio, and take profits automatically. Let your mindful self plan for your degen self's future.
 
-![](https://ethglobal.s3.amazonaws.com/rec1A1jTI5wQcLPsp/cover_image_mindful.png)
+![](./src/assets/chakra.png)
 
 ## What is Mindful?
 
@@ -159,3 +159,5 @@ Some pools have a cap which limits the totalSupply of the pool shares token. To 
 ```solidity
 function getCap() external view returns (uint256);
 ```
+
+![](./src/assets/loading-no-shadow.gif)

@@ -3,7 +3,7 @@
     <h1 class="heading">
       Coming Soon
     </h1>
-    <span class="secondary-text">In the mean time start aligning your chakras...</span>
+    <span class="secondary-text">In the meantime, start aligning your chakras...</span>
     <br />
     <br />
     <button class="highlight-btn" style="cursor: pointer;font-size: 16px;" @click="goToApp">
