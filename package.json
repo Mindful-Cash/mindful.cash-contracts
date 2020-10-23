@@ -85,7 +85,7 @@
     "test": "test"
   },
   "dependencies": {
-    "ethers": "^4.0.47",
+    "ethers": "5.0.4",
     "@nomiclabs/buidler": "^1.4.7",
     "@nomiclabs/buidler-etherscan": "^2.1.0",
     "@pie-dao/mock-contracts": "0.0.9",
