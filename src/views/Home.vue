@@ -150,7 +150,7 @@ hr {
 
 .chakra-button-inactive {
   cursor: pointer;
-  padding-bottom: 0px !important;
+  padding-bottom: 10px !important;
   padding-left: 10px;
   padding-right: 10px;
 }
