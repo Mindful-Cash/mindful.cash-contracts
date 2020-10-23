@@ -6,6 +6,14 @@ With Mindful, you can adopt strategies to mindfully DCA into cryptoassets, rebal
 
 ![](./src/assets/chakra.png)
 
+## Docs and Links
+
+- [Medium Post](https://medium.com/@mindful-cash/7ff1aafe4f58)
+- [Twitter](https://twitter.com/mindfulcash)
+- [Slide dec](https://docs.google.com/presentation/d/1oi8igtqZWn-fPtbnoKm9h-eYL1GKsGIijxb8H1VYQws/edit#slide=id.p)
+- [Mockups](https://www.figma.com/file/6N4PRLldUjUvxqTkhRob3q/Mindful---ETHOnline-2020?node-id=0%3A1)
+- [Contract documentation](./docs/contracts-documentation/mindful/mindfulproxy.md)
+
 ## What is Mindful?
 
 Mindful was built out of a need. As DeFi natives ourselves, we wanted to learn from our mistakes and calm our degenerate tendencies. So, for [ETHOnline](https://hack.ethglobal.co/showcase/mindful-rec1A1jTI5wQcLPsp), we decided to build something we'd actually use.
@@ -17,6 +25,13 @@ With this new platform, you can adopt strategies to mindfully DCA into assets, r
 Mindful's intuitive UI guides users seamlessly through the Chakra creation and strategy-setting process. Built on Ethereum, it works with all major wallets and ERC20 assets. With Mindful, we hope to enable other crypto traders to invest mindfully, take the emotion out of trading, and actually realize profits instead of riding gains back down to the bottom.
 
 Start aligning your chakras today.
+
+## Team
+- 🇬🇧 **Chris Fulford** - Front-end, Integrations
+- 🇿🇦 **Chris Maree** - Smart Contracts, Front end
+- 🇹🇳 **Haythem Sellami** - smart Contracts, bot-infra
+- 🇳🇿 **Liesl Eichholz** - Design, UX/UI,, Memetics
+- 🇩🇪 **Matthias Bachmann** - Design/ UX/UI, Memetics
 
 ## Chakras
 
@@ -51,16 +66,17 @@ In both buy and sell strategy cases, all interactions with the Balancer pool use
 A relayer bot is used to monitor all Chakras within the Mindful ecosystem. If a strategy can be executed, the bot calls the associated function on the MindfulProxy. The strategy’s parameters guarantee that this is only done at the exact thresholds defined by the Chakra owner. To compensate relayer bots for their work and gas usage, they are rewarded with 0.3% of the total deposit or withdrawal amount.
 
 ## Code attribution
+Some code in this project was borrowed, forked and modified, as it is the case with building DeFi products. This section outlines the opensource code that was coppied.
 
-### Smart contracts
+#### Smart contracts
 
 The Chakra system and smart contracts in this repo are heavily inspired by Pie-dao's smart pools. You can find it on Github [here](https://github.com/pie-dao/pie-smart-pools). The initial version of this repo was a direct copy of their code and much of their original logic is still in the contracts. Specifically, our smart contract contribution for this hackathon is the `MindfulProxy.sol` contract which is completely new and novel. The rest of the contracts within the contracts directory are forked from pie-dao.
 
-## Relayer bot
+#### Relayer bot
 
 All written during hackathon.
 
-## Front end
+#### Front end
 
 All written during hackathon.
 
