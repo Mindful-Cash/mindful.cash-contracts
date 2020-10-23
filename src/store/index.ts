@@ -372,6 +372,7 @@ export default new Vuex.Store({
 
     async getAllTokens({ commit, state }) {
       console.log("Getting setWalletTokens...", state.walletTokens);
+      console.log("ethers",state.ethers)
 
       // TODO: parallzalize this call
       const walletTokens = await fetchWalletTokens(state.userAddress);
