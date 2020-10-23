@@ -105,7 +105,6 @@ export default new Vuex.Store({
     async setUp({ dispatch, state }) {
       console.log("IN SETUP");
       // Setting up Onboard.js
-      // await setUpOnboard();
       await dispatch("setUpOnboard");
 
       // Setting up the Smart contracts
@@ -411,7 +410,7 @@ export default new Vuex.Store({
         tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
           ? Number(
               Number(
-                state.ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+                ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
               ).toFixed(4)
             )
           : Number(0).toFixed(4);
