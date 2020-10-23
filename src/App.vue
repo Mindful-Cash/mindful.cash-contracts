@@ -1,12 +1,7 @@
 <template>
   <md-app :id="this.$router.currentRoute.name != 'Home' ? 'app' : 'landing'" md-mode="reveal">
-    <md-app-toolbar
-      md-elevation="0"
-      id="toolbar"
-      v-if="this.$router.currentRoute.name != 'Home'"
-      style="background-color: transparent"
-    >
-      <router-link class="logo" to="/">
+    <md-app-toolbar md-elevation="0" id="toolbar" style="background-color: transparent">
+      <router-link class="logo" to="/" v-if="this.$router.currentRoute.name != 'Home'">
         <img class="logo" src="@/assets/svg/logo.svg" />
       </router-link>
 
