@@ -77,6 +77,7 @@ button {
 }
 
 input {
+  color: #292929 !important;
   border: none;
   box-shadow: inset 0 0 0 1px #ddd;
   border-radius: 0.5rem;

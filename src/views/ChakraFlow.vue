@@ -7,7 +7,7 @@
           <div class="md-layout-item md-size-55">
             <h2 class="title">Chakra Name</h2>
             <p>Choose a name for your Chakra. This will be viewable by other users.</p>
-            <input placeholder="Enter Name" v-model="chakraName" />
+            <input placeholder="Enter Name" style="color:black" v-model="chakraName" />
             <Separator />
             <h2 class="title">Select Distribution</h2>
             <p>Select the tokens you want to add to your Chakra, and choose your distribution ratios.</p>
@@ -61,15 +61,15 @@
                   v-on:show-modal="showSelectInitialContributionDialog = true"
                 />
               </div>
-              <div class="md-layout-item md-size-50">
+              <div class="md-layout-item md-size-35">
                 <TokenInput
-                  :state="initialContribution"
+                  :state="initialContributionState"
                   v-model="initialContribution"
                   v-on:approve-token="handleInitialContribution($event)"
                 />
               </div>
-              <div class="md-layout-item md-size-20">
-                <TokenInfo :price="20" :balance="2" />
+              <div class="md-layout-item md-size-35">
+                <TokenInfo :price="initialContributionCoin.price" :balance="initialContributionCoin.amountRounded" />
               </div>
             </div>
 
@@ -79,7 +79,13 @@
             >
               <div class="md-layout-item">
                 <span class="totalContributionText">Total Contribution:</span
-                ><span class="totalContributionNumber">${{ initialContribution }}</span>
+                ><span class="totalContributionNumber"
+                  >${{
+                    initialContributionCoin.price && initialContribution
+                      ? (Number(initialContribution) * initialContributionCoin.price).toFixed(2)
+                      : 0
+                  }}</span
+                >
               </div>
             </div>
           </div>
@@ -109,7 +115,13 @@
                     <span class="dot" :style="'background:' + colors[index]" />
                   </md-table-cell>
                   <md-table-cell>{{ item.symbol }}</md-table-cell>
-                  <md-table-cell>${{ "500" }}</md-table-cell>
+                  <md-table-cell
+                    >${{
+                      initialContributionCoin.price && initialContribution
+                        ? ((item.ratio * initialContribution * initialContributionCoin.price) / 100).toFixed(2)
+                        : 0
+                    }}</md-table-cell
+                  >
                   <md-table-cell>{{ item.ratio }}%</md-table-cell>
                 </md-table-row>
               </md-table>
@@ -148,15 +160,18 @@
                   v-on:show-modal="showSelectInitialDCAContributionDialog = true"
                 />
               </div>
-              <div class="md-layout-item md-size-50">
+              <div class="md-layout-item md-size-40">
                 <TokenInput
                   :state="tokenAllowanceState"
                   v-model="tokenAllowance"
                   v-on:approve-token="handleTokenAllowance($event)"
                 />
               </div>
-              <div class="md-layout-item md-size-20">
-                <TokenInfo :price="20" :balance="2" />
+              <div class="md-layout-item md-size-30">
+                <TokenInfo
+                  :price="initialDCAContributionCoin.price | 0"
+                  :balance="initialDCAContributionCoin.amountRounded | 0"
+                />
               </div>
             </div>
             <Separator />
@@ -248,7 +263,7 @@
                   <p>Take profit in:</p>
                 </div>
                 <div class="md-layout-item md-size-45">
-                  <AssetDropdown :asset="takeProfitIn" v-on:show-modal="showSelectInitialContributionDialog = true" />
+                  <AssetDropdown :asset="takeProfitInCoin" v-on:show-modal="showTakeProfitDialog = true" />
                 </div>
                 <div class="md-layout-item md-size-25">
                   <TokenInfo :price="20" :balance="2" />
@@ -264,7 +279,7 @@
                   <p>
                     When Chakra value increases by <b>{{ takeProfitAfter || "–" }}%</b>, take
                     <b>{{ takeProfitAmount || "–" }}%</b> of <b>the total {{ takeProfitSelection }} value</b> as profit
-                    in <b>{{ takeProfitIn.symbol }}</b
+                    in <b>{{ takeProfitInCoin.symbol }}</b
                     >.
                   </p>
                 </div>
@@ -292,8 +307,8 @@
             </p>
             <Separator />
             <h2 class="title">Chakra Overview <a class="step-edit" @click="setStep(0)">Edit</a></h2>
-            <p><b>Name: </b>Strong Crypto Energy</p>
-            <p><b>Inital contribution: </b>{{ dcaBreakdownStats.amount || 0 }} {{ initialContributionCoin.symbol }}</p>
+            <p><b>Name: </b>{{ chakraName }}</p>
+            <p><b>Inital contribution: </b>{{ initialContribution || 0 }} {{ initialContributionCoin.symbol }}</p>
 
             <Separator />
             <h2 class="title">DCA Strategy <a class="step-edit" @click="setStep(1)">Edit</a></h2>
@@ -306,7 +321,7 @@
             <p>
               When Chakra value increases by <b>{{ takeProfitAfter || "–" }}%</b>, take
               <b>{{ takeProfitAmount || "–" }}%</b> of <b>the total {{ takeProfitSelection }} value</b> as profit in
-              <b>{{ takeProfitIn.symbol }}</b
+              <b>{{ takeProfitInCoin.symbol }}</b
               >.
             </p>
           </div>
@@ -316,6 +331,7 @@
           <div class="md-layout-item md-size-40" style="padding-top: 20px">
             <div class="md-layout-item">
               <apexchart
+                id="other"
                 type="donut"
                 width="420"
                 :options="pieValues.options"
@@ -332,13 +348,12 @@
                   <md-table-head>USD</md-table-head>
                   <md-table-head>Allocation</md-table-head>
                 </md-table-row>
-
                 <md-table-row v-for="(item, index) in selectedCoins" :key="index">
                   <md-table-cell>
                     <span class="dot" :style="'background:' + colors[index]" />
                   </md-table-cell>
                   <md-table-cell>{{ item.symbol }}</md-table-cell>
-                  <md-table-cell>${{ "500" }}</md-table-cell>
+                  <md-table-cell>${{ (item.ratio * initialContribution).toFixed(2) }}</md-table-cell>
                   <md-table-cell>{{ item.ratio }}%</md-table-cell>
                 </md-table-row>
               </md-table>
@@ -386,6 +401,14 @@
         <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handleInitialDCACoinChosen" />
       </md-dialog-content>
     </md-dialog>
+
+    <md-dialog class="text-center roundedDialog" :md-active.sync="showTakeProfitDialog">
+      <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
+
+      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
+        <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handletakeProfitCoinChosen" />
+      </md-dialog-content>
+    </md-dialog>
   </div>
 </template>
 
@@ -417,18 +440,19 @@ export default {
     chakraName: null,
     dcaOn: true,
     takeProfitOn: true,
-    initialContribution: 0,
     initialContributionCoin: { symbol: "SELECT", logoURI: null },
     initialDCAContributionCoin: { symbol: "SELECT", logoURI: null },
-    takeProfitIn: { symbol: "SELECT", logoURI: null },
+    takeProfitInCoin: { symbol: "SELECT", logoURI: null },
     contributionMode: "single",
     showCoinDialog: false,
     showSelectInitialContributionDialog: false,
     showSelectInitialDCAContributionDialog: false,
+    showTakeProfitDialog: false,
     selectedCoins: [],
     tokenAllowance: 0,
     tokenAllowanceState: "default",
-    initialContribution: "default",
+    initialContributionState: "default",
+    initialContribution: "0",
     // DCA
     dcaTimeframes: [{ name: "Daily" }, { name: "Weekly" }, { name: "Fortnightly" }, { name: "Monthly" }],
     dcaBreakdownStats: {
@@ -440,7 +464,6 @@ export default {
     takeProfitSelection: null,
     takeProfitAfter: null,
     takeProfitAmount: null,
-    takeProfitIn: { symbol: "SELECT" },
     //
     colors: [
       "#A8A2F5",
@@ -517,6 +540,10 @@ export default {
     },
     handleInitialContribution(initialContribution) {
       this.initialContribution = initialContribution;
+      this.initialContributionState = "loading";
+      setTimeout(() => {
+        this.initialContributionState = "complete";
+      }, 5000);
     },
     handelInitialSendCoinChosen(chosenCoin) {
       console.log("CHOSEN", chosenCoin);
@@ -529,9 +556,9 @@ export default {
       this.showSelectInitialDCAContributionDialog = false;
     },
     handletakeProfitCoinChosen(coin) {
-      this.takeProfitIn = coin;
-      this.dcaBreakdownStats = { ...this.dcaBreakdownStats, coin: coin.symbol };
-      this.showSelectInitialDCAContributionDialog = false;
+      this.takeProfitInCoin = coin;
+      // this.dcaBreakdownStats = { ...this.dcaBreakdownStats, coin: coin.symbol };
+      this.showTakeProfitDialog = false;
     },
     handelCoinChosen(coinObject) {
       console.log("clickedz", coinObject);

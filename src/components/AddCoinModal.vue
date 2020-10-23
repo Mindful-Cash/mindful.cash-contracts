@@ -1,5 +1,8 @@
 <template>
-  <div class="text-center">
+  <div>
+    <input placeholder="Enter Name" style="color:black" v-model="filterToken" />
+    <br />
+    <br />
     <Select-Asset-Row-Item
       v-for="token in allTokensProcessed"
       :asset="token"
@@ -21,6 +24,7 @@ export default {
       required: false
     }
   },
+  data: () => ({ filterToken: null }),
   methods: {
     handelCoinChosen(coinObject) {
       this.$emit("rowItemClicked", coinObject);
@@ -32,11 +36,22 @@ export default {
       if (this.allTokens.length === 0) {
         return [];
       }
+      const filterToken = this.filterToken;
+      let nameList = this.allTokens;
+      if (filterToken) {
+        nameList = this.allTokens.filter(token => {
+          return (
+            token.symbol.toLowerCase().indexOf(filterToken.toLowerCase()) != -1 ||
+            token.address.toLowerCase() == filterToken.toLowerCase()
+          );
+        });
+      }
+      console.log("nameList", nameList);
       if (!this.filterOnlyWithBalance) {
-        return this.allTokens;
+        return nameList;
       }
       if (this.filterOnlyWithBalance) {
-        return this.allTokens.filter(token => {
+        return nameList.filter(token => {
           return token.value !== 0;
         });
       }
@@ -59,5 +74,28 @@ export default {
   background: rgba(255, 255, 255, 0.25) !important;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 8px !important;
+}
+
+input {
+  border: none;
+  box-shadow: inset 0 0 0 1px #ddd;
+  border-radius: 0.5rem;
+  color: #aaa;
+  background: none;
+  border-radius: 8px;
+  height: 2.5rem;
+  box-sizing: border-box;
+  width: 95%;
+  padding: 0 1rem;
+  font-size: 1rem;
+
+  &:focus {
+    border: 1px solid #00e0ff;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #aaa;
+  }
 }
 </style>

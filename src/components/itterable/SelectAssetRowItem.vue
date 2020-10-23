@@ -1,5 +1,5 @@
 <template>
-  <div class="rowItem gradient-border" @click="rowClicked">
+  <div class="rowItem gradient-border" @click="rowClicked" style="padding-right:10px;padding-left:10px">
     <div class="md-layout md-alignment-center-right">
       <div class="md-layout-item md-size-10">
         <img :width="30" :src="asset.logoURI" />
@@ -9,8 +9,14 @@
         <span class="secondaryText">({{ asset.symbol }}) </span>
       </div>
       <div class="md-layout-item" style="text-align: right">
-        <span class="secondaryText" style="padding-right: 10px">${{ asset.value }}</span>
-        <span class="primaryText" style="padding-right: 10px">{{ asset.amountRounded }}</span>
+        <span class="secondaryText" style="padding-right: 10px">${{ asset.value != "0" ? asset.value : "-" }}</span>
+        <span
+          class="primaryText"
+          style="padding-right: 10px"
+          :style="asset.amountRounded == '0.0000' ? 'margin-left:50px' : ''"
+          >{{ asset.amountRounded != "0.0000" ? asset.amountRounded : "-" }}</span
+        >
+        <!-- p{{ asset.price }} -->
       </div>
     </div>
   </div>

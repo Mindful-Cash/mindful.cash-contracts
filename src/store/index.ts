@@ -427,7 +427,9 @@ export default new Vuex.Store({
         }
         return tokenObject;
       });
-      const sortedWalletBalances = joinedTokenArrays.sort((a, b) => (Number(a.value) < Number(b.value) ? 1 : -1));
+      const sortedWalletBalances = joinedTokenArrays
+        .sort((a, b) => (Number(a.price) > Number(b.price) ? 1 : -1))
+        .sort((a, b) => (Number(a.value) < Number(b.value) ? 1 : -1));
       commit("setAllTokens", sortedWalletBalances);
     }
   },
