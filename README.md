@@ -8,7 +8,7 @@ With Mindful, you can adopt strategies to mindfully DCA into cryptoassets, rebal
 
 ## Docs and Links
 
-- [Medium Post](https://medium.com/@mindful-cash/7ff1aafe4f58)
+- [Medium Post](https://medium.com/mindfulcash/introducing-mindful-portfolio-alignment-for-degens-7ff1aafe4f58)
 - [Twitter](https://twitter.com/mindfulcash)
 - [Slide dec](https://docs.google.com/presentation/d/1oi8igtqZWn-fPtbnoKm9h-eYL1GKsGIijxb8H1VYQws/edit#slide=id.p)
 - [Mockups](https://www.figma.com/file/6N4PRLldUjUvxqTkhRob3q/Mindful---ETHOnline-2020?node-id=0%3A1)
@@ -27,6 +27,7 @@ Mindful's intuitive UI guides users seamlessly through the Chakra creation and s
 Start aligning your chakras today.
 
 ## Team
+
 - 🇬🇧 **Chris Fulford** - Front-end, Integrations
 - 🇿🇦 **Chris Maree** - Smart Contracts, Front end
 - 🇹🇳 **Haythem Sellami** - smart Contracts, bot-infra
@@ -66,6 +67,7 @@ In both buy and sell strategy cases, all interactions with the Balancer pool use
 A relayer bot is used to monitor all Chakras within the Mindful ecosystem. If a strategy can be executed, the bot calls the associated function on the MindfulProxy. The strategy’s parameters guarantee that this is only done at the exact thresholds defined by the Chakra owner. To compensate relayer bots for their work and gas usage, they are rewarded with 0.3% of the total deposit or withdrawal amount.
 
 ## Code attribution
+
 Some code in this project was borrowed, forked and modified, as it is the case with building DeFi products. This section outlines the opensource code that was coppied.
 
 #### Smart contracts
