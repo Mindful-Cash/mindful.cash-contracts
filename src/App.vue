@@ -141,6 +141,7 @@ custom-navbar {
   margin: 0px auto;
   background: none;
   overflow: visible !important;
+  margin-top: -75px !important;
 }
 
 .md-app-container {
