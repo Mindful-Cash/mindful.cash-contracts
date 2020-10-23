@@ -103,7 +103,6 @@ export default new Vuex.Store({
   },
   actions: {
     async setUp({ dispatch, state }) {
-      commit("setEthers", ethers);
       console.log("IN SETUP");
       // Setting up Onboard.js
       await dispatch("setUpOnboard");
@@ -120,6 +119,7 @@ export default new Vuex.Store({
 
     async setUpOnboard({ commit, state }) {
       console.log("Onboard.js flow...");
+      commit("setEthers", ethers);
       const SUPPORTED_NETWORK_IDS: number[] = [1, 42];
 
       const onboardInstance = Onboard({
