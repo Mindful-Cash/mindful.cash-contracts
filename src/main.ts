@@ -4,6 +4,8 @@ import router from "./router";
 import store from "./store";
 import VueMaterial from "vue-material";
 
+import ethers from "ethers";
+
 import "vue-material/dist/vue-material.min.css";
 
 import VueSlider from "vue-slider-component";

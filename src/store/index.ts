@@ -1,4 +1,4 @@
-import { MindfulProxyFactory } from "../../typechain/MindfulProxyFactory";
+// import { MindfulProxyFactory } from "../../typechain/MindfulProxyFactory";
 
 import { config } from "../utils/Config";
 import CharkaInfo from "../utils/FetchCharkaInfo";
@@ -163,12 +163,12 @@ export default new Vuex.Store({
 
     async setUpContracts({ commit, state }) {
       console.log("Setting up Smart Contract instances...");
-      const contractInstance = await MindfulProxyFactory.connect(
-        "0x6841db1aa2d922204EE77918924578335B1a0739",
-        state.signer
-      );
+      // const contractInstance = await MindfulProxyFactory.connect(
+      //   "0x6841db1aa2d922204EE77918924578335B1a0739",
+      //   state.signer
+      // );
 
-      console.log("contractInstance", contractInstance);
+      // console.log("contractInstance", contractInstance);
       //   // Setting up contract info
       //   let tokensAddress = await ContractHelper.getTokenAddress(state.currentNetwork);
       //   commit(mutations.SET_CONTRACT_ADDRESS, tokensAddress.unique);
@@ -372,7 +372,7 @@ export default new Vuex.Store({
 
     async getAllTokens({ commit, state }) {
       console.log("Getting setWalletTokens...", state.walletTokens);
-      console.log("ethers",state.ethers)
+      console.log("ethers", state.ethers);
 
       // TODO: parallzalize this call
       const walletTokens = await fetchWalletTokens(state.userAddress);
@@ -396,6 +396,7 @@ export default new Vuex.Store({
       console.log("allTokens", allTokens);
 
       const allTokensRightNetwork = allTokens.filter(token => {
+        console.log("token", token);
         return token.chainId === state.currentNetworkId;
       });
 
@@ -411,7 +412,7 @@ export default new Vuex.Store({
         tokenObject.amountRounded = walletTokens[tokenObject.address.toLowerCase()]
           ? Number(
               Number(
-                state.ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
+                ethers.utils.formatUnits(walletTokens[tokenObject.address.toLowerCase()], tokenObject.decimals)
               ).toFixed(4)
             )
           : Number(0).toFixed(4);

@@ -140,3 +140,6 @@ pnpm-debug.log*
 *.sw?
 
 .vercel
+
+# Local Netlify folder
+.netlify

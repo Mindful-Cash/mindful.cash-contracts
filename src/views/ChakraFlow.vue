@@ -381,7 +381,7 @@
     <md-dialog class="text-center roundedDialog" :md-active.sync="showCoinDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
 
-      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
+      <md-dialog-content style="padding-top: 15px; padding-left: 0px; padding-right: 0px">
         <Add-Coin-Modal @rowItemClicked="handelCoinChosen" />
       </md-dialog-content>
     </md-dialog>
@@ -389,7 +389,7 @@
     <md-dialog class="text-center roundedDialog" :md-active.sync="showSelectInitialContributionDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
 
-      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
+      <md-dialog-content style="padding-top: 15px; padding-left: 0px; padding-right: 0px">
         <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handelInitialSendCoinChosen" />
       </md-dialog-content>
     </md-dialog>
@@ -397,7 +397,7 @@
     <md-dialog class="text-center roundedDialog" :md-active.sync="showSelectInitialDCAContributionDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
 
-      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
+      <md-dialog-content style="padding-top: 15px; padding-left: 0px; padding-right: 0px">
         <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handleInitialDCACoinChosen" />
       </md-dialog-content>
     </md-dialog>
@@ -405,8 +405,8 @@
     <md-dialog class="text-center roundedDialog" :md-active.sync="showTakeProfitDialog">
       <md-dialog-title class="selectAssets" style="text-align: left">Select Asset</md-dialog-title>
 
-      <md-dialog-content style="width: 750px; padding-top: 15px; padding-left: 0px; padding-right: 0px">
-        <Add-Coin-Modal :filterOnlyWithBalance="true" @rowItemClicked="handletakeProfitCoinChosen" />
+      <md-dialog-content style="padding-top: 15px; padding-left: 0px; padding-right: 0px">
+        <Add-Coin-Modal @rowItemClicked="handletakeProfitCoinChosen" />
       </md-dialog-content>
     </md-dialog>
   </div>
