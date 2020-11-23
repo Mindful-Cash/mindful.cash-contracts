@@ -382,10 +382,12 @@ export default new Vuex.Store({
       const allTokens = await fetchAllTokens();
       console.log("ZETA", await fetchTokenPrices(allTokens.slice(0, 150).map(token => token.address.toLowerCase())));
 
+      console.log("allTokens", allTokens.length);
       const tokenPricesPromiseResponse = await Promise.all([
         fetchTokenPrices(allTokens.slice(0, 150).map(token => token.address.toLowerCase())),
         fetchTokenPrices(allTokens.slice(151, 301).map(token => token.address.toLowerCase())),
-        fetchTokenPrices(allTokens.slice(302, allTokens.length - 1).map(token => token.address.toLowerCase()))
+        fetchTokenPrices(allTokens.slice(302, 450).map(token => token.address.toLowerCase())),
+        fetchTokenPrices(allTokens.slice(451, allTokens.length - 1).map(token => token.address.toLowerCase()))
       ]);
 
       let tokenPrices = {};
