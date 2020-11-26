@@ -94,108 +94,17 @@ contract MindfulProxy is Ownable {
         _;
     }
 
-    function init(address _balancerFactory, address _implementation) public {
-        require(smartPoolImplementation == address(0));
-        _setOwner(msg.sender);
-        balancerFactory = IBFactory(_balancerFactory);
-
-        smartPoolImplementation = _implementation;
-    }
-
-    function togglePause() public onlyOwner {
-        isPaused = !isPaused;
-    }
-
-    // What is this !!
-    // function die() public onlyOwner {
-    //   address payable _to = payable(los().owner);
-    //   selfdestruct(_to);
-    // }
-
-    function newProxiedSmartPool(
-        string memory _name,
-        string memory _symbol,
-        uint256 _initialSupply,
-        address[] memory _tokens,
-        uint256[] memory _amounts,
-        uint256[] memory _weights,
-        uint256 _cap
-    ) public revertIfPaused returns (address) {
-        // Deploy proxy contract
-        PProxyPausable proxy = new PProxyPausable();
-
-        // Setup proxy
-        proxy.setImplementation(smartPoolImplementation);
-        proxy.setPauzer(address(this));
-        proxy.setProxyOwner(address(this));
-
-        // Setup balancer pool
-        address balancerPoolAddress = balancerFactory.newBPool();
-        IBPool bPool = IBPool(balancerPoolAddress);
-
-        for (uint256 i = 0; i < _tokens.length; i++) {
-            IERC20 token = IERC20(_tokens[i]);
-            // Transfer tokens to this contract
-            token.transferFrom(msg.sender, address(this), _amounts[i]);
-            // Approve the balancer pool
-            token.safeApprove(balancerPoolAddress, uint256(-1));
-            // Bind tokens
-            bPool.bind(_tokens[i], _amounts[i], _weights[i]);
-        }
-        bPool.setController(address(proxy));
-
-        // Setup smart pool
-        IPV2SmartPool smartPool = IPV2SmartPool(address(proxy));
-
-        smartPool.init(balancerPoolAddress, _name, _symbol, _initialSupply);
-        smartPool.setCap(_cap);
-        smartPool.setPublicSwapSetter(address(this));
-        smartPool.setTokenBinder(address(this));
-        smartPool.setController(address(this));
-        smartPool.approveTokens();
-
-        isChakra[address(smartPool)] = true;
-        chakraManager[address(smartPool)] = msg.sender;
-        chakras.push(address(smartPool));
-
-        emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
-
-        smartPool.transfer(msg.sender, _initialSupply);
-
-        return address(smartPool);
-    }
-
-    // todod: add isRelayer param, add fee calculation, return fee equal to zero if isRelayer = false
-    function calcToChakra(
-        address _chakra,
-        address _curreny,
-        uint256 _poolAmount
-    ) public view returns (uint256) {
-        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
-
-        uint256 totalBaseAmount = 0;
-        uint256 relayerFee;
-
-        for (uint256 i = 0; i < tokens.length; i++) {
-            // enable recursive chakras
-            if (isChakra[tokens[i]]) {
-                uint256 internalTotalBaseAmount = calcToChakra(tokens[i], _curreny, amounts[i]);
-                totalBaseAmount += internalTotalBaseAmount;
-            } else {
-                (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
-                    address(UNISWAP_FACTORY),
-                    _curreny,
-                    tokens[i]
-                );
-                totalBaseAmount += UniLib.getAmountIn(amounts[i], reserveA, reserveB);
-            }
-        }
-
-        return totalBaseAmount;
-    }
-
     function setImplementation(address _implementation) external onlyOwner {
         smartPoolImplementation = _implementation;
+    }
+
+    function saveEth() external onlyOwner {
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function saveToken(address _token) external onlyOwner {
+        IERC20 token = IERC20(_token);
+        token.transfer(msg.sender, token.balanceOf(address(this)));
     }
 
     function addSellStrategy(
@@ -248,6 +157,24 @@ contract MindfulProxy is Ownable {
         buyStrategies.push(buyStrategy);
 
         emit BuyStrategyAdded(_chakra, _name, buyStrategyId);
+    }
+
+    struct SellStrategy {
+        string name;
+        uint256 id;
+        uint256[] prices; // price threshold
+        address[] sellTokens; // token to sell to for each price point
+        bool[] isExecuted;
+        bool isActive; // chakra manager can disable strategy
+    }
+    
+    function updateSellStrategy(
+        address _chakra,
+        uint256 _sellStrategyId,
+        address[] calldata _sellTokens,	
+        uint256[] calldata _prices
+    ) external onlyChakraManager(_chakra, msg.sender) {
+
     }
 
     function disableSellStrategy(
@@ -450,15 +377,6 @@ contract MindfulProxy is Ownable {
         IERC20(vars.sellToken).transfer(vars.manager, vars.totalAmount);
     }
 
-    function saveEth() external onlyOwner {
-        msg.sender.transfer(address(this).balance);
-    }
-
-    function saveToken(address _token) external onlyOwner {
-        IERC20 token = IERC20(_token);
-        token.transfer(msg.sender, token.balanceOf(address(this)));
-    }
-
     function fromChakra(
         address _chakra,
         address _sellToken,
@@ -488,14 +406,104 @@ contract MindfulProxy is Ownable {
         return buyStrategies;
     }
 
-    function token0Or1(address tokenA, address tokenB) internal view returns (uint256) {
-        (address token0, address token1) = UniLib.sortTokens(tokenA, tokenB);
+    function togglePause() public onlyOwner {
+        isPaused = !isPaused;
+    }
 
-        if (token0 == tokenB) {
-            return 0;
+    // What is this !!
+    // function die() public onlyOwner {
+    //   address payable _to = payable(los().owner);
+    //   selfdestruct(_to);
+    // }Q
+
+    function init(address _balancerFactory, address _implementation) public {
+        require(smartPoolImplementation == address(0));
+        _setOwner(msg.sender);
+        balancerFactory = IBFactory(_balancerFactory);
+
+        smartPoolImplementation = _implementation;
+    }
+
+    function newProxiedSmartPool(
+        string memory _name,
+        string memory _symbol,
+        uint256 _initialSupply,
+        address[] memory _tokens,
+        uint256[] memory _amounts,
+        uint256[] memory _weights,
+        uint256 _cap
+    ) public revertIfPaused returns (address) {
+        // Deploy proxy contract
+        PProxyPausable proxy = new PProxyPausable();
+
+        // Setup proxy
+        proxy.setImplementation(smartPoolImplementation);
+        proxy.setPauzer(address(this));
+        proxy.setProxyOwner(address(this));
+
+        // Setup balancer pool
+        address balancerPoolAddress = balancerFactory.newBPool();
+        IBPool bPool = IBPool(balancerPoolAddress);
+
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            IERC20 token = IERC20(_tokens[i]);
+            // Transfer tokens to this contract
+            token.transferFrom(msg.sender, address(this), _amounts[i]);
+            // Approve the balancer pool
+            token.safeApprove(balancerPoolAddress, uint256(-1));
+            // Bind tokens
+            bPool.bind(_tokens[i], _amounts[i], _weights[i]);
+        }
+        bPool.setController(address(proxy));
+
+        // Setup smart pool
+        IPV2SmartPool smartPool = IPV2SmartPool(address(proxy));
+
+        smartPool.init(balancerPoolAddress, _name, _symbol, _initialSupply);
+        smartPool.setCap(_cap);
+        smartPool.setPublicSwapSetter(address(this));
+        smartPool.setTokenBinder(address(this));
+        smartPool.setController(address(this));
+        smartPool.approveTokens();
+
+        isChakra[address(smartPool)] = true;
+        chakraManager[address(smartPool)] = msg.sender;
+        chakras.push(address(smartPool));
+
+        emit SmartPoolCreated(address(smartPool), msg.sender, _name, _symbol);
+
+        smartPool.transfer(msg.sender, _initialSupply);
+
+        return address(smartPool);
+    }
+
+    // todod: add isRelayer param, add fee calculation, return fee equal to zero if isRelayer = false
+    function calcToChakra(
+        address _chakra,
+        address _curreny,
+        uint256 _poolAmount
+    ) public view returns (uint256) {
+        (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
+
+        uint256 totalBaseAmount = 0;
+        uint256 relayerFee;
+
+        for (uint256 i = 0; i < tokens.length; i++) {
+            // enable recursive chakras
+            if (isChakra[tokens[i]]) {
+                uint256 internalTotalBaseAmount = calcToChakra(tokens[i], _curreny, amounts[i]);
+                totalBaseAmount += internalTotalBaseAmount;
+            } else {
+                (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
+                    address(UNISWAP_FACTORY),
+                    _curreny,
+                    tokens[i]
+                );
+                totalBaseAmount += UniLib.getAmountIn(amounts[i], reserveA, reserveB);
+            }
         }
 
-        return 1;
+        return totalBaseAmount;
     }
 
     function _toChakra(
@@ -606,5 +614,15 @@ contract MindfulProxy is Ownable {
         sellStrategy.isExecuted[_tokenIndex] = true;
 
         return (isRelayer, manager, strategySellToken, strategySellAmount);
+    }
+
+    function token0Or1(address tokenA, address tokenB) internal view returns (uint256) {
+        (address token0, address token1) = UniLib.sortTokens(tokenA, tokenB);
+
+        if (token0 == tokenB) {
+            return 0;
+        }
+
+        return 1;
     }
 }
