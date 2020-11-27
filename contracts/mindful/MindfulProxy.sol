@@ -159,23 +159,23 @@ contract MindfulProxy is Ownable {
         emit BuyStrategyAdded(_chakra, _name, buyStrategyId);
     }
 
-    struct SellStrategy {
-        string name;
-        uint256 id;
-        uint256[] prices; // price threshold
-        address[] sellTokens; // token to sell to for each price point
-        bool[] isExecuted;
-        bool isActive; // chakra manager can disable strategy
-    }
+    // struct SellStrategy {
+    //     string name;
+    //     uint256 id;
+    //     uint256[] prices; // price threshold
+    //     address[] sellTokens; // token to sell to for each price point
+    //     bool[] isExecuted;
+    //     bool isActive; // chakra manager can disable strategy
+    // }
     
-    function updateSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId,
-        address[] calldata _sellTokens,	
-        uint256[] calldata _prices
-    ) external onlyChakraManager(_chakra, msg.sender) {
+    // function updateSellStrategy(
+    //     address _chakra,
+    //     uint256 _sellStrategyId,
+    //     address[] calldata _sellTokens,	
+    //     uint256[] calldata _prices
+    // ) external onlyChakraManager(_chakra, msg.sender) {
 
-    }
+    // }
 
     function toChakra(
         address _chakra,
