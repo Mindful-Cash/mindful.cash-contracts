@@ -177,66 +177,6 @@ contract MindfulProxy is Ownable {
 
     }
 
-    function disableSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_sellStrategyId <= sellStrategies.length);
-        require(sellStrategyChakra[_sellStrategyId] == _chakra);
-
-        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
-        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
-        sellStrategy.isActive = false;
-
-        emit SellStrategyDisabled(_chakra, _sellStrategyId);
-    }
-
-    function disableBuyStrategy(
-        address _chakra,
-        uint256 _buyStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_buyStrategyId <= buyStrategies.length);
-        require(buyStrategyChakra[_buyStrategyId] == _chakra);
-
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
-        buyStrategy.isActive = false;
-
-        emit BuyStrategyDisabled(_chakra, _buyStrategyId);
-    }
-
-    function enableSellStrategy(
-        address _chakra,
-        uint256 _sellStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_sellStrategyId <= sellStrategies.length);
-        require(sellStrategyChakra[_sellStrategyId] == _chakra);
-
-        uint256 sellStrategyIndex = _sellStrategyId.sub(1);
-        SellStrategy storage sellStrategy = sellStrategies[sellStrategyIndex];
-        sellStrategy.isActive = true;
-
-        emit SellStrategyEnabled(_chakra, _sellStrategyId);
-    }
-
-    function enableBuyStrategy(
-        address _chakra,
-        uint256 _buyStrategyId
-    ) external onlyChakraManager(_chakra, msg.sender) {
-        require(isChakra[_chakra]);
-        require(_buyStrategyId <= buyStrategies.length);
-        require(buyStrategyChakra[_buyStrategyId] == _chakra);
-
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
-        buyStrategy.isActive = true;
-
-        emit BuyStrategyEnabled(_chakra, _buyStrategyId);
-    }
-
     function toChakra(
         address _chakra,
         address _baseToken,
