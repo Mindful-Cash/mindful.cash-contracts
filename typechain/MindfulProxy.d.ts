@@ -129,12 +129,12 @@ interface MindfulProxyInterface extends Interface {
       encode([_newOwner]: [string]): string;
     }>;
 
-    updateBuyStartegy: TypedFunctionDescription<{
+    updateBuystrategy: TypedFunctionDescription<{
       encode([
         _chakra,
         _buyToken,
         _buyStrategyId,
-        _InterBuyDelay,
+        _interBuyDelay,
         _buyAmount,
         _isActive
       ]: [
@@ -617,21 +617,21 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    updateBuyStartegy(
+    updateBuystrategy(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
-      _InterBuyDelay: BigNumberish,
+      _interBuyDelay: BigNumberish,
       _buyAmount: BigNumberish,
       _isActive: boolean,
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    "updateBuyStartegy(address,address,uint256,uint256,uint256,bool)"(
+    "updateBuystrategy(address,address,uint256,uint256,uint256,bool)"(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
-      _InterBuyDelay: BigNumberish,
+      _interBuyDelay: BigNumberish,
       _buyAmount: BigNumberish,
       _isActive: boolean,
       overrides?: TransactionOverrides
@@ -1013,21 +1013,21 @@ export class MindfulProxy extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  updateBuyStartegy(
+  updateBuystrategy(
     _chakra: string,
     _buyToken: string,
     _buyStrategyId: BigNumberish,
-    _InterBuyDelay: BigNumberish,
+    _interBuyDelay: BigNumberish,
     _buyAmount: BigNumberish,
     _isActive: boolean,
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  "updateBuyStartegy(address,address,uint256,uint256,uint256,bool)"(
+  "updateBuystrategy(address,address,uint256,uint256,uint256,bool)"(
     _chakra: string,
     _buyToken: string,
     _buyStrategyId: BigNumberish,
-    _InterBuyDelay: BigNumberish,
+    _interBuyDelay: BigNumberish,
     _buyAmount: BigNumberish,
     _isActive: boolean,
     overrides?: TransactionOverrides
@@ -1352,21 +1352,21 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    updateBuyStartegy(
+    updateBuystrategy(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
-      _InterBuyDelay: BigNumberish,
+      _interBuyDelay: BigNumberish,
       _buyAmount: BigNumberish,
       _isActive: boolean,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    "updateBuyStartegy(address,address,uint256,uint256,uint256,bool)"(
+    "updateBuystrategy(address,address,uint256,uint256,uint256,bool)"(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
-      _InterBuyDelay: BigNumberish,
+      _interBuyDelay: BigNumberish,
       _buyAmount: BigNumberish,
       _isActive: boolean,
       overrides?: TransactionOverrides
