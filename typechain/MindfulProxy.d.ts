@@ -42,7 +42,7 @@ interface MindfulProxyInterface extends Interface {
     }>;
 
     calcToChakra: TypedFunctionDescription<{
-      encode([_chakra, _curreny, _poolAmount]: [
+      encode([_chakra, _currency, _poolAmount]: [
         string,
         string,
         BigNumberish
@@ -52,22 +52,6 @@ interface MindfulProxyInterface extends Interface {
     chakraManager: TypedFunctionDescription<{encode([]: [string]): string}>;
 
     chakras: TypedFunctionDescription<{encode([]: [BigNumberish]): string}>;
-
-    disableBuyStrategy: TypedFunctionDescription<{
-      encode([_chakra, _buyStrategyId]: [string, BigNumberish]): string;
-    }>;
-
-    disableSellStrategy: TypedFunctionDescription<{
-      encode([_chakra, _sellStrategyId]: [string, BigNumberish]): string;
-    }>;
-
-    enableBuyStrategy: TypedFunctionDescription<{
-      encode([_chakra, _buyStrategyId]: [string, BigNumberish]): string;
-    }>;
-
-    enableSellStrategy: TypedFunctionDescription<{
-      encode([_chakra, _sellStrategyId]: [string, BigNumberish]): string;
-    }>;
 
     fromChakra: TypedFunctionDescription<{
       encode([_chakra, _sellToken, _poolAmountOut]: [
@@ -143,6 +127,24 @@ interface MindfulProxyInterface extends Interface {
 
     transferOwnership: TypedFunctionDescription<{
       encode([_newOwner]: [string]): string;
+    }>;
+
+    updateBuyStartegy: TypedFunctionDescription<{
+      encode([
+        _chakra,
+        _buyToken,
+        _buyStrategyId,
+        _InterBuyDelay,
+        _buyAmount,
+        _isActive
+      ]: [
+        string,
+        string,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        boolean
+      ]): string;
     }>;
   };
 
@@ -330,14 +332,14 @@ export class MindfulProxy extends Contract {
 
     calcToChakra(
       _chakra: string,
-      _curreny: string,
+      _currency: string,
       _poolAmount: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
     "calcToChakra(address,address,uint256)"(
       _chakra: string,
-      _curreny: string,
+      _currency: string,
       _poolAmount: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
@@ -361,54 +363,6 @@ export class MindfulProxy extends Contract {
       arg0: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<string>;
-
-    disableBuyStrategy(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    "disableBuyStrategy(address,uint256)"(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    disableSellStrategy(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    "disableSellStrategy(address,uint256)"(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    enableBuyStrategy(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    "enableBuyStrategy(address,uint256)"(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    enableSellStrategy(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    "enableSellStrategy(address,uint256)"(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
 
     fromChakra(
       _chakra: string,
@@ -662,6 +616,26 @@ export class MindfulProxy extends Contract {
       _newOwner: string,
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
+
+    updateBuyStartegy(
+      _chakra: string,
+      _buyToken: string,
+      _buyStrategyId: BigNumberish,
+      _InterBuyDelay: BigNumberish,
+      _buyAmount: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<ContractTransaction>;
+
+    "updateBuyStartegy(address,address,uint256,uint256,uint256,bool)"(
+      _chakra: string,
+      _buyToken: string,
+      _buyStrategyId: BigNumberish,
+      _InterBuyDelay: BigNumberish,
+      _buyAmount: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<ContractTransaction>;
   };
 
   addBuyStrategy(
@@ -754,14 +728,14 @@ export class MindfulProxy extends Contract {
 
   calcToChakra(
     _chakra: string,
-    _curreny: string,
+    _currency: string,
     _poolAmount: BigNumberish,
     overrides?: TransactionOverrides
   ): Promise<BigNumber>;
 
   "calcToChakra(address,address,uint256)"(
     _chakra: string,
-    _curreny: string,
+    _currency: string,
     _poolAmount: BigNumberish,
     overrides?: TransactionOverrides
   ): Promise<BigNumber>;
@@ -785,54 +759,6 @@ export class MindfulProxy extends Contract {
     arg0: BigNumberish,
     overrides?: TransactionOverrides
   ): Promise<string>;
-
-  disableBuyStrategy(
-    _chakra: string,
-    _buyStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  "disableBuyStrategy(address,uint256)"(
-    _chakra: string,
-    _buyStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  disableSellStrategy(
-    _chakra: string,
-    _sellStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  "disableSellStrategy(address,uint256)"(
-    _chakra: string,
-    _sellStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  enableBuyStrategy(
-    _chakra: string,
-    _buyStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  "enableBuyStrategy(address,uint256)"(
-    _chakra: string,
-    _buyStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  enableSellStrategy(
-    _chakra: string,
-    _sellStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  "enableSellStrategy(address,uint256)"(
-    _chakra: string,
-    _sellStrategyId: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
 
   fromChakra(
     _chakra: string,
@@ -1087,6 +1013,26 @@ export class MindfulProxy extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
+  updateBuyStartegy(
+    _chakra: string,
+    _buyToken: string,
+    _buyStrategyId: BigNumberish,
+    _InterBuyDelay: BigNumberish,
+    _buyAmount: BigNumberish,
+    _isActive: boolean,
+    overrides?: TransactionOverrides
+  ): Promise<ContractTransaction>;
+
+  "updateBuyStartegy(address,address,uint256,uint256,uint256,bool)"(
+    _chakra: string,
+    _buyToken: string,
+    _buyStrategyId: BigNumberish,
+    _InterBuyDelay: BigNumberish,
+    _buyAmount: BigNumberish,
+    _isActive: boolean,
+    overrides?: TransactionOverrides
+  ): Promise<ContractTransaction>;
+
   filters: {
     BuyStrategyAdded(
       chakra: string | null,
@@ -1204,14 +1150,14 @@ export class MindfulProxy extends Contract {
 
     calcToChakra(
       _chakra: string,
-      _curreny: string,
+      _currency: string,
       _poolAmount: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
     "calcToChakra(address,address,uint256)"(
       _chakra: string,
-      _curreny: string,
+      _currency: string,
       _poolAmount: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
@@ -1233,54 +1179,6 @@ export class MindfulProxy extends Contract {
 
     "chakras(uint256)"(
       arg0: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    disableBuyStrategy(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    "disableBuyStrategy(address,uint256)"(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    disableSellStrategy(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    "disableSellStrategy(address,uint256)"(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    enableBuyStrategy(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    "enableBuyStrategy(address,uint256)"(
-      _chakra: string,
-      _buyStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    enableSellStrategy(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    "enableSellStrategy(address,uint256)"(
-      _chakra: string,
-      _sellStrategyId: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
@@ -1451,6 +1349,26 @@ export class MindfulProxy extends Contract {
 
     "transferOwnership(address)"(
       _newOwner: string,
+      overrides?: TransactionOverrides
+    ): Promise<BigNumber>;
+
+    updateBuyStartegy(
+      _chakra: string,
+      _buyToken: string,
+      _buyStrategyId: BigNumberish,
+      _InterBuyDelay: BigNumberish,
+      _buyAmount: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<BigNumber>;
+
+    "updateBuyStartegy(address,address,uint256,uint256,uint256,bool)"(
+      _chakra: string,
+      _buyToken: string,
+      _buyStrategyId: BigNumberish,
+      _InterBuyDelay: BigNumberish,
+      _buyAmount: BigNumberish,
+      _isActive: boolean,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
   };

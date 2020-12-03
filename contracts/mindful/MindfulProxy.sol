@@ -23,9 +23,6 @@ contract MindfulProxy is Ownable {
     using LibSafeApprove for IERC20;
 
     IUniswapV2Factory constant UNISWAP_FACTORY = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
-    // ISmartPoolRegistry public constant REGISTRY = ISmartPoolRegistry(
-    //   0x412a5d5eC35fF185D6BfF32a367a985e1FB7c296
-    // );
 
     struct SellStrategy {
         string name;
@@ -159,6 +156,33 @@ contract MindfulProxy is Ownable {
         emit BuyStrategyAdded(_chakra, _name, buyStrategyId);
     }
 
+    function updateBuyStartegy(
+        address _chakra,
+        address _buyToken,
+        uint256 _buyStrategyId,
+        uint256 _InterBuyDelay,
+        uint256 _buyAmount,
+        bool _isActive
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        require(isChakra[_chakra]);
+        require(_buyStrategyId <= buyStrategies.length);
+        require(buyStrategyChakra[_buyStrategyId] == _chakra);
+        require(_buyToken != address(0));
+        require(_buyAmount > 0);
+        require(_InterBuyDelay > 0);
+
+        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+
+        buyStrategy.buyToken = _buyToken;
+        buyStrategy.buyAmount = _buyAmount;
+        buyStrategy.interBuyDelay = _InterBuyDelay;
+        buyStrategy.isActive = _isActive;
+
+        emit BuyStrategyUpdated(_chakra, _buyStrategyId);
+    }
+
+
     // struct SellStrategy {
     //     string name;
     //     uint256 id;
@@ -174,7 +198,6 @@ contract MindfulProxy is Ownable {
     //     address[] calldata _sellTokens,	
     //     uint256[] calldata _prices
     // ) external onlyChakraManager(_chakra, msg.sender) {
-
     // }
 
     function toChakra(
@@ -245,9 +268,7 @@ contract MindfulProxy is Ownable {
 
     struct FromChakraLocalVar {
         address payable manager;
-        address strategySellToken;
         address sellToken;
-        uint256 strategySellAmount;
         uint256 sellAmount;
         uint256 totalAmount;
         uint256 relayerFee;
@@ -265,17 +286,19 @@ contract MindfulProxy is Ownable {
         (
             vars.isRelayer,
             vars.manager,
-            vars.strategySellToken,
-            vars.strategySellAmount
+            vars.sellToken,
+            vars.sellAmount
         ) = isRelayerSelling(_arg._chakra, _arg._sellToken, _arg._sellStrategyId, _arg._sellTokenIndex);
 
         // if sender is relayer, amount to trade is the amount specified in strategy
         // otherwise can be overwritten from function arg
-        vars.sellAmount = vars.isRelayer ? vars.strategySellAmount : _arg._minQuoteToken;
+        vars.sellAmount = vars.isRelayer ? vars.sellAmount : _arg._minQuoteToken;
         // same for sellToken
-        vars.sellToken = vars.isRelayer ? vars.strategySellToken : _arg._sellToken;
+        vars.sellToken = vars.isRelayer ? vars.sellToken : _arg._sellToken;
 
         vars.totalAmount = calcToChakra(_arg._chakra, vars.sellToken, _arg._poolAmount);
+
+        require(vars.sellAmount <= vars.totalAmount);
 
         // Relayer fee
         uint256 relayerFee;
@@ -283,8 +306,6 @@ contract MindfulProxy is Ownable {
         if(vars.isRelayer) {
             relayerFee = vars.totalAmount.mul(300).div(10000);
         }
-
-        require(vars.sellAmount <= vars.totalAmount);
 
         IPSmartPool chakra = IPSmartPool(_arg._chakra);
 
@@ -350,11 +371,10 @@ contract MindfulProxy is Ownable {
         isPaused = !isPaused;
     }
 
-    // What is this !!
     // function die() public onlyOwner {
     //   address payable _to = payable(los().owner);
     //   selfdestruct(_to);
-    // }Q
+    // }
 
     function init(address _balancerFactory, address _implementation) public {
         require(smartPoolImplementation == address(0));
@@ -420,7 +440,7 @@ contract MindfulProxy is Ownable {
     // todod: add isRelayer param, add fee calculation, return fee equal to zero if isRelayer = false
     function calcToChakra(
         address _chakra,
-        address _curreny,
+        address _currency,
         uint256 _poolAmount
     ) public view returns (uint256) {
         (address[] memory tokens, uint256[] memory amounts) = IPSmartPool(_chakra).calcTokensForAmount(_poolAmount);
@@ -431,12 +451,12 @@ contract MindfulProxy is Ownable {
         for (uint256 i = 0; i < tokens.length; i++) {
             // enable recursive chakras
             if (isChakra[tokens[i]]) {
-                uint256 internalTotalBaseAmount = calcToChakra(tokens[i], _curreny, amounts[i]);
+                uint256 internalTotalBaseAmount = calcToChakra(tokens[i], _currency, amounts[i]);
                 totalBaseAmount += internalTotalBaseAmount;
             } else {
                 (uint256 reserveA, uint256 reserveB) = UniLib.getReserves(
                     address(UNISWAP_FACTORY),
-                    _curreny,
+                    _currency,
                     tokens[i]
                 );
                 totalBaseAmount += UniLib.getAmountIn(amounts[i], reserveA, reserveB);
@@ -510,7 +530,7 @@ contract MindfulProxy is Ownable {
             require(buyStrategy.isActive);
             require(buyStrategy.buyToken == _baseToken);
             require(
-                buyStrategy.lastBuyTimestamp.add(buyStrategy.interBuyDelay) <= now
+                now >= buyStrategy.lastBuyTimestamp.add(buyStrategy.interBuyDelay)
             );
 
             buyStrategy.lastBuyTimestamp = now;
