@@ -1,7 +1,7 @@
 // import { MindfulProxyFactory } from "../../typechain/MindfulProxyFactory";
 
 import { config } from "../utils/Config";
-import CharkaInfo from "../utils/FetchCharkaInfo";
+import ChakraInfo from "../utils/FetchChakraInfo";
 import {
   fetchWalletTokens,
   fetchAllTokens,
@@ -12,7 +12,7 @@ import {
 import Onboard from "bnc-onboard";
 import { API as OnboardApi, Wallet } from "bnc-onboard/dist/src/interfaces";
 import Notify from "bnc-notify";
-import ethers from "ethers";
+import { ethers } from "ethers";
 import moment from "moment";
 
 import Vue from "vue";
@@ -33,7 +33,7 @@ export default new Vuex.Store({
     notify: null,
     onboard: null,
     wallet: null,
-    charkaInfo: null,
+    chakraInfo: null,
     protocolBalances: null,
     walletTokens: [],
     chakras: null,
@@ -44,8 +44,8 @@ export default new Vuex.Store({
       state.signer = signer;
       console.log("signer set to: ", state.signer);
     },
-    setCharkaInfo(state, charkaInfo) {
-      state.charkaInfo = charkaInfo;
+    setChakraInfo(state, chakraInfo) {
+      state.chakraInfo = chakraInfo;
       console.log("signer set to: ", state.signer);
     },
     setUserAddress(state, address) {
@@ -154,8 +154,8 @@ export default new Vuex.Store({
 
       await onboardInstance.walletSelect();
       await onboardInstance.walletCheck();
-      const charkaInfo = new CharkaInfo(state.provider);
-      commit("setCharkaInfo", charkaInfo);
+      const chakraInfo = new ChakraInfo(state.provider);
+      commit("setChakraInfo", chakraInfo);
       commit("setOnboard", onboardInstance);
 
       console.log("> Successfully run onboard.js");
@@ -199,7 +199,7 @@ export default new Vuex.Store({
       console.log("Getting chakras...", userAddress);
 
       // Get BPT from defiSDK
-      const portfolioBalances = await state.charkaInfo.fetchProtocolBalance(userAddress);
+      const portfolioBalances = await state.chakraInfo.fetchProtocolBalance(userAddress);
 
       // Add in additional token information such as price, logo ect from the all tokens object
       const userChakras = portfolioBalances.map(portfolioObject => {
@@ -247,10 +247,10 @@ export default new Vuex.Store({
         chakra.underlyingTokens.forEach((token, chakraTokenIndex) => {
           // set the price information
           userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].valueInChakra = Number(
-            (parseInt(token.amountInCharka, 10) * Number(token.price)).toFixed(2)
+            (parseInt(token.amountInChakra, 10) * Number(token.price)).toFixed(2)
           );
-          userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].amountInCharkaRounded = Number(
-            Number(token.amountInCharka).toFixed(2)
+          userChakras[chakraIndex].underlyingTokens[chakraTokenIndex].amountInChakraRounded = Number(
+            Number(token.amountInChakra).toFixed(2)
           );
 
           console.log("TOKENZZZ", token);
@@ -276,7 +276,7 @@ export default new Vuex.Store({
             const indexOfClosestTimeStamp = chartInfoTimeStamps.indexOf(closestChartInfoTimeStamp);
 
             const portfolioValueFromTokenAtTimestamp =
-              chartInfo.map(x => x[1])[indexOfClosestTimeStamp] * Number(chakra.underlyingTokens[index].amountInCharka);
+              chartInfo.map(x => x[1])[indexOfClosestTimeStamp] * Number(chakra.underlyingTokens[index].amountInChakra);
             cumlativeValuePoint += portfolioValueFromTokenAtTimestamp;
 
             cumlativeChartInfo.push([
@@ -292,7 +292,7 @@ export default new Vuex.Store({
               token: {
                 address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
                 amount: "694230902983134993",
-                amountInCharka: "6.511285732428220037",
+                amountInChakra: "6.511285732428220037",
                 amountRounded: "1",
                 chainId: 1,
                 decimals: 6,
@@ -363,7 +363,7 @@ export default new Vuex.Store({
         timeBetweenDataPoint
       );
 
-      // let chartInfo = await state.charkaInfo.fetchChartInfo(state.userAddress, 30);
+      // let chartInfo = await state.chakraInfo.fetchChartInfo(state.userAddress, 30);
     },
     async getSampleUserChakra({ dispatch }) {
       console.log("loading sample user");

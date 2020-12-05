@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { DeFiSDK } from "defi-sdk";
-import ethers from "ethers";
-export default class CharkaInfo {
+import { ethers } from "ethers";
+export default class ChakraInfo {
   defiSdk: DeFiSDK;
 
   constructor(provider: any) {
@@ -14,7 +14,7 @@ export default class CharkaInfo {
     const portfolioBalances: any = await this.defiSdk.adapterRegistry.getAdapterBalance(
       address.toLowerCase(), // account address
       "0x581ae5af7afa6f8171bbf40d1981779f168a9523", // balancer adapter address
-      ["0x6d59cf780d70927f022e3b827f31d6a6235a8d20"] // pool address (chakra) owned by (DAI/WETH)
+      ["0xe5AC9548275787cD86dF2350248614afaB0088eE"] // pool address (chakra) owned by (DAI/WETH)
     );
     console.log("getAdapterBalance", portfolioBalances);
 
@@ -31,7 +31,7 @@ export default class CharkaInfo {
         underlyingTokens: portfolioBalance.underlying.map(underlyingToken => {
           return {
             address: underlyingToken.metadata.token,
-            amountInCharka: ethers.utils
+            amountInChakra: ethers.utils
               .formatUnits(underlyingToken.amount, underlyingToken.metadata.decimals)
               .toString()
           };
