@@ -680,16 +680,6 @@ export default {
   font-weight: 500 !important;
 }
 
-// Switch override
-::v-deep .md-switch.md-theme-default .md-switch-container {
-  background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
-  box-shadow: inset 0px 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-::v-deep .md-switch.md-theme-default .md-switch-container .md-switch-thumb {
-  background: #fff;
-}
-
 // Theme
 .wrapper {
   text-align: left;
@@ -841,39 +831,6 @@ h1.title {
   text-align: right;
   color: #292929;
   border: 1px solid #ffffff;
-}
-
-.my-dropdown-toggle {
-  width: 100%;
-  text-align: center;
-  font-size: 1rem;
-
-  ::v-deep .dropdown-toggle {
-    color: #fff;
-    border-radius: 0.5rem;
-    background: linear-gradient(74.67deg, #00e0ff -6.3%, #aa55ff 111.05%);
-    font-weight: 600;
-  }
-
-  ::v-deep .dropdown-menu {
-    width: 100%;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05) !important;
-    border-radius: 0.5rem;
-    background: #fff;
-    padding: 0;
-  }
-
-  ::v-deep .dropdown-menu li {
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-    color: #292929;
-    font-size: 1rem;
-
-    a:hover {
-      background: linear-gradient(74.67deg, rgba(0, 224, 255, 0.075) -6.3%, rgba(170, 85, 255, 0.075) 111.05%);
-      text-decoration: none;
-    }
-  }
 }
 
 a.step-edit {
