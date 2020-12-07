@@ -287,64 +287,76 @@ contract MindfulProxy is Ownable {
     // ) external onlyChakraManager(_chakra, msg.sender) {
     // }
 
+    struct ToChakraArg {
+        address chakra;
+        address baseToken;
+        uint256 buyStrategyId;
+        uint256 poolAmount;
+        uint256 baseAmount;
+    }
+
+    struct ToChakraLocalVar {
+        address payable manager;
+        address strategyBaseToken;
+        uint256 strategyBaseAmount;
+        uint256 relayerFee;
+        bool isRelayer;
+    }
+
     /**
      * @notice DCA in
      */
     function toChakra(
-        address _chakra,
-        address _baseToken,
-        uint256 _poolAmount,
-        uint256 _baseAmount,
-        uint256 _buyStrategyId
+        ToChakraArg calldata _arg
     ) external payable revertIfPaused {
-        require(_baseToken != address(0));
-        require(isChakra[_chakra]);
+        require(_arg.baseToken != address(0));
+        require(isChakra[_arg.chakra]);
+
+        ToChakraLocalVar memory vars;
 
         (
-            bool isRelayer,
-            address payable manager,
-            address strategyBaseToken,
-            uint256 strategyBaseAmount
-        ) = isRelayerBuying(_chakra, _baseToken, _buyStrategyId);
+            vars.isRelayer,
+            vars.manager,
+            vars.strategyBaseToken,
+            vars.strategyBaseAmount
+        ) = isRelayerBuying(_arg.chakra, _arg.baseToken, _arg.buyStrategyId);
 
         // if sender is relayer, amount to trade is the amount specified in strategy
         // otherwise can be overwritten from function arg
-        uint256 baseAmount = isRelayer ? strategyBaseAmount : _baseAmount;
+        vars.strategyBaseAmount = vars.isRelayer ? vars.strategyBaseAmount : _arg.baseAmount;
         // same for baseToken
-        address baseToken = isRelayer ? strategyBaseToken : _baseToken;
+        vars.strategyBaseToken = vars.isRelayer ? vars.strategyBaseToken : _arg.baseToken;
 
         // this function below should return totalBaseAmount + fee in case sender relayer // split this out
-        uint256 requiredTotalBaseAmount = calcToChakra(_chakra, baseToken, _poolAmount);
+        uint256 requiredTotalBaseAmount = calcToChakra(_arg.chakra, vars.strategyBaseToken, _arg.poolAmount);
 
         // Relayer fee
-        uint256 relayerFee;
-
-        if(isRelayer) {
-            relayerFee = requiredTotalBaseAmount.mul(300).div(10000);
+        if(vars.isRelayer) {
+            vars.relayerFee = requiredTotalBaseAmount.mul(300).div(10000);
         }
 
         // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
         // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
         // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
         // the requested number of pool tokens.
-        require(baseAmount >= requiredTotalBaseAmount.add(relayerFee));
+        require(vars.strategyBaseAmount >= requiredTotalBaseAmount.add(vars.relayerFee));
 
-        require(IERC20(baseToken).transferFrom(manager, address(this), baseAmount));
+        require(IERC20(vars.strategyBaseToken).transferFrom(vars.manager, address(this), vars.strategyBaseAmount));
 
         // If the caller is a relayer then we need to check that they are not under spending on the chakra owners behalf
         // (buying too little pool tokens).
-        if (isRelayer) {
-            require(requiredTotalBaseAmount.mul(95).div(100) < baseAmount);
+        if (vars.isRelayer) {
+            require(requiredTotalBaseAmount.mul(95).div(100) < vars.strategyBaseAmount);
 
-            IERC20(baseToken).transfer(msg.sender, relayerFee);
+            IERC20(vars.strategyBaseToken).transfer(msg.sender, vars.relayerFee);
         }
 
-        _toChakra(_chakra, baseToken, _poolAmount);
+        _toChakra(_arg.chakra, vars.strategyBaseToken, _arg.poolAmount);
 
         // Transfer pool tokens to chakra manager
-        IERC20 chakra = IERC20(_chakra);
+        IERC20 chakra = IERC20(_arg.chakra);
 
-        IERC20(chakra).transfer(manager, chakra.balanceOf(address(this)));
+        IERC20(chakra).transfer(vars.manager, chakra.balanceOf(address(this)));
     }
 
     struct FromChakraArg {
@@ -391,10 +403,8 @@ contract MindfulProxy is Ownable {
         require(vars.sellAmount <= vars.totalAmount);
 
         // Relayer fee
-        uint256 relayerFee;
-
         if(vars.isRelayer) {
-            relayerFee = vars.totalAmount.mul(300).div(10000);
+            vars.relayerFee = vars.totalAmount.mul(300).div(10000);
         }
 
         IPSmartPool chakra = IPSmartPool(_arg._chakra);

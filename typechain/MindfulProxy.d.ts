@@ -114,12 +114,14 @@ interface MindfulProxyInterface extends Interface {
     smartPoolImplementation: TypedFunctionDescription<{encode([]: []): string}>;
 
     toChakra: TypedFunctionDescription<{
-      encode([_chakra, _baseToken, _poolAmount, _baseAmount, _buyStrategyId]: [
-        string,
-        string,
-        BigNumberish,
-        BigNumberish,
-        BigNumberish
+      encode([_arg]: [
+        {
+          chakra: string;
+          baseToken: string;
+          buyStrategyId: BigNumberish;
+          poolAmount: BigNumberish;
+          baseAmount: BigNumberish;
+        }
       ]): string;
     }>;
 
@@ -584,20 +586,24 @@ export class MindfulProxy extends Contract {
     ): Promise<string>;
 
     toChakra(
-      _chakra: string,
-      _baseToken: string,
-      _poolAmount: BigNumberish,
-      _baseAmount: BigNumberish,
-      _buyStrategyId: BigNumberish,
+      _arg: {
+        chakra: string;
+        baseToken: string;
+        buyStrategyId: BigNumberish;
+        poolAmount: BigNumberish;
+        baseAmount: BigNumberish;
+      },
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    "toChakra(address,address,uint256,uint256,uint256)"(
-      _chakra: string,
-      _baseToken: string,
-      _poolAmount: BigNumberish,
-      _baseAmount: BigNumberish,
-      _buyStrategyId: BigNumberish,
+    "toChakra(tuple)"(
+      _arg: {
+        chakra: string;
+        baseToken: string;
+        buyStrategyId: BigNumberish;
+        poolAmount: BigNumberish;
+        baseAmount: BigNumberish;
+      },
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
@@ -980,20 +986,24 @@ export class MindfulProxy extends Contract {
   ): Promise<string>;
 
   toChakra(
-    _chakra: string,
-    _baseToken: string,
-    _poolAmount: BigNumberish,
-    _baseAmount: BigNumberish,
-    _buyStrategyId: BigNumberish,
+    _arg: {
+      chakra: string;
+      baseToken: string;
+      buyStrategyId: BigNumberish;
+      poolAmount: BigNumberish;
+      baseAmount: BigNumberish;
+    },
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  "toChakra(address,address,uint256,uint256,uint256)"(
-    _chakra: string,
-    _baseToken: string,
-    _poolAmount: BigNumberish,
-    _baseAmount: BigNumberish,
-    _buyStrategyId: BigNumberish,
+  "toChakra(tuple)"(
+    _arg: {
+      chakra: string;
+      baseToken: string;
+      buyStrategyId: BigNumberish;
+      poolAmount: BigNumberish;
+      baseAmount: BigNumberish;
+    },
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
@@ -1321,20 +1331,24 @@ export class MindfulProxy extends Contract {
     ): Promise<BigNumber>;
 
     toChakra(
-      _chakra: string,
-      _baseToken: string,
-      _poolAmount: BigNumberish,
-      _baseAmount: BigNumberish,
-      _buyStrategyId: BigNumberish,
+      _arg: {
+        chakra: string;
+        baseToken: string;
+        buyStrategyId: BigNumberish;
+        poolAmount: BigNumberish;
+        baseAmount: BigNumberish;
+      },
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    "toChakra(address,address,uint256,uint256,uint256)"(
-      _chakra: string,
-      _baseToken: string,
-      _poolAmount: BigNumberish,
-      _baseAmount: BigNumberish,
-      _buyStrategyId: BigNumberish,
+    "toChakra(tuple)"(
+      _arg: {
+        chakra: string;
+        baseToken: string;
+        buyStrategyId: BigNumberish;
+        poolAmount: BigNumberish;
+        baseAmount: BigNumberish;
+      },
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
