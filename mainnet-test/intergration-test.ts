@@ -18,9 +18,11 @@ import { Ierc20 } from "../typechain/IERC20";
 
 import Pv2SmartPoolArtifact from "../artifacts/Pv2SmartPool.json";
 import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
+import PProxiedFactoryArtifact from "../artifacts/PProxiedFactory.json";
 
 import { MindfulProxyFactory } from "../typechain/MindfulProxyFactory";
 import { MindfulProxy } from "../typechain/MindfulProxy";
+import { PProxiedFactory } from "../typechain/PProxiedFactory";
 import { Pv2SmartPool } from "../typechain/PV2SmartPool";
 import { MockTokenFactory } from "@pie-dao/mock-contracts/dist/typechain/MockTokenFactory";
 import { MockToken } from "@pie-dao/mock-contracts/typechain/MockToken";
@@ -48,13 +50,14 @@ const WEIGHTS: any = [constants.WeiPerEther.mul(3), constants.WeiPerEther.mul(3)
 
 const timeTraveler = new TimeTraveler(ethereum);
 
-describe("MAINNET TEST", function () {
+describe("MAINNET TEST", function() {
   this.timeout(10000000);
   let signers: Signer[];
   let account: string;
   let whaleSigner: Signer;
 
   let mindfulProxy: MindfulProxy;
+  let pProxiedFactory: PProxiedFactory;
   let mindfulProxyWhaleSigner: MindfulProxy;
   let smartpool: Pv2SmartPool;
   let smartpoolProxy: Ipv2SmartPool;
@@ -76,6 +79,15 @@ describe("MAINNET TEST", function () {
     );
 
     mindfulProxy = await mindfulProxyDeployer.deploy();
+
+    const pProxiedDeployer: any = new ethers.ContractFactory(
+      PProxiedFactoryArtifact.abi,
+      PProxiedFactoryArtifact.bytecode,
+      signers[0]
+    );
+
+    pProxiedFactory = await pProxiedDeployer.deploy();
+
     mindfulProxyWhaleSigner = MindfulProxyFactory.connect(mindfulProxy.address, whaleSigner);
 
     console.log("deployed mindful proxy", mindfulProxy.address);
@@ -87,13 +99,17 @@ describe("MAINNET TEST", function () {
 
     const smartPoolDeployer: any = new ethers.ContractFactory(linkedArtifact.abi, linkedArtifact.bytecode, signers[0]);
 
-    // Notice we pass in "Hello World" as the parameter to the constructor
     smartpool = await smartPoolDeployer.deploy();
 
     console.log("smartpool deployed", smartpool.address);
 
     await smartpool.init(PLACE_HOLDER_ADDRESS, "IMP", "IMP", 1337);
-    await mindfulProxy.init(SMART_POOL_FACTORY, smartpool.address);
+
+    console.log("Should get here");
+    console.log("PProxiedFactory.address", pProxiedFactory.address);
+
+    await mindfulProxy.init(pProxiedFactory.address, SMART_POOL_FACTORY, smartpool.address);
+    console.log("end of setup");
 
     await timeTraveler.snapshot();
   });
@@ -116,15 +132,7 @@ describe("MAINNET TEST", function () {
     }
 
     // 2. User makes a new Mindful Proxy.
-    await mindfulProxyWhaleSigner.newProxiedSmartPool(
-      NAME,
-      SYMBOL,
-      INITIAL_SUPPLY,
-      TOKENS,
-      AMOUNTS,
-      WEIGHTS,
-      INITIAL_SUPPLY
-    );
+    await mindfulProxyWhaleSigner.deployChakra(NAME, SYMBOL, INITIAL_SUPPLY, TOKENS, AMOUNTS, WEIGHTS, INITIAL_SUPPLY);
     expect((await mindfulProxy.getChakras()).length).to.eq(1);
     smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.chakras(0), whaleSigner);
     console.log("chakras", await mindfulProxy.getChakras());

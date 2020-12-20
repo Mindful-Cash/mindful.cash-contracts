@@ -31,8 +31,6 @@ interface MindfulProxyInterface extends Interface {
       ]): string;
     }>;
 
-    balancerFactory: TypedFunctionDescription<{encode([]: []): string}>;
-
     buyStrategies: TypedFunctionDescription<{
       encode([]: [BigNumberish]): string;
     }>;
@@ -53,29 +51,7 @@ interface MindfulProxyInterface extends Interface {
 
     chakras: TypedFunctionDescription<{encode([]: [BigNumberish]): string}>;
 
-    fromChakra: TypedFunctionDescription<{
-      encode([_chakra, _sellToken, _poolAmountOut]: [
-        string,
-        string,
-        BigNumberish
-      ]): string;
-    }>;
-
-    getBuyStrategies: TypedFunctionDescription<{encode([]: []): string}>;
-
-    getChakras: TypedFunctionDescription<{encode([]: []): string}>;
-
-    getSellStrategies: TypedFunctionDescription<{encode([]: []): string}>;
-
-    init: TypedFunctionDescription<{
-      encode([_balancerFactory, _implementation]: [string, string]): string;
-    }>;
-
-    isChakra: TypedFunctionDescription<{encode([]: [string]): string}>;
-
-    isPaused: TypedFunctionDescription<{encode([]: []): string}>;
-
-    newProxiedSmartPool: TypedFunctionDescription<{
+    deployChakra: TypedFunctionDescription<{
       encode([
         _name,
         _symbol,
@@ -95,6 +71,34 @@ interface MindfulProxyInterface extends Interface {
       ]): string;
     }>;
 
+    fromChakra: TypedFunctionDescription<{
+      encode([_chakra, _sellToken, _poolAmountOut]: [
+        string,
+        string,
+        BigNumberish
+      ]): string;
+    }>;
+
+    getBuyStrategies: TypedFunctionDescription<{encode([]: []): string}>;
+
+    getChakras: TypedFunctionDescription<{encode([]: []): string}>;
+
+    getSellStrategies: TypedFunctionDescription<{encode([]: []): string}>;
+
+    init: TypedFunctionDescription<{
+      encode([_pProxiedFactory, _balancerFactory, _implementation]: [
+        string,
+        string,
+        string
+      ]): string;
+    }>;
+
+    isChakra: TypedFunctionDescription<{encode([]: [string]): string}>;
+
+    isPaused: TypedFunctionDescription<{encode([]: []): string}>;
+
+    pProxiedFactory: TypedFunctionDescription<{encode([]: []): string}>;
+
     saveEth: TypedFunctionDescription<{encode([]: []): string}>;
 
     saveToken: TypedFunctionDescription<{encode([_token]: [string]): string}>;
@@ -106,12 +110,6 @@ interface MindfulProxyInterface extends Interface {
     sellStrategyChakra: TypedFunctionDescription<{
       encode([]: [BigNumberish]): string;
     }>;
-
-    setImplementation: TypedFunctionDescription<{
-      encode([_implementation]: [string]): string;
-    }>;
-
-    smartPoolImplementation: TypedFunctionDescription<{encode([]: []): string}>;
 
     toChakra: TypedFunctionDescription<{
       encode([_arg]: [
@@ -278,10 +276,6 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    balancerFactory(overrides?: TransactionOverrides): Promise<string>;
-
-    "balancerFactory()"(overrides?: TransactionOverrides): Promise<string>;
-
     buyStrategies(
       arg0: BigNumberish,
       overrides?: TransactionOverrides
@@ -365,6 +359,28 @@ export class MindfulProxy extends Contract {
       arg0: BigNumberish,
       overrides?: TransactionOverrides
     ): Promise<string>;
+
+    deployChakra(
+      _name: string,
+      _symbol: string,
+      _initialSupply: BigNumberish,
+      _tokens: string[],
+      _amounts: BigNumberish[],
+      _weights: BigNumberish[],
+      _cap: BigNumberish,
+      overrides?: TransactionOverrides
+    ): Promise<ContractTransaction>;
+
+    "deployChakra(string,string,uint256,address[],uint256[],uint256[],uint256)"(
+      _name: string,
+      _symbol: string,
+      _initialSupply: BigNumberish,
+      _tokens: string[],
+      _amounts: BigNumberish[],
+      _weights: BigNumberish[],
+      _cap: BigNumberish,
+      overrides?: TransactionOverrides
+    ): Promise<ContractTransaction>;
 
     fromChakra(
       _chakra: string,
@@ -477,12 +493,14 @@ export class MindfulProxy extends Contract {
     >;
 
     init(
+      _pProxiedFactory: string,
       _balancerFactory: string,
       _implementation: string,
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    "init(address,address)"(
+    "init(address,address,address)"(
+      _pProxiedFactory: string,
       _balancerFactory: string,
       _implementation: string,
       overrides?: TransactionOverrides
@@ -499,27 +517,9 @@ export class MindfulProxy extends Contract {
 
     "isPaused()"(overrides?: TransactionOverrides): Promise<boolean>;
 
-    newProxiedSmartPool(
-      _name: string,
-      _symbol: string,
-      _initialSupply: BigNumberish,
-      _tokens: string[],
-      _amounts: BigNumberish[],
-      _weights: BigNumberish[],
-      _cap: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
+    pProxiedFactory(overrides?: TransactionOverrides): Promise<string>;
 
-    "newProxiedSmartPool(string,string,uint256,address[],uint256[],uint256[],uint256)"(
-      _name: string,
-      _symbol: string,
-      _initialSupply: BigNumberish,
-      _tokens: string[],
-      _amounts: BigNumberish[],
-      _weights: BigNumberish[],
-      _cap: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
+    "pProxiedFactory()"(overrides?: TransactionOverrides): Promise<string>;
 
     saveEth(overrides?: TransactionOverrides): Promise<ContractTransaction>;
 
@@ -566,22 +566,6 @@ export class MindfulProxy extends Contract {
 
     "sellStrategyChakra(uint256)"(
       arg0: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<string>;
-
-    setImplementation(
-      _implementation: string,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    "setImplementation(address)"(
-      _implementation: string,
-      overrides?: TransactionOverrides
-    ): Promise<ContractTransaction>;
-
-    smartPoolImplementation(overrides?: TransactionOverrides): Promise<string>;
-
-    "smartPoolImplementation()"(
       overrides?: TransactionOverrides
     ): Promise<string>;
 
@@ -678,10 +662,6 @@ export class MindfulProxy extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  balancerFactory(overrides?: TransactionOverrides): Promise<string>;
-
-  "balancerFactory()"(overrides?: TransactionOverrides): Promise<string>;
-
   buyStrategies(
     arg0: BigNumberish,
     overrides?: TransactionOverrides
@@ -765,6 +745,28 @@ export class MindfulProxy extends Contract {
     arg0: BigNumberish,
     overrides?: TransactionOverrides
   ): Promise<string>;
+
+  deployChakra(
+    _name: string,
+    _symbol: string,
+    _initialSupply: BigNumberish,
+    _tokens: string[],
+    _amounts: BigNumberish[],
+    _weights: BigNumberish[],
+    _cap: BigNumberish,
+    overrides?: TransactionOverrides
+  ): Promise<ContractTransaction>;
+
+  "deployChakra(string,string,uint256,address[],uint256[],uint256[],uint256)"(
+    _name: string,
+    _symbol: string,
+    _initialSupply: BigNumberish,
+    _tokens: string[],
+    _amounts: BigNumberish[],
+    _weights: BigNumberish[],
+    _cap: BigNumberish,
+    overrides?: TransactionOverrides
+  ): Promise<ContractTransaction>;
 
   fromChakra(
     _chakra: string,
@@ -877,12 +879,14 @@ export class MindfulProxy extends Contract {
   >;
 
   init(
+    _pProxiedFactory: string,
     _balancerFactory: string,
     _implementation: string,
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  "init(address,address)"(
+  "init(address,address,address)"(
+    _pProxiedFactory: string,
     _balancerFactory: string,
     _implementation: string,
     overrides?: TransactionOverrides
@@ -899,27 +903,9 @@ export class MindfulProxy extends Contract {
 
   "isPaused()"(overrides?: TransactionOverrides): Promise<boolean>;
 
-  newProxiedSmartPool(
-    _name: string,
-    _symbol: string,
-    _initialSupply: BigNumberish,
-    _tokens: string[],
-    _amounts: BigNumberish[],
-    _weights: BigNumberish[],
-    _cap: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
+  pProxiedFactory(overrides?: TransactionOverrides): Promise<string>;
 
-  "newProxiedSmartPool(string,string,uint256,address[],uint256[],uint256[],uint256)"(
-    _name: string,
-    _symbol: string,
-    _initialSupply: BigNumberish,
-    _tokens: string[],
-    _amounts: BigNumberish[],
-    _weights: BigNumberish[],
-    _cap: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
+  "pProxiedFactory()"(overrides?: TransactionOverrides): Promise<string>;
 
   saveEth(overrides?: TransactionOverrides): Promise<ContractTransaction>;
 
@@ -966,22 +952,6 @@ export class MindfulProxy extends Contract {
 
   "sellStrategyChakra(uint256)"(
     arg0: BigNumberish,
-    overrides?: TransactionOverrides
-  ): Promise<string>;
-
-  setImplementation(
-    _implementation: string,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  "setImplementation(address)"(
-    _implementation: string,
-    overrides?: TransactionOverrides
-  ): Promise<ContractTransaction>;
-
-  smartPoolImplementation(overrides?: TransactionOverrides): Promise<string>;
-
-  "smartPoolImplementation()"(
     overrides?: TransactionOverrides
   ): Promise<string>;
 
@@ -1134,10 +1104,6 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    balancerFactory(overrides?: TransactionOverrides): Promise<BigNumber>;
-
-    "balancerFactory()"(overrides?: TransactionOverrides): Promise<BigNumber>;
-
     buyStrategies(
       arg0: BigNumberish,
       overrides?: TransactionOverrides
@@ -1192,6 +1158,28 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
+    deployChakra(
+      _name: string,
+      _symbol: string,
+      _initialSupply: BigNumberish,
+      _tokens: string[],
+      _amounts: BigNumberish[],
+      _weights: BigNumberish[],
+      _cap: BigNumberish,
+      overrides?: TransactionOverrides
+    ): Promise<BigNumber>;
+
+    "deployChakra(string,string,uint256,address[],uint256[],uint256[],uint256)"(
+      _name: string,
+      _symbol: string,
+      _initialSupply: BigNumberish,
+      _tokens: string[],
+      _amounts: BigNumberish[],
+      _weights: BigNumberish[],
+      _cap: BigNumberish,
+      overrides?: TransactionOverrides
+    ): Promise<BigNumber>;
+
     fromChakra(
       _chakra: string,
       _sellToken: string,
@@ -1231,12 +1219,14 @@ export class MindfulProxy extends Contract {
     "getSellStrategies()"(overrides?: TransactionOverrides): Promise<BigNumber>;
 
     init(
+      _pProxiedFactory: string,
       _balancerFactory: string,
       _implementation: string,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    "init(address,address)"(
+    "init(address,address,address)"(
+      _pProxiedFactory: string,
       _balancerFactory: string,
       _implementation: string,
       overrides?: TransactionOverrides
@@ -1256,27 +1246,9 @@ export class MindfulProxy extends Contract {
 
     "isPaused()"(overrides?: TransactionOverrides): Promise<BigNumber>;
 
-    newProxiedSmartPool(
-      _name: string,
-      _symbol: string,
-      _initialSupply: BigNumberish,
-      _tokens: string[],
-      _amounts: BigNumberish[],
-      _weights: BigNumberish[],
-      _cap: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
+    pProxiedFactory(overrides?: TransactionOverrides): Promise<BigNumber>;
 
-    "newProxiedSmartPool(string,string,uint256,address[],uint256[],uint256[],uint256)"(
-      _name: string,
-      _symbol: string,
-      _initialSupply: BigNumberish,
-      _tokens: string[],
-      _amounts: BigNumberish[],
-      _weights: BigNumberish[],
-      _cap: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
+    "pProxiedFactory()"(overrides?: TransactionOverrides): Promise<BigNumber>;
 
     saveEth(overrides?: TransactionOverrides): Promise<BigNumber>;
 
@@ -1309,24 +1281,6 @@ export class MindfulProxy extends Contract {
 
     "sellStrategyChakra(uint256)"(
       arg0: BigNumberish,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    setImplementation(
-      _implementation: string,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    "setImplementation(address)"(
-      _implementation: string,
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    smartPoolImplementation(
-      overrides?: TransactionOverrides
-    ): Promise<BigNumber>;
-
-    "smartPoolImplementation()"(
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 

@@ -470,10 +470,11 @@ contract MindfulProxy is Ownable {
     //   selfdestruct(_to);
     // }
 
-    function init(address _pProxiedFactory) public {
-        require(_pProxiedFactory == address(0));
+    function init(address _pProxiedFactory,address _balancerFactory, address _implementation) public {
+        require(_pProxiedFactory != address(0),"invalid pProxiedFactory");
         _setOwner(msg.sender);
         pProxiedFactory = IPProxiedFactory(_pProxiedFactory);
+        pProxiedFactory.init(_balancerFactory,_implementation);
     }
 
     function deployChakra(
