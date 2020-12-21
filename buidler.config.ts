@@ -156,6 +156,7 @@ task("deploy-pool-from-factory", "deploys a pie smart pool from the factory")
     }
 
     const tx = await factory.newProxiedSmartPool(
+      await signers[0].getAddress(),
       name,
       symbol,
       initialSupply,

@@ -129,7 +129,7 @@ interface MindfulProxyInterface extends Interface {
       encode([_newOwner]: [string]): string;
     }>;
 
-    updateBuystrategy: TypedFunctionDescription<{
+    updateBuyStrategy: TypedFunctionDescription<{
       encode([
         _chakra,
         _buyToken,
@@ -607,7 +607,7 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    updateBuystrategy(
+    updateBuyStrategy(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
@@ -617,7 +617,7 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    "updateBuystrategy(address,address,uint256,uint256,uint256,bool)"(
+    "updateBuyStrategy(address,address,uint256,uint256,uint256,bool)"(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
@@ -993,7 +993,7 @@ export class MindfulProxy extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  updateBuystrategy(
+  updateBuyStrategy(
     _chakra: string,
     _buyToken: string,
     _buyStrategyId: BigNumberish,
@@ -1003,7 +1003,7 @@ export class MindfulProxy extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  "updateBuystrategy(address,address,uint256,uint256,uint256,bool)"(
+  "updateBuyStrategy(address,address,uint256,uint256,uint256,bool)"(
     _chakra: string,
     _buyToken: string,
     _buyStrategyId: BigNumberish,
@@ -1320,7 +1320,7 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    updateBuystrategy(
+    updateBuyStrategy(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,
@@ -1330,7 +1330,7 @@ export class MindfulProxy extends Contract {
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    "updateBuystrategy(address,address,uint256,uint256,uint256,bool)"(
+    "updateBuyStrategy(address,address,uint256,uint256,uint256,bool)"(
       _chakra: string,
       _buyToken: string,
       _buyStrategyId: BigNumberish,

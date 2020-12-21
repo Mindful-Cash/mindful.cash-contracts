@@ -13,6 +13,8 @@ import { Ierc20 } from "../typechain/Ierc20";
 import { IbPool } from "../typechain/IbPool";
 import { IbPoolFactory } from "../typechain/IbPoolFactory";
 import { Ipv2SmartPoolFactory } from "../typechain/Ipv2SmartPoolFactory";
+import { PProxiedFactoryFactory } from "../typechain/PProxiedFactoryFactory";
+import { PProxiedFactory } from "../typechain/PProxiedFactory";
 import { MindfulProxyFactory } from "../typechain/MindfulProxyFactory";
 import { MindfulProxy } from "../typechain/MindfulProxy";
 import { Pv2SmartPool } from "../typechain/PV2SmartPool";
@@ -20,6 +22,7 @@ import { Ipv2SmartPool } from "../typechain/Ipv2SmartPool";
 
 import Pv2SmartPoolArtifact from "../artifacts/Pv2SmartPool.json";
 import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
+import PProxiedFactoryArtifact from "../artifacts/PProxiedFactory.json";
 import { Ierc20Factory } from "../typechain/Ierc20Factory";
 import { TestPcToken } from "../typechain/TestPcToken";
 import { TestPcTokenFactory } from "../typechain/TestPcTokenFactory";
@@ -40,6 +43,7 @@ describe("Buy strategy", () => {
   let relayer: string;
   let random: string;
 
+  let pProxiedFactory: PProxiedFactory;
   let mindfulProxy: MindfulProxy;
   let smartpool: Pv2SmartPool;
   let smartpoolProxy: Ipv2SmartPool;
@@ -68,16 +72,19 @@ describe("Buy strategy", () => {
       gasLimit: 100000000,
     })) as MindfulProxy;
 
+    pProxiedFactory = (await deployContract(signers[0] as Wallet, PProxiedFactoryArtifact, [], {
+      gasLimit: 100000000,
+    })) as PProxiedFactory;
+
     const libraries = await run("deploy-libraries");
     const linkedArtifact = linkArtifact(Pv2SmartPoolArtifact, libraries);
-
     // Deploy this way to get the coverage provider to pick it up
     smartpool = (await deployContract(signers[0] as Wallet, linkedArtifact, [], {
       gasLimit: 100000000,
     })) as Pv2SmartPool;
 
     await smartpool.init(PLACE_HOLDER_ADDRESS, "IMP", "IMP", 1337);
-    await mindfulProxy.init(balancerFactoryAddress, smartpool.address);
+    await mindfulProxy.init(pProxiedFactory.address, balancerFactoryAddress, smartpool.address);
 
     const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
 
@@ -89,9 +96,9 @@ describe("Buy strategy", () => {
     await umaToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await compToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await yfiToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
-    await umaToken.approve(mindfulProxy.address, constants.MaxUint256);
-    await compToken.approve(mindfulProxy.address, constants.MaxUint256);
-    await yfiToken.approve(mindfulProxy.address, constants.MaxUint256);
+    await umaToken.approve(pProxiedFactory.address, constants.MaxUint256);
+    await compToken.approve(pProxiedFactory.address, constants.MaxUint256);
+    await yfiToken.approve(pProxiedFactory.address, constants.MaxUint256);
 
     tokens.push(umaToken);
     tokens.push(compToken);
@@ -104,7 +111,7 @@ describe("Buy strategy", () => {
     amounts.push(constants.WeiPerEther.mul(10));
     amounts.push(constants.WeiPerEther.mul(10));
 
-    await mindfulProxy.newProxiedSmartPool(
+    await mindfulProxy.deployChakra(
       NAME,
       SYMBOL,
       constants.WeiPerEther,
@@ -156,7 +163,7 @@ describe("Buy strategy", () => {
     const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
     const wethToken : MockToken = await tokenFactorySigner0.deploy('WETH', 'WETH', 18);
 
-    await mindfulProxy.updateBuyStartegy(chakraAddress, wethToken.address, buyStrategyid, new BigNumber(60*60*24*3), constants.WeiPerEther.mul(20000000000));
+    await mindfulProxy.updateBuyStrategy(chakraAddress, wethToken.address, buyStrategyid, new BigNumber(60*60*24*3), constants.WeiPerEther.mul(20000000000), true);
 
     expect((await mindfulProxy.getBuyStrategies())[0].buyToken).to.eq(wethToken.address);
     expect((await mindfulProxy.getBuyStrategies())[0].buyAmount).to.eq(constants.WeiPerEther.mul(20000000000));

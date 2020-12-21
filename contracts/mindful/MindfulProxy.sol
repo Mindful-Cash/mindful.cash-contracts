@@ -227,7 +227,7 @@ contract MindfulProxy is Ownable {
      * @param _buyAmount amount to buy
      * @param _isActive to disable strategy, set to false
      */
-    function updateBuystrategy(
+    function updateBuyStrategy(
         address _chakra,
         address _buyToken,
         uint256 _buyStrategyId,
@@ -486,8 +486,10 @@ contract MindfulProxy is Ownable {
         uint256[] memory _weights,
         uint256 _cap
     ) public revertIfPaused returns (address) {
+        // approve pProxiedFactory 
         // Deploy proxy contract
         address smartPool = pProxiedFactory.newProxiedSmartPool(
+            msg.sender,
             _name,
             _symbol,
             _initialSupply,

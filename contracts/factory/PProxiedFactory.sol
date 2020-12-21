@@ -32,6 +32,7 @@ contract PProxiedFactory is Ownable {
     }
 
     function newProxiedSmartPool(
+        address _degen,
         string memory _name,
         string memory _symbol,
         uint256 _initialSupply,
@@ -55,7 +56,7 @@ contract PProxiedFactory is Ownable {
         for (uint256 i = 0; i < _tokens.length; i++) {
             IERC20 token = IERC20(_tokens[i]);
             // Transfer tokens to this contract
-            token.transferFrom(msg.sender, address(this), _amounts[i]);
+            token.transferFrom(_degen, address(this), _amounts[i]);
             // Approve the balancer pool
             token.safeApprove(balancerPoolAddress, uint256(-1));
             // Bind tokens
