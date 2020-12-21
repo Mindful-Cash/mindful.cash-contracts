@@ -134,28 +134,6 @@ describe("Buy strategy", () => {
     expect(await mindfulProxy.buyStrategyChakra(1)).to.eq(chakraAddress);
   });
   
-  // it('should disable created startegy', async () => {
-  //   const chakraAddress = (await mindfulProxy.getChakras())[0];
-  //   const buyStrategyid = (await mindfulProxy.getBuyStrategies()).length;
-
-  //   expect((await mindfulProxy.getBuyStrategies())[0].isActive).to.eq(true);
-
-  //   await mindfulProxy.disableBuyStrategy(chakraAddress, buyStrategyid);
-
-  //   expect((await mindfulProxy.getBuyStrategies())[0].isActive).to.eq(false);
-  // })
-  
-  // it('should enable a disabled buy startegy', async () => {
-  //   const chakraAddress = (await mindfulProxy.getChakras())[0];
-  //   const buyStrategyid = (await mindfulProxy.getBuyStrategies()).length;
-
-  //   expect((await mindfulProxy.getBuyStrategies())[0].isActive).to.eq(false);
-
-  //   await mindfulProxy.enableBuyStrategy(chakraAddress, buyStrategyid);
-
-  //   expect((await mindfulProxy.getBuyStrategies())[0].isActive).to.eq(true);
-  // })
-
   it('should update a specific buy strategy', async () => {
     const chakraAddress = (await mindfulProxy.getChakras())[0];
     const buyStrategyid = (await mindfulProxy.getBuyStrategies()).length;
@@ -169,33 +147,4 @@ describe("Buy strategy", () => {
     expect((await mindfulProxy.getBuyStrategies())[0].buyAmount).to.eq(constants.WeiPerEther.mul(20000000000));
     expect((await mindfulProxy.getBuyStrategies())[0].interBuyDelay.toString()).to.eq(new BigNumber(60*60*24*3).toString());
   })
-
-//   // describe("DCA in", () => {
-//   //   it("chakra owner can send in single currency to add to pool");
-//   // });
-
-//   async function getTokenBalances(address: string) {
-//     const balances: BigNumber[] = [];
-
-//     for (const token of tokens) {
-//       balances.push(await token.balanceOf(address));
-//     }
-
-//     return balances;
-//   }
-
-//   function expectZero(amounts: BigNumber[]) {
-//     for (const amount of amounts) {
-//       expect(amount).to.eq(0);
-//     }
-//   }
-
-//   function createBigNumberArray(length: number, value: BigNumber): BigNumber[] {
-//     const result: BigNumber[] = [];
-//     for (let i = 0; i < length; i++) {
-//       result.push(value);
-//     }
-
-//     return result;
-//   }
 });
