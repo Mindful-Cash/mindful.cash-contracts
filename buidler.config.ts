@@ -25,7 +25,7 @@ usePlugin("@nomiclabs/buidler-waffle");
 usePlugin("@nomiclabs/buidler-etherscan");
 usePlugin("solidity-coverage");
 usePlugin("buidler-deploy");
-// usePlugin("buidler-gas-reporter"); // uncomment this to get gas reports
+usePlugin("buidler-gas-reporter"); 
 
 const INFURA_API_KEY = process.env.INFURA_API_KEY || "";
 const KOVAN_PRIVATE_KEY = process.env.KOVAN_PRIVATE_KEY || "";
@@ -87,7 +87,13 @@ const config: ExtendedBuidlerConfig = {
   //   // Obtain one at https://etherscan.io/
   //   apiKey: ETHERSCAN_API_KEY,
   // },
-  gasReporter: {},
+  gasReporter: {
+    currency: 'USD',
+    artifactType: 'truffle-v5',
+    coinmarketcap: process.env.COINMARKETCAP_API,
+    excludeContracts: ['Migrations'],
+    showTimeSpent: true,
+  },
 };
 
 // Coverage fix
