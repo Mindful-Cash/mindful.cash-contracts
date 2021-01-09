@@ -17,9 +17,11 @@ import { MindfulProxyFactory } from "../typechain/MindfulProxyFactory";
 import { MindfulProxy } from "../typechain/MindfulProxy";
 import { Pv2SmartPool } from "../typechain/PV2SmartPool";
 import { Ipv2SmartPool } from "../typechain/Ipv2SmartPool";
-
+import { PProxiedFactoryFactory } from "../typechain/PProxiedFactoryFactory";
+import { PProxiedFactory } from "../typechain/PProxiedFactory";
 import Pv2SmartPoolArtifact from "../artifacts/Pv2SmartPool.json";
 import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
+import PProxiedFactoryArtifact from "../artifacts/PProxiedFactory.json";
 import { Ierc20Factory } from "../typechain/Ierc20Factory";
 import { TestPcToken } from "../typechain/TestPcToken";
 import { TestPcTokenFactory } from "../typechain/TestPcTokenFactory";
@@ -40,6 +42,7 @@ describe("Sell strategy", () => {
   let relayer: string;
   let random: string;
 
+  let pProxiedFactory: PProxiedFactory;
   let mindfulProxy: MindfulProxy;
   let smartpool: Pv2SmartPool;
   let smartpoolProxy: Ipv2SmartPool;
@@ -68,6 +71,10 @@ describe("Sell strategy", () => {
       gasLimit: 100000000,
     })) as MindfulProxy;
 
+    pProxiedFactory = (await deployContract(signers[0] as Wallet, PProxiedFactoryArtifact, [], {
+      gasLimit: 100000000,
+    })) as PProxiedFactory;
+
     const libraries = await run("deploy-libraries");
     const linkedArtifact = linkArtifact(Pv2SmartPoolArtifact, libraries);
 
@@ -77,7 +84,7 @@ describe("Sell strategy", () => {
     })) as Pv2SmartPool;
 
     await smartpool.init(PLACE_HOLDER_ADDRESS, "IMP", "IMP", 1337);
-    await mindfulProxy.init(balancerFactoryAddress, smartpool.address);
+    await mindfulProxy.init(pProxiedFactory.address, balancerFactoryAddress, smartpool.address);
 
     const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
     const tokenFactorySigner1 = new MockTokenFactory(signers[0]);
@@ -91,9 +98,9 @@ describe("Sell strategy", () => {
     await umaToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await compToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await yfiToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
-    await umaToken.approve(mindfulProxy.address, constants.MaxUint256);
-    await compToken.approve(mindfulProxy.address, constants.MaxUint256);
-    await yfiToken.approve(mindfulProxy.address, constants.MaxUint256);
+    await umaToken.approve(pProxiedFactory.address, constants.MaxUint256);
+    await compToken.approve(pProxiedFactory.address, constants.MaxUint256);
+    await yfiToken.approve(pProxiedFactory.address, constants.MaxUint256);
 
     tokens.push(umaToken);
     tokens.push(compToken);
@@ -106,7 +113,7 @@ describe("Sell strategy", () => {
     amounts.push(constants.WeiPerEther.mul(10));
     amounts.push(constants.WeiPerEther.mul(10));
 
-    await mindfulProxy.newProxiedSmartPool(
+    await mindfulProxy.deployChakra(
       NAME,
       SYMBOL,
       constants.WeiPerEther,
@@ -139,50 +146,24 @@ describe("Sell strategy", () => {
     expect(await mindfulProxy.sellStrategyChakra(1)).to.eq(chakraAddress);
   });
   
-  // it('should disable created startegy', async () => {
+  // it('should update a specific sell strategy', async () => {
   //   const chakraAddress = (await mindfulProxy.getChakras())[0];
   //   const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
 
-  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
+  //   let prices = [];
+  //   let sellOtokens = [];
 
-  //   await mindfulProxy.disableSellStrategy(chakraAddress, sellStrategyid);
+  //   prices.push(constants.WeiPerEther.mul(10000000000));
+  //   prices.push(constants.WeiPerEther.mul(12000000000));
+  //   prices.push(constants.WeiPerEther.mul(20000000000));
+  //   sellOtokens.push(usdcToken.address);
+  //   sellOtokens.push(usdcToken.address);
+  //   sellOtokens.push(constants.AddressZero);
 
-  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
+  //   await mindfulProxy.updateSellStrategy(chakraAddress, sellStrategyid, sellOtokens, prices);
+
+  //   expect((await mindfulProxy.getSellStrategies())[0].sellTokens.length).to.eq(2);
   // })
-  
-  // it('should enable a disabled sell startegy', async () => {
-  //   const chakraAddress = (await mindfulProxy.getChakras())[0];
-  //   const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
-
-  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(false);
-
-  //   await mindfulProxy.enableSellStrategy(chakraAddress, sellStrategyid);
-
-  //   expect((await mindfulProxy.getSellStrategies())[0].isActive).to.eq(true);
-  // })
-
-  it('should update a specific sell strategy', async () => {
-    const chakraAddress = (await mindfulProxy.getChakras())[0];
-    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
-
-    let prices = [];
-    let sellOtokens = [];
-
-    prices.push(constants.WeiPerEther.mul(10000000000));
-    prices.push(constants.WeiPerEther.mul(12000000000));
-    prices.push(constants.WeiPerEther.mul(20000000000));
-    sellOtokens.push(usdcToken.address);
-    sellOtokens.push(usdcToken.address);
-    sellOtokens.push(constants.AddressZero);
-
-    await mindfulProxy.updateSellStrategy(chakraAddress, sellStrategyid, sellOtokens, prices);
-
-    expect((await mindfulProxy.getSellStrategies())[0].sellTokens.length).to.eq(2);
-  })
-
-  // describe("DCA in", () => {
-  //   it("chakra owner can send in single currency to add to pool");
-  // });
 
   async function getTokenBalances(address: string) {
     const balances: BigNumber[] = [];

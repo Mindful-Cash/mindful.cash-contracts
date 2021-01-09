@@ -17,7 +17,10 @@ import { MindfulProxyFactory } from "../typechain/MindfulProxyFactory";
 import { MindfulProxy } from "../typechain/MindfulProxy";
 import { Pv2SmartPool } from "../typechain/PV2SmartPool";
 import { Ipv2SmartPool } from "../typechain/Ipv2SmartPool";
+import { PProxiedFactoryFactory } from "../typechain/PProxiedFactoryFactory";
+import { PProxiedFactory } from "../typechain/PProxiedFactory";
 
+import PProxiedFactoryArtifact from "../artifacts/PProxiedFactory.json";
 import Pv2SmartPoolArtifact from "../artifacts/Pv2SmartPool.json";
 import MindfulProxyArtifact from "../artifacts/MindfulProxy.json";
 import { Ierc20Factory } from "../typechain/Ierc20Factory";
@@ -40,6 +43,7 @@ describe("Create Chakra functionality", () => {
   let relayer: string;
   let random: string;
 
+  let pProxiedFactory: PProxiedFactory;
   let mindfulProxy: MindfulProxy;
   let smartpool: Pv2SmartPool;
   let smartpoolProxy: Ipv2SmartPool;
@@ -68,6 +72,10 @@ describe("Create Chakra functionality", () => {
       gasLimit: 100000000,
     })) as MindfulProxy;
 
+    pProxiedFactory = (await deployContract(signers[0] as Wallet, PProxiedFactoryArtifact, [], {
+      gasLimit: 100000000,
+    })) as PProxiedFactory;
+
     const libraries = await run("deploy-libraries");
     const linkedArtifact = linkArtifact(Pv2SmartPoolArtifact, libraries);
 
@@ -77,7 +85,7 @@ describe("Create Chakra functionality", () => {
     })) as Pv2SmartPool;
 
     await smartpool.init(PLACE_HOLDER_ADDRESS, "IMP", "IMP", 1337);
-    await mindfulProxy.init(balancerFactoryAddress, smartpool.address);
+    await mindfulProxy.init(pProxiedFactory.address, balancerFactoryAddress, smartpool.address);
 
     const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
     const tokenFactorySigner1 = new MockTokenFactory(signers[0]);
@@ -91,9 +99,9 @@ describe("Create Chakra functionality", () => {
     await umaToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await compToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
     await yfiToken.mint(mindfulDeployer, constants.WeiPerEther.mul(10000000000));
-    await umaToken.approve(mindfulProxy.address, constants.MaxUint256);
-    await compToken.approve(mindfulProxy.address, constants.MaxUint256);
-    await yfiToken.approve(mindfulProxy.address, constants.MaxUint256);
+    await umaToken.approve(pProxiedFactory.address, constants.MaxUint256);
+    await compToken.approve(pProxiedFactory.address, constants.MaxUint256);
+    await yfiToken.approve(pProxiedFactory.address, constants.MaxUint256);
 
     tokens.push(umaToken);
     tokens.push(compToken);
@@ -109,7 +117,7 @@ describe("Create Chakra functionality", () => {
 
   describe("init smart pool proxy", async () => {
     beforeEach(async () => {
-      await mindfulProxy.newProxiedSmartPool(
+      await mindfulProxy.deployChakra(
         NAME,
         SYMBOL,
         constants.WeiPerEther,
