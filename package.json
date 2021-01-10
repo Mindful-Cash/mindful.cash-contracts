@@ -58,7 +58,6 @@
     "@openzeppelin/contracts": "3.1.0",
     "@pie-dao/mock-contracts": "0.0.9",
     "@pie-dao/proxy": "0.0.6",
-    "@types/vue-material": "git+https://github.com/calebsander/vue-material-types.git",
     "apexcharts": "^3.22.0",
     "axios": "^0.18.0",
     "bn.js": "^5.1.1",
