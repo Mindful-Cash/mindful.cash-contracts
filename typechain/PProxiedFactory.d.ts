@@ -22,6 +22,7 @@ interface PProxiedFactoryInterface extends Interface {
 
     newProxiedSmartPool: TypedFunctionDescription<{
       encode([
+        _degen,
         _name,
         _symbol,
         _initialSupply,
@@ -30,6 +31,7 @@ interface PProxiedFactoryInterface extends Interface {
         _weights,
         _cap
       ]: [
+        string,
         string,
         string,
         BigNumberish,
@@ -112,6 +114,7 @@ export class PProxiedFactory extends Contract {
     ): Promise<boolean>;
 
     newProxiedSmartPool(
+      _degen: string,
       _name: string,
       _symbol: string,
       _initialSupply: BigNumberish,
@@ -122,7 +125,8 @@ export class PProxiedFactory extends Contract {
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
 
-    "newProxiedSmartPool(string,string,uint256,address[],uint256[],uint256[],uint256)"(
+    "newProxiedSmartPool(address,string,string,uint256,address[],uint256[],uint256[],uint256)"(
+      _degen: string,
       _name: string,
       _symbol: string,
       _initialSupply: BigNumberish,
@@ -194,6 +198,7 @@ export class PProxiedFactory extends Contract {
   ): Promise<boolean>;
 
   newProxiedSmartPool(
+    _degen: string,
     _name: string,
     _symbol: string,
     _initialSupply: BigNumberish,
@@ -204,7 +209,8 @@ export class PProxiedFactory extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
-  "newProxiedSmartPool(string,string,uint256,address[],uint256[],uint256[],uint256)"(
+  "newProxiedSmartPool(address,string,string,uint256,address[],uint256[],uint256[],uint256)"(
+    _degen: string,
     _name: string,
     _symbol: string,
     _initialSupply: BigNumberish,
@@ -286,6 +292,7 @@ export class PProxiedFactory extends Contract {
     ): Promise<BigNumber>;
 
     newProxiedSmartPool(
+      _degen: string,
       _name: string,
       _symbol: string,
       _initialSupply: BigNumberish,
@@ -296,7 +303,8 @@ export class PProxiedFactory extends Contract {
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
 
-    "newProxiedSmartPool(string,string,uint256,address[],uint256[],uint256[],uint256)"(
+    "newProxiedSmartPool(address,string,string,uint256,address[],uint256[],uint256[],uint256)"(
+      _degen: string,
       _name: string,
       _symbol: string,
       _initialSupply: BigNumberish,

@@ -4,6 +4,7 @@ interface IPProxiedFactory {
     function init(address _balancerFactory, address _implementation) external;
 
     function newProxiedSmartPool(
+        address _degen,
         string calldata _name,
         string calldata _symbol,
         uint256 _initialSupply,

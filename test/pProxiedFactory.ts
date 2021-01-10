@@ -61,6 +61,7 @@ describe("PProxiedFactory", () => {
 
   it("Creating a new proxied pool should work", async () => {
     await factory.newProxiedSmartPool(
+      account,
       "TEST",
       "TST",
       constants.WeiPerEther,

@@ -37,6 +37,11 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_degen",
+        type: "address"
+      },
+      {
         internalType: "string",
         name: "_name",
         type: "string"

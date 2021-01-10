@@ -79,7 +79,7 @@ contract MindfulProxy is Ownable {
     event SellStrategyDisabled(address indexed chakra, uint256 indexed sellStrategyId);
     event BuyStrategyEnabled(address indexed chakra, uint256 indexed buyStrategyId);
     event SellStrategyEnabled(address indexed chakra, uint256 indexed sellStrategyId);
-    event SellStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId);
+    event SellStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId, uint256 indexed sellTokenIndex, uint256 oldPrice, uint256 newPrice, bool wasActive, bool isActive);
     event BuyStrategyUpdated(address indexed chakra, uint256 indexed sellStrategyId);
 
     /**
@@ -199,7 +199,7 @@ contract MindfulProxy is Ownable {
         require(_buyToken != address(0));
 
         // create staregy
-        uint256 buyStrategyId = buyStrategies.length.add(1);
+        uint256 buyStrategyId = buyStrategies.length;
         BuyStrategy memory buyStrategy = BuyStrategy(
             _name,
             buyStrategyId,
@@ -227,7 +227,7 @@ contract MindfulProxy is Ownable {
      * @param _buyAmount amount to buy
      * @param _isActive to disable strategy, set to false
      */
-    function updateBuystrategy(
+    function updateBuyStrategy(
         address _chakra,
         address _buyToken,
         uint256 _buyStrategyId,
@@ -240,7 +240,7 @@ contract MindfulProxy is Ownable {
         // check if _buyToken is valid address
         require(_buyToken != address(0));
         // check if buy strategy id is valid
-        require(_buyStrategyId <= buyStrategies.length);
+        require(_buyStrategyId < buyStrategies.length);
         // check that buy strategy passed as arg map to correct chakra address
         require(buyStrategyChakra[_buyStrategyId] == _chakra);
         // check if _buyAmount is valid amount
@@ -249,7 +249,7 @@ contract MindfulProxy is Ownable {
         require(_interBuyDelay > 0);
 
         // get strategy index & load strategy
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+        uint256 buyStrategyIndex = _buyStrategyId;
         BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
 
         // update strategy data
@@ -261,23 +261,40 @@ contract MindfulProxy is Ownable {
         emit BuyStrategyUpdated(_chakra, _buyStrategyId);
     }
 
-    // struct SellStrategy {
-    //     string name;
-    //     uint256 id;
-    //     uint256[] prices; // price threshold
-    //     address[] sellTokens; // token to sell to for each price point
-    //     bool[] isExecuted;
-    //     bool isActive; // chakra manager can disable strategy
-    // }
+    /** 
+     * @notice update a specific sell strategy for a specific sell token
+     * @dev only price and strategy status can be updated
+     * @param _chakra chakra address
+     * @param _sellStrategyId sell strategy id
+     * @param _sellTokenIndex sell token index in SellStrategy.sellTokens array
+     * @param _price new selling price
+     * @param _isActive set to false to deactivate strategy
+     */
+    function updateSellStrategy(
+        address _chakra,
+        uint256 _sellStrategyId,
+        uint256 _sellTokenIndex,
+        uint256 _price,
+        bool _isActive
+    ) external onlyChakraManager(_chakra, msg.sender) {
+        // check if _chakra address is a legit chakra
+        require(isChakra[_chakra]);
+        // check if buy strategy id is valid
+        require(_sellStrategyId < sellStrategies.length);
 
-    // function updateSellStrategy(
-    //     address _chakra,
-    //     uint256 _sellStrategyId,
-    //     address[] calldata _sellTokens,
-    //     uint256[] calldata _prices
-    // ) external onlyChakraManager(_chakra, msg.sender) {
-    // }
+        // get sell strategy 
+        SellStrategy storage sellStrategy = sellStrategies[_sellStrategyId];
 
+        // check if sell token to update exist
+        require(_sellTokenIndex < sellStrategy.sellTokens.length);
+
+        emit SellStrategyUpdated(_chakra, _sellStrategyId, _sellTokenIndex, sellStrategy.prices[_sellTokenIndex], _price, sellStrategy.isActive, _isActive);
+
+        sellStrategy.prices[_sellTokenIndex] = _price;
+        sellStrategy.isActive = _isActive;
+    }
+
+    /// @dev a struct for toChakra() arguments
     struct ToChakraArg {
         address chakra;
         address baseToken;
@@ -286,6 +303,7 @@ contract MindfulProxy is Ownable {
         uint256 baseAmount;
     }
 
+    /// @dev a struct for toChakra() local variables
     struct ToChakraLocalVar {
         address payable manager;
         address strategyBaseToken;
@@ -348,6 +366,7 @@ contract MindfulProxy is Ownable {
         IERC20(chakra).transfer(vars.manager, chakra.balanceOf(address(this)));
     }
 
+    /// @dev a struct for fromChakra() arguments
     struct FromChakraArg {
         address _chakra;
         address _sellToken;
@@ -357,6 +376,7 @@ contract MindfulProxy is Ownable {
         uint256 _minQuoteToken;
     }
 
+    /// @dev a struct for fromCHakra() local variables
     struct FromChakraLocalVar {
         address payable manager;
         address sellToken;
@@ -486,8 +506,10 @@ contract MindfulProxy is Ownable {
         uint256[] memory _weights,
         uint256 _cap
     ) public revertIfPaused returns (address) {
+        // approve pProxiedFactory 
         // Deploy proxy contract
         address smartPool = pProxiedFactory.newProxiedSmartPool(
+            msg.sender,
             _name,
             _symbol,
             _initialSupply,

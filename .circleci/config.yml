@@ -1,0 +1,133 @@
+version: 2.1
+orbs:
+  coveralls: coveralls/coveralls@1.0.6
+  node: circleci/node@1.1.6
+
+workflows:
+  build-test-report:
+    jobs:
+      - checkout_and_install
+      - build:
+          requires:
+            - checkout_and_install
+      - lint:
+          requires:
+            - build
+      - unit-test:
+          requires:
+            - build
+      # - coverage:
+      #     context: COVERALLS_REPO_TOKEN
+      #     requires:
+      #       - build
+      # - gas-report:
+      #     context: COVERALLS_REPO_TOKEN
+      #     requires:
+      #       - unit-test
+
+jobs:
+
+  checkout_and_install:
+    working_directory: ~/mindful.cash
+    docker:
+      - image: circleci/node:10.18.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install packages
+          command: yarn
+      - save_cache: 
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - save_cache:
+          key: mindfulcash-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/mindful.cash
+
+  lint:
+    working_directory: ~/mindful.cash
+    docker:
+      - image: circleci/node:10.18.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: mindfulcash-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Lint Contracts
+          command: yarn run lint:solidity
+      - run:
+          name: Lint typescript
+          command: yarn run lint:typescript
+
+  build:
+    working_directory: ~/mindful.cash
+    docker:
+      - image: circleci/node:10.18.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: mindfulcash-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Install packages
+          command: npm install
+      - run:
+          name: Build Contracts
+          command: yarn run build
+      - save_cache:
+          key: mindful.cash-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/mindful.cash
+
+  unit-test:
+    working_directory: ~/mindful.cash
+    docker:
+      - image: circleci/node:10.18.0
+      - image: trufflesuite/ganache-cli:v6.10.1
+        command: ganache-cli -d --port 8545 --defaultBalanceEther 500
+    steps:
+      - restore_cache:
+          key: mindfulcash-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Contracts Unit Tests 
+          command: yarn run test
+      - save_cache:
+          key: gas-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/mindful.cash/gasReporterOutput.json
+
+  gas-report:
+    working_directory: ~/mindful.cash
+    docker:
+      - image: circleci/node:10.18.0
+      - image: trufflesuite/ganache-cli:v6.10.1
+    steps:
+      - restore_cache:
+          key: mindfulcash-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: gas-{{ .Environment.CIRCLE_SHA1 }}
+      - run: 
+          name: Gas Reporter
+          command: npx codechecks
+
+  coverage:
+    working_directory: ~/mindful.cash
+    docker:
+      - image: circleci/node:10.18.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: mindfulcash-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Produce Coverage Report
+          command: yarn run coverage
+      - coveralls/upload:
+          path_to_lcov: ./coverage/lcov.info
+      - store_artifacts:
+          path: /coverage
+      - store_artifacts:
+          path: /coverage.json
+      - store_artifacts:
+          path: test-results.xml
