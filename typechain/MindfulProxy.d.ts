@@ -146,6 +146,16 @@ interface MindfulProxyInterface extends Interface {
         boolean
       ]): string;
     }>;
+
+    updateSellStrategy: TypedFunctionDescription<{
+      encode([_chakra, _sellStrategyId, _sellTokenIndex, _price, _isActive]: [
+        string,
+        BigNumberish,
+        BigNumberish,
+        BigNumberish,
+        boolean
+      ]): string;
+    }>;
   };
 
   events: {
@@ -208,9 +218,22 @@ interface MindfulProxyInterface extends Interface {
     }>;
 
     SellStrategyUpdated: TypedEventDescription<{
-      encodeTopics([chakra, sellStrategyId]: [
+      encodeTopics([
+        chakra,
+        sellStrategyId,
+        sellTokenIndex,
+        oldPrice,
+        newPrice,
+        wasActive,
+        isActive
+      ]: [
         string | null,
-        BigNumberish | null
+        BigNumberish | null,
+        BigNumberish | null,
+        null,
+        null,
+        null,
+        null
       ]): string[];
     }>;
 
@@ -626,6 +649,24 @@ export class MindfulProxy extends Contract {
       _isActive: boolean,
       overrides?: TransactionOverrides
     ): Promise<ContractTransaction>;
+
+    updateSellStrategy(
+      _chakra: string,
+      _sellStrategyId: BigNumberish,
+      _sellTokenIndex: BigNumberish,
+      _price: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<ContractTransaction>;
+
+    "updateSellStrategy(address,uint256,uint256,uint256,bool)"(
+      _chakra: string,
+      _sellStrategyId: BigNumberish,
+      _sellTokenIndex: BigNumberish,
+      _price: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<ContractTransaction>;
   };
 
   addBuyStrategy(
@@ -1013,6 +1054,24 @@ export class MindfulProxy extends Contract {
     overrides?: TransactionOverrides
   ): Promise<ContractTransaction>;
 
+  updateSellStrategy(
+    _chakra: string,
+    _sellStrategyId: BigNumberish,
+    _sellTokenIndex: BigNumberish,
+    _price: BigNumberish,
+    _isActive: boolean,
+    overrides?: TransactionOverrides
+  ): Promise<ContractTransaction>;
+
+  "updateSellStrategy(address,uint256,uint256,uint256,bool)"(
+    _chakra: string,
+    _sellStrategyId: BigNumberish,
+    _sellTokenIndex: BigNumberish,
+    _price: BigNumberish,
+    _isActive: boolean,
+    overrides?: TransactionOverrides
+  ): Promise<ContractTransaction>;
+
   filters: {
     BuyStrategyAdded(
       chakra: string | null,
@@ -1058,7 +1117,12 @@ export class MindfulProxy extends Contract {
 
     SellStrategyUpdated(
       chakra: string | null,
-      sellStrategyId: BigNumberish | null
+      sellStrategyId: BigNumberish | null,
+      sellTokenIndex: BigNumberish | null,
+      oldPrice: null,
+      newPrice: null,
+      wasActive: null,
+      isActive: null
     ): EventFilter;
 
     SmartPoolCreated(
@@ -1336,6 +1400,24 @@ export class MindfulProxy extends Contract {
       _buyStrategyId: BigNumberish,
       _interBuyDelay: BigNumberish,
       _buyAmount: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<BigNumber>;
+
+    updateSellStrategy(
+      _chakra: string,
+      _sellStrategyId: BigNumberish,
+      _sellTokenIndex: BigNumberish,
+      _price: BigNumberish,
+      _isActive: boolean,
+      overrides?: TransactionOverrides
+    ): Promise<BigNumber>;
+
+    "updateSellStrategy(address,uint256,uint256,uint256,bool)"(
+      _chakra: string,
+      _sellStrategyId: BigNumberish,
+      _sellTokenIndex: BigNumberish,
+      _price: BigNumberish,
       _isActive: boolean,
       overrides?: TransactionOverrides
     ): Promise<BigNumber>;
