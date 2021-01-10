@@ -240,7 +240,7 @@ contract MindfulProxy is Ownable {
         // check if _buyToken is valid address
         require(_buyToken != address(0));
         // check if buy strategy id is valid
-        require(_buyStrategyId <= buyStrategies.length);
+        require(_buyStrategyId < buyStrategies.length);
         // check that buy strategy passed as arg map to correct chakra address
         require(buyStrategyChakra[_buyStrategyId] == _chakra);
         // check if _buyAmount is valid amount
@@ -249,7 +249,7 @@ contract MindfulProxy is Ownable {
         require(_interBuyDelay > 0);
 
         // get strategy index & load strategy
-        uint256 buyStrategyIndex = _buyStrategyId.sub(1);
+        uint256 buyStrategyIndex = _buyStrategyId;
         BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
 
         // update strategy data
@@ -261,6 +261,15 @@ contract MindfulProxy is Ownable {
         emit BuyStrategyUpdated(_chakra, _buyStrategyId);
     }
 
+    /** 
+     * @notice update a specific sell strategy for a specific sell token
+     * @dev only price and strategy status can be updated
+     * @param _chakra chakra address
+     * @param _sellStrategyId sell strategy id
+     * @param _sellTokenIndex sell token index in SellStrategy.sellTokens array
+     * @param _price new selling price
+     * @param _isActive set to false to deactivate strategy
+     */
     function updateSellStrategy(
         address _chakra,
         uint256 _sellStrategyId,

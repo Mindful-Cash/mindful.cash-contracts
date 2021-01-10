@@ -131,13 +131,12 @@ describe("Buy strategy", () => {
     await mindfulProxy.addBuyStrategy(chakraAddress, usdcToken.address, startegyName, new BigNumber(60*60*24*7), constants.WeiPerEther.mul(10000000000));
 
     expect((await mindfulProxy.getBuyStrategies()).length).to.eq(1);
-    expect(await mindfulProxy.buyStrategyChakra(1)).to.eq(chakraAddress);
+    expect(await mindfulProxy.buyStrategyChakra(0)).to.eq(chakraAddress);
   });
   
   it('should update a specific buy strategy', async () => {
     const chakraAddress = (await mindfulProxy.getChakras())[0];
-    const buyStrategyid = (await mindfulProxy.getBuyStrategies()).length;
-
+    const buyStrategyid = '0'
     const tokenFactorySigner0 = new MockTokenFactory(signers[0]);
     const wethToken : MockToken = await tokenFactorySigner0.deploy('WETH', 'WETH', 18);
 

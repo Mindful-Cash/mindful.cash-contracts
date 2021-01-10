@@ -146,24 +146,16 @@ describe("Sell strategy", () => {
     expect(await mindfulProxy.sellStrategyChakra(1)).to.eq(chakraAddress);
   });
   
-  // it('should update a specific sell strategy', async () => {
-  //   const chakraAddress = (await mindfulProxy.getChakras())[0];
-  //   const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
+  it('should update a specific sell strategy price', async () => {
+    const chakraAddress = (await mindfulProxy.getChakras())[0];
+    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
+    const  newPrice = constants.WeiPerEther.mul(20000000000);
+    const isActive = true;
 
-  //   let prices = [];
-  //   let sellOtokens = [];
+    await mindfulProxy.updateSellStrategy(chakraAddress, sellStrategyid, 0, newPrice, isActive);
 
-  //   prices.push(constants.WeiPerEther.mul(10000000000));
-  //   prices.push(constants.WeiPerEther.mul(12000000000));
-  //   prices.push(constants.WeiPerEther.mul(20000000000));
-  //   sellOtokens.push(usdcToken.address);
-  //   sellOtokens.push(usdcToken.address);
-  //   sellOtokens.push(constants.AddressZero);
-
-  //   await mindfulProxy.updateSellStrategy(chakraAddress, sellStrategyid, sellOtokens, prices);
-
-  //   expect((await mindfulProxy.getSellStrategies())[0].sellTokens.length).to.eq(2);
-  // })
+    // expect((await mindfulProxy.getSellStrategies())[0].sellTokens.length).to.eq(2);
+  })
 
   async function getTokenBalances(address: string) {
     const balances: BigNumber[] = [];
