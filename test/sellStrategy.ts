@@ -148,7 +148,7 @@ describe("Sell strategy", () => {
   
   it('should update a specific sell strategy price', async () => {
     const chakraAddress = (await mindfulProxy.getChakras())[0];
-    const sellStrategyid = (await mindfulProxy.getSellStrategies()).length;
+    const sellStrategyid = '0';
     const  newPrice = constants.WeiPerEther.mul(20000000000);
     const isActive = true;
 
