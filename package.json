@@ -2,8 +2,9 @@
   "name": "mindful-cash",
   "version": "0.0.1",
   "scripts": {
+    "build": "yarn run compile &&  yarn run typechain",
     "compile": "npx buidler --config ./buidler.compile.config.ts compile",
-    "coverage": "npm run build && npx buidler coverage --temp artifacts --network coverage",
+    "coverage": "yarn run build && npx buidler coverage --temp artifacts --network coverage",
     "lint:solidity": "npx solhint ./contracts/**/*.sol",
     "lint:typescript": "tslint -c tslint.json {test,typechain,utils}/**/*.ts",
     "lint": "yarn lint:solidity && yarn lint:typescript",
