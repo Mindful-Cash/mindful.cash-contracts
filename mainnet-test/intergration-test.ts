@@ -35,16 +35,14 @@ const { expect } = chai;
 const PLACE_HOLDER_ADDRESS = "0x0000000000000000000000000000000000000001";
 const SMART_POOL_FACTORY = "0xed52D8E202401645eDAD1c0AA21e872498ce47D0";
 const WHALE_ACCOUNT = "0xF977814e90dA44bFA03b6295A0616a897441aceC";
-const WETH_TOKEN = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const BAT_TOKEN = "0x0d8775f648430679a709e98d2b0cb6250d2887ef";
-const USDC_TOKEN = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const UNI_TOKEN = "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984";
 const LINK_TOKEN = "0x514910771af9ca656af840dff83e8264ecf986ca";
-const OMG_TOKEN = "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07";
 
 const NAME = "DeFi Energy Chakra";
 const SYMBOL = "DEC";
 const INITIAL_SUPPLY = constants.WeiPerEther;
-const TOKENS: any = [BAT_TOKEN, LINK_TOKEN, OMG_TOKEN];
+const TOKENS: any = [BAT_TOKEN, LINK_TOKEN, UNI_TOKEN];
 const AMOUNTS: any = [constants.WeiPerEther.mul(10), constants.WeiPerEther.mul(10), constants.WeiPerEther.mul(10)];
 const WEIGHTS: any = [constants.WeiPerEther.mul(3), constants.WeiPerEther.mul(3), constants.WeiPerEther.mul(3)];
 
@@ -79,6 +77,8 @@ describe("MAINNET TEST", function() {
     );
 
     mindfulProxy = await mindfulProxyDeployer.deploy();
+    
+    console.log("deployed mindful proxy", mindfulProxy.address);
 
     const pProxiedDeployer: any = new ethers.ContractFactory(
       PProxiedFactoryArtifact.abi,
@@ -89,8 +89,6 @@ describe("MAINNET TEST", function() {
     pProxiedFactory = await pProxiedDeployer.deploy();
 
     mindfulProxyWhaleSigner = MindfulProxyFactory.connect(mindfulProxy.address, whaleSigner);
-
-    console.log("deployed mindful proxy", mindfulProxy.address);
 
     const libraries = await run("deploy-libraries");
     console.log("Libs deployed");
@@ -108,7 +106,10 @@ describe("MAINNET TEST", function() {
     console.log("Should get here");
     console.log("PProxiedFactory.address", pProxiedFactory.address);
 
-    await mindfulProxy.init(pProxiedFactory.address, SMART_POOL_FACTORY, smartpool.address);
+    console.log("Creating balancerfactory");
+    const balancerFactoryAddress = await deployBalancerFactory(signers[0]);
+
+    await mindfulProxy.init(pProxiedFactory.address, balancerFactoryAddress, smartpool.address);
     console.log("end of setup");
 
     await timeTraveler.snapshot();
@@ -127,12 +128,29 @@ describe("MAINNET TEST", function() {
     for (let i = 0; i < TOKENS.length; i++) {
       const token: Ierc20 = Ierc20Factory.connect(TOKENS[i], whaleSigner);
       console.log("token", token.address);
-      await token.approve(mindfulProxy.address, constants.MaxUint256);
+      console.log("balance", (await token.balanceOf(WHALE_ACCOUNT)).toString());
+      await token.approve(pProxiedFactory.address, constants.MaxUint256);
       console.log("balance", (await token.balanceOf(WHALE_ACCOUNT)).toString());
     }
 
     // 2. User makes a new Mindful Proxy.
-    await mindfulProxyWhaleSigner.deployChakra(NAME, SYMBOL, INITIAL_SUPPLY, TOKENS, AMOUNTS, WEIGHTS, INITIAL_SUPPLY);
+    console.log("RIGHT BEFORE");
+    console.log("mindfulProxyWhaleSigner", mindfulProxyWhaleSigner);
+    console.log("isPaused", await mindfulProxyWhaleSigner.isPaused());
+    let tx = await mindfulProxyWhaleSigner.deployChakra(
+      NAME,
+      SYMBOL,
+      INITIAL_SUPPLY,
+      TOKENS,
+      AMOUNTS,
+      WEIGHTS,
+      INITIAL_SUPPLY,
+      {
+        gasLimit: 100000000
+      }
+    );
+    console.log("tx", tx);
+    console.log("RIGHT AFTER");
     expect((await mindfulProxy.getChakras()).length).to.eq(1);
     smartpoolProxy = Ipv2SmartPoolFactory.connect(await mindfulProxy.chakras(0), whaleSigner);
     console.log("chakras", await mindfulProxy.getChakras());
