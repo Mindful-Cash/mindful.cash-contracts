@@ -199,7 +199,7 @@ contract MindfulProxy is Ownable {
         require(_buyToken != address(0));
 
         // create staregy
-        uint256 buyStrategyId = buyStrategies.length;
+        uint256 buyStrategyId = buyStrategies.length.add(1);
         BuyStrategy memory buyStrategy = BuyStrategy(
             _name,
             buyStrategyId,
@@ -240,7 +240,7 @@ contract MindfulProxy is Ownable {
         // check if _buyToken is valid address
         require(_buyToken != address(0));
         // check if buy strategy id is valid
-        require(_buyStrategyId < buyStrategies.length);
+        require(_buyStrategyId <= buyStrategies.length);
         // check that buy strategy passed as arg map to correct chakra address
         require(buyStrategyChakra[_buyStrategyId] == _chakra);
         // check if _buyAmount is valid amount
@@ -249,8 +249,7 @@ contract MindfulProxy is Ownable {
         require(_interBuyDelay > 0);
 
         // get strategy index & load strategy
-        uint256 buyStrategyIndex = _buyStrategyId;
-        BuyStrategy storage buyStrategy = buyStrategies[buyStrategyIndex];
+        BuyStrategy storage buyStrategy = buyStrategies[_buyStrategyId.sub(1)];
 
         // update strategy data
         buyStrategy.buyToken = _buyToken;
@@ -280,7 +279,7 @@ contract MindfulProxy is Ownable {
         // check if _chakra address is a legit chakra
         require(isChakra[_chakra]);
         // check if buy strategy id is valid
-        require(_sellStrategyId < sellStrategies.length);
+        require(_sellStrategyId <= sellStrategies.length);
 
         // get sell strategy 
         SellStrategy storage sellStrategy = sellStrategies[_sellStrategyId];
