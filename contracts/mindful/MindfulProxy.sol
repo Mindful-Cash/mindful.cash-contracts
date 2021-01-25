@@ -332,7 +332,7 @@ contract MindfulProxy is Ownable {
         // same for baseToken
         vars.strategyBaseToken = vars.isRelayer ? vars.strategyBaseToken : _arg.baseToken;
 
-        // this function below should return totalBaseAmount + fee in case sender relayer // split this out
+        // this function below should return totalBaseAmount
         uint256 requiredTotalBaseAmount = calcToChakra(_arg.chakra, vars.strategyBaseToken, _arg.poolAmount);
 
         // Relayer fee
