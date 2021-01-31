@@ -338,14 +338,13 @@ contract MindfulProxy is Ownable {
         // Relayer fee
         if (vars.isRelayer) {
             vars.relayerFee = requiredTotalBaseAmount.mul(3).div(100);
+
+            // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
+            // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
+            // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
+            // the requested number of pool tokens.
+            require(vars.strategyBaseAmount >= requiredTotalBaseAmount.add(vars.relayerFee));
         }
-
-        // The baseAmount must be at least as much as the calculated requiredTotalBaseAmount to fill the chakra.
-        // This checks that the relayer is not trying to spent more of the chakra owners funds than approved.
-        // It also checks that if the chakra owner is trying to do a buy they are not sending too little to fill
-        // the requested number of pool tokens.
-
-        require(vars.strategyBaseAmount >= requiredTotalBaseAmount.add(vars.relayerFee));
 
         require(IERC20(vars.strategyBaseToken).transferFrom(vars.manager, address(this), vars.strategyBaseAmount));
 
